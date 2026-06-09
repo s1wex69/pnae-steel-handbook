@@ -1,0 +1,127 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Палитра в стиле intech-atom.ru: тёмная бирюза, светлый фон, белые карточки */
+@theme {
+  --color-background: #0c1817;
+  --color-foreground: #f2f7f6;
+  --color-card: #142422;
+  --color-card-foreground: #f2f7f6;
+  --color-primary: #003837;
+  --color-primary-foreground: #ffffff;
+  --color-heading: #f2f7f6;
+  --color-emphasis: #8ee4dc;
+  --color-muted: #1c302f;
+  --color-muted-foreground: #b8ccc9;
+  --color-border: #2f4a48;
+  --color-accent: #1f3836;
+  --color-accent-foreground: #e8f4f3;
+  --color-destructive: #e87070;
+  --color-header: #003837;
+  --color-header-foreground: #ffffff;
+  --color-link: #8ee4dc;
+  --color-success: #003837;
+  --color-success-muted: #00383755;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.25);
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+:root.light {
+  --color-background: #e6e9ea;
+  --color-foreground: #1a2e2d;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a2e2d;
+  --color-primary: #003837;
+  --color-primary-foreground: #ffffff;
+  --color-heading: #003837;
+  --color-emphasis: #003837;
+  --color-muted: #f2f4f5;
+  --color-muted-foreground: #4a5654;
+  --color-border: #d4dcdb;
+  --color-accent: #e8edec;
+  --color-accent-foreground: #003837;
+  --color-destructive: #c44b4b;
+  --color-header: #003837;
+  --color-header-foreground: #ffffff;
+  --color-link: #003837;
+  --color-success: #003837;
+  --color-success-muted: #00383714;
+  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.08);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-foreground);
+  min-height: 100dvh;
+}
+
+:root.light body {
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 56, 55, 0.06) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+.methodology-content h1,
+.methodology-content h2,
+.methodology-content h3 {
+  scroll-margin-top: 6rem;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.methodology-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.methodology-content th,
+.methodology-content td {
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 0.75rem;
+}
+
+.methodology-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media print {
+  header,
+  aside {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    background-image: none !important;
+  }
+
+  .print-report {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .print-report::before {
+    content: "ИНТЕХ-АТОМ — отчёт расчёта";
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+}

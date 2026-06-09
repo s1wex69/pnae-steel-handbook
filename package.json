@@ -1,0 +1,25 @@
+{
+  "name": "intech-atom",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Инженерная платформа расчётов на прочность",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run dev -w apps/api",
+    "build": "npm run build -w apps/web && npm run build -w apps/api",
+    "db:migrate": "npm run db:migrate -w apps/api",
+    "db:seed-calculators": "node apps/api/scripts/seed-calculators.mjs",
+    "data:extract-steel": "python scripts/extract-steel-full.py",
+    "methodology:replace-in1": "node scripts/replace-in1-methodology.mjs",
+    "install:api": "cd apps/api && npm install --no-audit --no-fund",
+    "install:web": "cd apps/web && npm install --no-audit --no-fund",
+    "clean:install": "powershell -ExecutionPolicy Bypass -File scripts/clean-install.ps1"
+  },
+  "engines": {
+    "node": ">=20.0.0 <25.0.0"
+  }
+}
