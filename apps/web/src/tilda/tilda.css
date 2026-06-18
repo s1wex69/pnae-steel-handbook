@@ -75,7 +75,7 @@
   display: block;
   box-sizing: border-box;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin-inline: auto;
   overflow-x: clip;
   isolation: isolate;
@@ -182,7 +182,7 @@
 .t-rec:has(#root.pnae-tilda-embed),
 .t-rec:has(.pnae-t123-svc) {
   background: #ffffff !important;
-  padding-top: 0 !important;
+  padding-top: 5.5rem !important;
   padding-bottom: 0 !important;
 }
 
@@ -190,7 +190,7 @@
 .t-rec:has(#root.pnae-tilda-embed) .t-col,
 .t-rec:has(#root.pnae-tilda-embed) [class*="t-cell"] {
   width: 100% !important;
-  max-width: 1200px !important;
+  max-width: 1400px !important;
   margin-inline: auto !important;
   box-sizing: border-box !important;
 }

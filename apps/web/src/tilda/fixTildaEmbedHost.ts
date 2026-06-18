@@ -20,9 +20,11 @@ export function fixTildaEmbedHost() {
     if (el.classList.contains("t-rec") || el.classList.contains("t-container")) {
       el.style.setProperty("padding-left", "0", "important");
       el.style.setProperty("padding-right", "0", "important");
-      el.style.setProperty("padding-top", "0", "important");
       el.style.setProperty("padding-bottom", "0", "important");
       el.style.setProperty("background", "#ffffff", "important");
+      if (el.classList.contains("t-rec") && window.self === window.top) {
+        el.style.setProperty("padding-top", "5.5rem", "important");
+      }
     }
 
     el = el.parentElement;

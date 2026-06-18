@@ -149,7 +149,7 @@ function run(cmd, args, env) {
 
 function embedSnippet(title, iframeSrc) {
   const src = iframeSrc ?? "ВСТАВЬТЕ_СЮДА_ССЫЛКУ_НА_index.html";
-  return `<div style="width:100%;max-width:1200px;margin:0 auto;">
+  return `<div style="width:100%;max-width:1400px;margin:0 auto;padding-top:5.5rem;">
   <iframe
     src="${src}"
     title="${title}"

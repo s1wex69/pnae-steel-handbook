@@ -150,7 +150,7 @@ function MarkCell({
         className={cn(
           "mt-2 leading-relaxed text-[var(--color-muted-foreground)]",
           prominent ? "text-sm" : "text-xs",
-          align === "center" && "mx-auto max-w-[20rem]"
+          align === "center" && "mx-auto"
         )}
       >
         {sortament}
@@ -272,21 +272,22 @@ function toggleAllowableMode(
 const RESULT_CARD =
   "min-w-0 max-w-full border border-[var(--color-border)]/80 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_WRAP =
-  "overflow-x-auto overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
+  "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
+const TABLE_CLASS = "w-full table-fixed border-collapse";
 const TABLE_HEAD =
-  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-base font-semibold";
+  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-sm font-semibold sm:text-base";
 const TH_BASE =
-  "border-r border-white/25 px-4 py-4 text-center align-middle last:border-r-0";
-const TH_MARK = cn(TH_BASE, "min-w-[18rem] w-[24%] rounded-tl-xl");
-const TH_COND = cn(TH_BASE, "min-w-[9rem]");
-const TH_TEMP = cn(TH_BASE, "min-w-[5rem]");
-const TH_VALUE = cn(TH_BASE, "min-w-[7rem]");
+  "border-r border-white/25 px-2 py-3 text-center align-middle last:border-r-0 sm:px-3 sm:py-3.5";
+const TH_MARK = cn(TH_BASE, "w-[30%] min-w-0 rounded-tl-xl");
+const TH_COND = cn(TH_BASE, "w-[14%] min-w-0");
+const TH_TEMP = cn(TH_BASE, "w-[7%] min-w-0");
+const TH_VALUE = cn(TH_BASE, "min-w-0");
 const TD_BASE =
-  "border-r border-[var(--color-border)]/35 bg-[var(--color-card)] px-4 py-5 text-center align-middle last:border-r-0";
-const TD_MARK = cn(TD_BASE, "px-5");
+  "border-r border-[var(--color-border)]/35 bg-[var(--color-card)] px-2 py-4 text-center align-middle last:border-r-0 sm:px-3 sm:py-5";
+const TD_MARK = cn(TD_BASE, "px-3 sm:px-4");
 const TD_VALUE = cn(
   TD_BASE,
-  "text-lg font-bold tabular-nums text-[var(--color-heading)]"
+  "text-base font-bold tabular-nums text-[var(--color-heading)] sm:text-lg"
 );
 const TEMP_BADGE =
   "inline-flex min-w-[3.5rem] items-center justify-center rounded-md bg-[var(--color-muted)] px-3 py-1.5 text-base font-bold tabular-nums text-[var(--color-heading)]";
@@ -322,7 +323,7 @@ function SectionHeading({
 
 function InlineColumnHeader({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto max-w-[10rem] text-center font-serif text-base font-semibold leading-snug">
+    <div className="mx-auto min-w-0 text-center font-serif text-sm font-semibold leading-snug sm:text-base">
       {children}
     </div>
   );
@@ -407,7 +408,7 @@ function ResultsBlock({
   return (
     <div className="space-y-10">
       <Card className={RESULT_CARD}>
-        <CardContent className="space-y-6 p-6 sm:p-10">
+        <CardContent className="space-y-6 p-4 sm:p-6">
           <SectionHeading
             action={
               <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm text-[var(--color-foreground)] sm:text-base">
@@ -425,7 +426,7 @@ function ResultsBlock({
           </SectionHeading>
 
           <div className={TABLE_WRAP}>
-            <table className="w-full min-w-[48rem] border-collapse">
+            <table className={TABLE_CLASS}>
               <thead>
                 <tr className={TABLE_HEAD}>
                   <th className={TH_MARK}>Марка стали</th>
@@ -472,7 +473,7 @@ function ResultsBlock({
       </Card>
 
       <Card className={RESULT_CARD}>
-        <CardContent className="space-y-6 p-6 sm:p-10">
+        <CardContent className="space-y-6 p-4 sm:p-6">
           <SectionHeading>
             Допускаемые напряжения
           </SectionHeading>
@@ -500,7 +501,7 @@ function ResultsBlock({
           </div>
 
           <div className={TABLE_WRAP}>
-            <table className="w-full min-w-[50rem] border-collapse">
+            <table className={TABLE_CLASS}>
               <thead>
                 <tr className={TABLE_HEAD}>
                   <th className={TH_MARK}>Марка стали</th>
