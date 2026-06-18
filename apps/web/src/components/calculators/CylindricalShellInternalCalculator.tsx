@@ -243,12 +243,11 @@ export function CylindricalShellInternalCalculator({
           />
         </CalcSection>
 
-        <CalcSection title="Условие применения расчётных формул" titleAccent={false} twoColumns>
-          <div className="hidden min-w-0 xl:block" aria-hidden />
-          <div className="flex min-h-[3rem] items-center justify-start xl:justify-end">
+        <CalcSection title="Условие применения расчётных формул" titleAccent={false}>
+          <div className="sm:col-span-2">
             <span
               className={cn(
-                "inline-flex flex-wrap items-center justify-end gap-x-2 text-xl font-semibold tabular-nums",
+                "inline-flex flex-wrap items-center gap-x-2 text-xl font-semibold tabular-nums",
                 applicability.ok
                   ? "text-[var(--color-emphasis)]"
                   : "text-[var(--color-destructive)]"
