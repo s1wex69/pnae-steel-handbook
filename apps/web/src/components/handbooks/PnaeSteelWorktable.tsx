@@ -140,7 +140,7 @@ function MarkCell({
     <div className={cn(align === "left" ? "text-left" : "text-center")}>
       <div
         className={cn(
-          "font-semibold text-[var(--color-heading)]",
+          "pnae-handbook-mark font-semibold text-[var(--color-heading)]",
           prominent && "text-lg tracking-wide"
         )}
       >
@@ -272,13 +272,13 @@ function toggleAllowableMode(
 const RESULT_CARD =
   "min-w-0 max-w-full border border-[var(--color-border)]/80 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const HANDBOOK_TOGGLE_LABEL =
-  "text-[0.6875rem] leading-tight text-[var(--color-foreground)] sm:text-[0.75rem]";
+  "pnae-handbook-toggle text-[0.6875rem] leading-tight text-[var(--color-foreground)] sm:text-[0.75rem]";
 const HANDBOOK_TOGGLE_BOX =
   "flex cursor-pointer items-center gap-1.5 border border-[var(--color-border)]";
 const TABLE_HEAD_FONT =
-  "text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
+  "pnae-handbook-table-th text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
 const SECTION_HEADING_FONT =
-  "text-[1.1875rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.375rem]";
+  "pnae-handbook-section-title text-[1.1875rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.375rem]";
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
@@ -298,10 +298,10 @@ const TD_BASE =
 const TD_MARK = cn(TD_BASE, "px-3 sm:px-4");
 const TD_VALUE = cn(
   TD_BASE,
-  "text-base font-bold tabular-nums text-[var(--color-heading)] sm:text-lg"
+  "pnae-handbook-table-td text-base font-bold tabular-nums text-[var(--color-heading)] sm:text-lg"
 );
 const TEMP_BADGE =
-  "inline-flex min-w-[3.5rem] items-center justify-center rounded-md bg-[var(--color-muted)] px-3 py-1.5 text-base font-bold tabular-nums text-[var(--color-heading)]";
+  "pnae-handbook-table-td inline-flex min-w-[3.5rem] items-center justify-center rounded-md bg-[var(--color-muted)] px-3 py-1.5 text-base font-bold tabular-nums text-[var(--color-heading)]";
 
 function mechColumnUnit(key: SteelPropertyKey, unit: string): string {
   if (key === "thermalExpansionAlpha") return "10⁻⁶·К⁻¹";
@@ -565,7 +565,7 @@ function ResultsBlock({
                       <td
                         className={cn(
                           TD_BASE,
-                          "py-6 text-sm font-medium text-[var(--color-foreground)]"
+                          "pnae-handbook-table-td py-6 font-medium text-[var(--color-foreground)]"
                         )}
                         title={def.fullLabel}
                       >
