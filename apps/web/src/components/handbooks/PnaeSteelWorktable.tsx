@@ -276,9 +276,9 @@ const HANDBOOK_TOGGLE_LABEL =
 const HANDBOOK_TOGGLE_BOX =
   "flex cursor-pointer items-center gap-1 border border-[var(--color-border)]";
 const TABLE_HEAD_FONT =
-  "text-[0.8125rem] font-semibold leading-snug sm:text-[0.875rem]";
+  "text-[0.875rem] font-semibold leading-snug sm:text-[0.9375rem]";
 const SECTION_HEADING_FONT =
-  "text-[0.9375rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.0625rem]";
+  "text-[1.0625rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.25rem]";
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
