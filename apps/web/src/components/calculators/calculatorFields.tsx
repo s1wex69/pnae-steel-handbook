@@ -139,6 +139,10 @@ export function AllowancesCalcSection({
   onCc,
   onC3Manual,
   onCcManual,
+  c31Label = "Технологическая прибавка (утонение с внешней стороны отвода)",
+  c32Label = "Технологическая прибавка (утонение с внутренней стороны отвода)",
+  c33Label = "Технологическая прибавка (средняя часть отвода, ±15° нейтральной линии)",
+  ccSymbol = "c" as ReactNode,
 }: {
   expanded: boolean;
   onToggle: () => void;
@@ -158,6 +162,10 @@ export function AllowancesCalcSection({
   onCc: (v: string) => void;
   onC3Manual: () => void;
   onCcManual: () => void;
+  c31Label?: string;
+  c32Label?: string;
+  c33Label?: string;
+  ccSymbol?: ReactNode;
 }) {
   return (
     <CalcSection
@@ -170,16 +178,16 @@ export function AllowancesCalcSection({
         <>
           <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<Var letter="c" sub="1" />} value={c1} onChange={(v) => { onCcManual(); onC1(v); }} unit="мм" />
           <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<Var letter="c" sub="2" />} value={c2} onChange={(v) => { onCcManual(); onC2(v); }} unit="мм" />
-          <CalcRow label="Технологическая прибавка (утонение с внешней стороны отвода)" symbol={<Var letter="c" sub="31" />} value={c31} onChange={(v) => { onC3Manual(); onC31(v); }} unit="мм" />
-          <CalcRow label="Технологическая прибавка (утонение с внутренней стороны отвода)" symbol={<Var letter="c" sub="32" />} value={c32} onChange={(v) => { onC3Manual(); onC32(v); }} unit="мм" />
-          <CalcRow label="Технологическая прибавка (средняя часть отвода, ±15° нейтральной линии)" symbol={<Var letter="c" sub="33" />} value={c33} onChange={(v) => { onC3Manual(); onC33(v); }} unit="мм" />
+          <CalcRow label={c31Label} symbol={<Var letter="c" sub="31" />} value={c31} onChange={(v) => { onC3Manual(); onC31(v); }} unit="мм" />
+          <CalcRow label={c32Label} symbol={<Var letter="c" sub="32" />} value={c32} onChange={(v) => { onC3Manual(); onC32(v); }} unit="мм" />
+          <CalcRow label={c33Label} symbol={<Var letter="c" sub="33" />} value={c33} onChange={(v) => { onC3Manual(); onC33(v); }} unit="мм" />
           <CalcRow label="Технологическая прибавка" symbol={<Var letter="c" sub="3" />} value={c3} onChange={(v) => { onC3Manual(); onC3(v); }} unit="мм" borderless />
         </>
       }
     >
       <CalcRow
         label="Сумма прибавок к расчётным толщинам стенок"
-        symbol="c"
+        symbol={ccSymbol}
         value={cc}
         onChange={(v) => {
           onCcManual();
