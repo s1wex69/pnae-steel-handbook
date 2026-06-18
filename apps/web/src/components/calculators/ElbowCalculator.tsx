@@ -73,7 +73,7 @@ export function ElbowCalculator({ handbook }: { handbook: SteelHandbook }) {
           expanded={a.expanded} onToggle={a.toggleExpanded}
           c1={a.c1} c2={a.c2} c31={a.c31} c32={a.c32} c33={a.c33} c3={a.c3} cc={a.cc}
           onC1={a.setC1} onC2={a.setC2} onC31={a.setC31} onC32={a.setC32} onC33={a.setC33}
-          onC3={a.setC3} onCc={a.setCc} onC3Manual={a.setC3Manual} onCcManual={a.setCcManual}
+          onC3={a.setC3} onCc={a.setCc}
         />
 
         <CalcSection title="Исходные данные">

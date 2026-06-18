@@ -115,10 +115,7 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
           onC31={allowances.setC31}
           onC32={allowances.setC32}
           onC33={allowances.setC33}
-          onC3={allowances.setC3}
-          onCc={allowances.setCc}
-          onC3Manual={allowances.setC3Manual}
-          onCcManual={allowances.setCcManual}
+          onC3={allowances.setC3} onCc={allowances.setCc}
         />
 
         <CalcSection title="Исходные данные">

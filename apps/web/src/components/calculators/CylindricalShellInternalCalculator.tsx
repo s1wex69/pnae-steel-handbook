@@ -143,8 +143,6 @@ export function CylindricalShellInternalCalculator({
           onC33={allowances.setC33}
           onC3={allowances.setC3}
           onCc={allowances.setCc}
-          onC3Manual={allowances.setC3Manual}
-          onCcManual={allowances.setCcManual}
           ccSymbol={<Var letter="c" sub="c" />}
           c31Label="Технологическая прибавка (утонение с внешней стороны)"
           c32Label="Технологическая прибавка (утонение с внутренней стороны)"
