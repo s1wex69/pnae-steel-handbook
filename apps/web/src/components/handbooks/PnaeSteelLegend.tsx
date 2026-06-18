@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { HANDBOOK_SECTION_HEADING } from "@/components/handbooks/handbookTypography";
+import { HandbookSectionHeading } from "@/components/handbooks/handbookTypography";
 import { cn } from "@/lib/utils";
 import { In1Symbol, type In1SymbolId } from "@/components/handbooks/In1Symbol";
 import { MathSpan, Stress, Var } from "@/components/handbooks/MathNotation";
@@ -130,12 +130,9 @@ export function PnaeSteelLegend() {
   return (
     <div className="min-w-0 max-w-full">
       <div className="rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] px-5 py-7 shadow-[var(--shadow-card)] sm:px-10 sm:py-10">
-        <h2
-          id="pnae-steel-legend-heading"
-          className={HANDBOOK_SECTION_HEADING}
-        >
+        <HandbookSectionHeading id="pnae-steel-legend-heading">
           Условные обозначения
-        </h2>
+        </HandbookSectionHeading>
 
         <div className="mt-8">
           <LegendTermGrid terms={LEGEND_TERMS} />

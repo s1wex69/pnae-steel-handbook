@@ -23,7 +23,7 @@ import {
   type MechPropertyKey,
 } from "@/components/handbooks/MathNotation";
 import { PnaeSteelLegend } from "@/components/handbooks/PnaeSteelLegend";
-import { HANDBOOK_SECTION_HEADING } from "@/components/handbooks/handbookTypography";
+import { HandbookSectionHeading } from "@/components/handbooks/handbookTypography";
 import { SteelMarkCatalog } from "@/components/handbooks/SteelMarkCatalog";
 import { StyledSelect } from "@/components/handbooks/SelectStep";
 import { Button } from "@/components/ui/button";
@@ -320,7 +320,7 @@ function SectionHeading({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <h2 className={SECTION_HEADING_FONT}>{children}</h2>
+        <HandbookSectionHeading>{children}</HandbookSectionHeading>
         {subtitle ? (
           <p className="mt-1 text-sm font-normal text-[var(--color-muted-foreground)] sm:text-base">
             {subtitle}
