@@ -309,7 +309,7 @@ function SectionHeading({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <h2 className="text-2xl font-bold text-[var(--color-heading)] sm:text-3xl">{children}</h2>
+        <h2 className="text-xl font-bold text-[var(--color-heading)] sm:text-2xl">{children}</h2>
         {subtitle ? (
           <p className="mt-1 text-sm font-normal text-[var(--color-muted-foreground)] sm:text-base">
             {subtitle}
