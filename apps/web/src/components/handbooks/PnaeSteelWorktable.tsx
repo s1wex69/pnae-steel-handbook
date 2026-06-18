@@ -278,7 +278,6 @@ const HANDBOOK_TOGGLE_BOX =
   "flex cursor-pointer items-center gap-1.5 border border-[var(--color-border)]";
 const TABLE_HEAD_FONT =
   "pnae-handbook-table-th text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
-const SECTION_HEADING_FONT = HANDBOOK_SECTION_HEADING;
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
