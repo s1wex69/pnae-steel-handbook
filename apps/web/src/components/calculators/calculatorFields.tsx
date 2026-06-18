@@ -1,11 +1,15 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   CALC_ROW_GRID,
   CALC_VALUE_GRID,
+  CALC_SECTION_CARD,
   CalcSection,
+  CalcSectionHeading,
   calcInputClass,
+  calcResultBoxClass,
 } from "@/components/calculators/calculatorUi";
 import { Var } from "@/components/handbooks/MathNotation";
 
@@ -15,11 +19,11 @@ type RowLayout = "inline" | "stacked";
 function ResultValue({ value, unit }: { value: string; unit?: string }) {
   return (
     <>
-      <div className="flex h-11 w-full min-w-0 max-w-[11rem] items-center justify-end rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-lg tabular-nums text-[var(--color-foreground)]">
+      <div className={calcResultBoxClass}>
         {value}
       </div>
       {unit ? (
-        <span className="text-lg text-[var(--color-muted-foreground)]">{unit}</span>
+        <span className="text-base text-[var(--color-muted-foreground)]">{unit}</span>
       ) : (
         <span />
       )}
@@ -62,8 +66,8 @@ export function CalcRow({
   const isResult = variant === "result";
   const isStacked = layout === "stacked" && !isCheck;
 
-  const symbolClass = "justify-self-end text-right text-lg font-medium text-[var(--color-heading)]";
-  const unitClass = "text-lg text-[var(--color-muted-foreground)]";
+  const symbolClass = "justify-self-end text-right text-base font-medium text-[var(--color-heading)]";
+  const unitClass = "text-base text-[var(--color-muted-foreground)]";
 
   const valueBlock = children ? (
     <div className={cn(isCheck ? "mt-2 justify-self-start" : "justify-self-end")}>{children}</div>
@@ -136,6 +140,8 @@ export function AllowancesCalcSection({
   onC3,
   onCc,
   ccSymbol = <Var letter="c" sub="c" />,
+  collapsible = false,
+  defaultExpanded = true,
 }: {
   c1: string;
   c2: string;
@@ -146,7 +152,80 @@ export function AllowancesCalcSection({
   onC3: (v: string) => void;
   onCc: (v: string) => void;
   ccSymbol?: ReactNode;
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const toggleButton = collapsible ? (
+    <button
+      type="button"
+      onClick={() => setExpanded((v) => !v)}
+      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+    >
+      {expanded ? (
+        <>
+          <ChevronUp className="h-5 w-5" />
+          Скрыть
+        </>
+      ) : (
+        <>
+          <ChevronDown className="h-5 w-5" />
+          Раскрыть
+        </>
+      )}
+    </button>
+  ) : null;
+
+  if (collapsible) {
+    return (
+      <section className={CALC_SECTION_CARD}>
+        <CalcSectionHeading
+          title="Прибавки к расчётной толщине"
+          action={toggleButton}
+          accent={false}
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_11rem] sm:gap-x-6">
+          <div className="contents">
+            {expanded ? (
+              <>
+                <CalcRow
+                  label="Прибавка для компенсации коррозии и эрозии"
+                  symbol={<Var letter="c" sub="1" />}
+                  value={c1}
+                  onChange={onC1}
+                  unit="мм"
+                />
+                <CalcRow
+                  label="Прибавка для компенсации минусового допуска"
+                  symbol={<Var letter="c" sub="2" />}
+                  value={c2}
+                  onChange={onC2}
+                  unit="мм"
+                />
+                <CalcRow
+                  label="Сумма технологических прибавок"
+                  symbol={<Var letter="c" sub="3" />}
+                  value={c3}
+                  onChange={onC3}
+                  unit="мм"
+                />
+              </>
+            ) : null}
+            <CalcRow
+              label="Сумма прибавок к расчётным толщинам стенок"
+              symbol={ccSymbol}
+              value={cc}
+              onChange={onCc}
+              unit="мм"
+              borderless
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
       <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<Var letter="c" sub="1" />} value={c1} onChange={onC1} unit="мм" />

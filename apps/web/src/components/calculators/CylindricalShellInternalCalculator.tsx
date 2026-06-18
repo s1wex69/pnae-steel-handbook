@@ -127,6 +127,7 @@ export function CylindricalShellInternalCalculator({
 
       <section className="space-y-8">
         <AllowancesCalcSection
+          collapsible
           c1={allowances.c1}
           c2={allowances.c2}
           c3={allowances.c3}

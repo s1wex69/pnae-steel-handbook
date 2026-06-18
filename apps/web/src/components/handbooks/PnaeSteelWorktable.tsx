@@ -271,13 +271,24 @@ function toggleAllowableMode(
 
 const RESULT_CARD =
   "min-w-0 max-w-full border border-[var(--color-border)]/80 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
+const HANDBOOK_TOGGLE_LABEL =
+  "text-[0.625rem] leading-tight text-[var(--color-foreground)] sm:text-[0.6875rem]";
+const HANDBOOK_TOGGLE_BOX =
+  "flex cursor-pointer items-center gap-1 border border-[var(--color-border)]";
+const TABLE_HEAD_FONT =
+  "text-[0.8125rem] font-semibold leading-snug sm:text-[0.875rem]";
+const SECTION_HEADING_FONT =
+  "text-[0.9375rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.0625rem]";
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
 const TABLE_HEAD =
-  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-sm font-semibold sm:text-base";
+  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]";
 const TH_BASE =
-  "border-r border-white/25 px-2 py-3 text-center align-middle last:border-r-0 sm:px-3 sm:py-3.5";
+  cn(
+    TABLE_HEAD_FONT,
+    "border-r border-white/25 px-2 py-3 text-center align-middle last:border-r-0 sm:px-3 sm:py-3.5"
+  );
 const TH_MARK = cn(TH_BASE, "w-[30%] min-w-0 rounded-tl-xl");
 const TH_COND = cn(TH_BASE, "w-[14%] min-w-0");
 const TH_TEMP = cn(TH_BASE, "w-[7%] min-w-0");
@@ -309,7 +320,7 @@ function SectionHeading({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
-        <h2 className="text-base font-bold text-[var(--color-heading)] sm:text-lg">{children}</h2>
+        <h2 className={SECTION_HEADING_FONT}>{children}</h2>
         {subtitle ? (
           <p className="mt-1 text-sm font-normal text-[var(--color-muted-foreground)] sm:text-base">
             {subtitle}
@@ -323,7 +334,7 @@ function SectionHeading({
 
 function InlineColumnHeader({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto min-w-0 text-center font-serif text-sm font-semibold leading-snug sm:text-base">
+    <div className={cn("mx-auto min-w-0 text-center font-serif", TABLE_HEAD_FONT)}>
       {children}
     </div>
   );
@@ -411,10 +422,15 @@ function ResultsBlock({
         <CardContent className="space-y-6 p-4 sm:p-6">
           <SectionHeading
             action={
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm text-[var(--color-foreground)] sm:text-base">
+              <label
+                className={cn(
+                  HANDBOOK_TOGGLE_BOX,
+                  HANDBOOK_TOGGLE_LABEL,
+                  "rounded-lg bg-[var(--color-card)] px-2 py-1"
+                )}
+              >
                 <input
                   type="checkbox"
-                  className="h-4 w-4 accent-[var(--color-primary)]"
                   checked={showExtraProps}
                   onChange={(e) => onShowExtraPropsChange(e.target.checked)}
                 />
@@ -478,16 +494,19 @@ function ResultsBlock({
             Допускаемые напряжения
           </SectionHeading>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {PNAE_ALLOWABLE_MODES.map((mode) => (
               <label
                 key={mode.id}
                 title={mode.fullLabel}
-                className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-5 py-3.5 text-base text-[var(--color-foreground)]"
+                className={cn(
+                  HANDBOOK_TOGGLE_BOX,
+                  HANDBOOK_TOGGLE_LABEL,
+                  "rounded-xl bg-[var(--color-muted)]/40 px-2.5 py-1.5"
+                )}
               >
                 <input
                   type="checkbox"
-                  className="h-5 w-5 accent-[var(--color-primary)]"
                   checked={allowableModes.includes(mode.id)}
                   onChange={(e) =>
                     onAllowableModesChange(

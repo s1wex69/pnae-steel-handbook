@@ -47,19 +47,17 @@ function StandardToggle({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <label className="flex cursor-pointer items-center gap-2.5 text-base font-medium text-[var(--color-heading)]">
+      <label className="flex cursor-pointer items-center gap-2 text-base font-medium text-[var(--color-heading)]">
         <input
           type="checkbox"
-          className="h-5 w-5 accent-[var(--color-primary)]"
           checked={standard === "pnae"}
           onChange={() => onChange("pnae")}
         />
         ПНАЭ
       </label>
-      <label className="flex cursor-pointer items-center gap-2.5 text-base font-medium text-[var(--color-heading)]">
+      <label className="flex cursor-pointer items-center gap-2 text-base font-medium text-[var(--color-heading)]">
         <input
           type="checkbox"
-          className="h-5 w-5 accent-[var(--color-primary)]"
           checked={standard === "gost"}
           onChange={() => onChange("gost")}
         />

@@ -2,12 +2,15 @@ import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_19rem]";
+export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_11rem]";
 export const CALC_VALUE_GRID =
-  "grid w-full max-w-[19rem] grid-cols-[4rem_11rem_2.75rem] items-center justify-self-end gap-x-2.5";
+  "grid w-full max-w-[11rem] grid-cols-[2.75rem_5.5rem_2rem] items-center justify-self-end gap-x-1.5";
 
 export const calcInputClass =
-  "calc-input box-border h-11 w-full min-w-0 max-w-[11rem] text-right text-lg tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
+  "calc-input box-border h-9 w-full min-w-0 max-w-[5.5rem] text-right text-base tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
+
+export const calcResultBoxClass =
+  "flex h-9 w-full min-w-0 max-w-[5.5rem] items-center justify-end rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-base tabular-nums text-[var(--color-foreground)]";
 
 export const CALC_SECTION_CARD =
   "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)] sm:p-8";
@@ -117,19 +120,20 @@ export function CalcSection({
   return (
     <section className={cn(CALC_SECTION_CARD, className)}>
       <CalcSectionHeading title={title} action={toggleButton} accent={titleAccent} />
-      {twoColumns ? (
-        <div className="grid grid-cols-1 gap-x-8 gap-y-0 xl:grid-cols-2">{children}</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_19rem] sm:gap-x-6">
-          {collapsible && expanded && details ? (
-            <>
-              <div className="contents">{details}</div>
-              <div className="col-span-2 my-2 border-b border-[var(--color-border)]/50" aria-hidden />
-            </>
-          ) : null}
-          <div className="contents">{children}</div>
-        </div>
-      )}
+      {(!collapsible || expanded) &&
+        (twoColumns ? (
+          <div className="grid grid-cols-1 gap-x-8 gap-y-0 xl:grid-cols-2">{children}</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_11rem] sm:gap-x-6">
+            {collapsible && expanded && details ? (
+              <>
+                <div className="contents">{details}</div>
+                <div className="col-span-2 my-2 border-b border-[var(--color-border)]/50" aria-hidden />
+              </>
+            ) : null}
+            <div className="contents">{children}</div>
+          </div>
+        ))}
     </section>
   );
 }

@@ -49,11 +49,11 @@ function CalcRow({
 }) {
   const isResult = variant === "result";
   const symbolClass = cn(
-    "justify-self-end text-right text-lg font-medium",
+    "justify-self-end text-right text-base font-medium",
     isResult ? "text-[var(--color-primary)]" : "text-[var(--color-heading)]"
   );
   const unitClass = cn(
-    "text-lg",
+    "text-base",
     isResult ? "font-medium text-[var(--color-primary)]/80" : "text-[var(--color-muted-foreground)]"
   );
 
