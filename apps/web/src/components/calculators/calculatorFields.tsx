@@ -145,7 +145,7 @@ export function AllowancesCalcSection({
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
       <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<Var letter="c" sub="1" />} value={c1} onChange={onC1} unit="мм" />
       <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<Var letter="c" sub="2" />} value={c2} onChange={onC2} unit="мм" />
-      <CalcRow label="Технологическая прибавка" symbol={<Var letter="c" sub="3" />} value={c3} onChange={onC3} unit="мм" />
+      <CalcRow label="Сумма технологических прибавок" symbol={<Var letter="c" sub="3" />} value={c3} onChange={onC3} unit="мм" />
       <CalcRow
         label="Сумма прибавок к расчётным толщинам стенок"
         symbol={ccSymbol}

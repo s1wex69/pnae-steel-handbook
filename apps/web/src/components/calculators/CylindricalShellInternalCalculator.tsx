@@ -122,7 +122,7 @@ export function CylindricalShellInternalCalculator({
       <CalculatorPageHeader
         eyebrow="Калькулятор"
         title="Расчёт на прочность цилиндрической обечайки при внутреннем избыточном давлении"
-        standard="по ГОСТ 34233.1-2017, приложение Д"
+        standard="по ГОСТ 34233.2-2017"
       />
 
       <section className="space-y-8">
@@ -140,7 +140,7 @@ export function CylindricalShellInternalCalculator({
 
         <CalcSection title="Исходные данные" titleAccent={false}>
           <CalcRow
-            label="Внутренний диаметр сосуда или аппарата"
+            label="Внутренний диаметр обечайки"
             symbol="D"
             value={D}
             onChange={setD}
@@ -156,6 +156,19 @@ export function CylindricalShellInternalCalculator({
               setP(v);
             }}
             unit="МПа"
+          />
+          <CalcRow
+            label="Расчётная температура"
+            symbol="T"
+            value={sigmaTemp}
+            onChange={setSigmaTemp}
+            unit="°C"
+          />
+          <CalcRow
+            label="Коэффициент прочности продольного сварного шва"
+            symbol={<Var letter="φ" sub="p" />}
+            value={phiP}
+            onChange={setPhiP}
           />
           <CalcRow
             label="Допускаемое напряжение при расчётной температуре"
@@ -179,19 +192,6 @@ export function CylindricalShellInternalCalculator({
             value={sigmaStr}
             onChange={setSigmaStr}
             unit="МПа"
-          />
-          <CalcRow
-            label="Температура"
-            symbol="T"
-            value={sigmaTemp}
-            onChange={setSigmaTemp}
-            unit="°C"
-          />
-          <CalcRow
-            label="Коэффициент прочности продольного сварного шва"
-            symbol={<Var letter="φ" sub="p" />}
-            value={phiP}
-            onChange={setPhiP}
             borderless
           />
         </CalcSection>
