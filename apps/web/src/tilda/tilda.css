@@ -152,7 +152,7 @@
 
 /* Иерархия шрифтов справочника — перекрывает общие правила Tilda */
 #root.pnae-tilda-embed .pnae-handbook-section-title {
-  font-size: 24px !important;
+  font-size: 28px !important;
   line-height: 1.3 !important;
 }
 
@@ -179,7 +179,7 @@
 
 @media (min-width: 640px) {
   #root.pnae-tilda-embed .pnae-handbook-section-title {
-    font-size: 26px !important;
+    font-size: 32px !important;
   }
 
   #root.pnae-tilda-embed .pnae-handbook-table-th,

@@ -278,7 +278,7 @@ const HANDBOOK_TOGGLE_BOX =
 const TABLE_HEAD_FONT =
   "pnae-handbook-table-th text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
 const SECTION_HEADING_FONT =
-  "pnae-handbook-section-title text-[1.1875rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.375rem]";
+  "pnae-handbook-section-title text-[1.5rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.75rem]";
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
