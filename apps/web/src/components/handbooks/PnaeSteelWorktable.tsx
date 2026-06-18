@@ -272,13 +272,13 @@ function toggleAllowableMode(
 const RESULT_CARD =
   "min-w-0 max-w-full border border-[var(--color-border)]/80 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const HANDBOOK_TOGGLE_LABEL =
-  "text-[0.625rem] leading-tight text-[var(--color-foreground)] sm:text-[0.6875rem]";
+  "text-[0.6875rem] leading-tight text-[var(--color-foreground)] sm:text-[0.75rem]";
 const HANDBOOK_TOGGLE_BOX =
-  "flex cursor-pointer items-center gap-1 border border-[var(--color-border)]";
+  "flex cursor-pointer items-center gap-1.5 border border-[var(--color-border)]";
 const TABLE_HEAD_FONT =
-  "text-[0.875rem] font-semibold leading-snug sm:text-[0.9375rem]";
+  "text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
 const SECTION_HEADING_FONT =
-  "text-[1.0625rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.25rem]";
+  "text-[1.1875rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.375rem]";
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
