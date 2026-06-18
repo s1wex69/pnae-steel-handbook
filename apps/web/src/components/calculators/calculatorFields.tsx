@@ -11,7 +11,7 @@ import {
   calcInputClass,
   calcResultBoxClass,
 } from "@/components/calculators/calculatorUi";
-import { Var } from "@/components/handbooks/MathNotation";
+import { CalcSymbol } from "@/components/handbooks/MathNotation";
 
 type RowVariant = "default" | "check" | "result";
 type RowLayout = "inline" | "stacked";
@@ -139,7 +139,7 @@ export function AllowancesCalcSection({
   onC2,
   onC3,
   onCc,
-  ccSymbol = <Var letter="c" sub="c" />,
+  ccSymbol = <CalcSymbol>cc</CalcSymbol>,
   collapsible = false,
   defaultExpanded = true,
 }: {
@@ -191,21 +191,21 @@ export function AllowancesCalcSection({
               <>
                 <CalcRow
                   label="Прибавка для компенсации коррозии и эрозии"
-                  symbol={<Var letter="c" sub="1" />}
+                  symbol={<CalcSymbol>c1</CalcSymbol>}
                   value={c1}
                   onChange={onC1}
                   unit="мм"
                 />
                 <CalcRow
                   label="Прибавка для компенсации минусового допуска"
-                  symbol={<Var letter="c" sub="2" />}
+                  symbol={<CalcSymbol>c2</CalcSymbol>}
                   value={c2}
                   onChange={onC2}
                   unit="мм"
                 />
                 <CalcRow
                   label="Сумма технологических прибавок"
-                  symbol={<Var letter="c" sub="3" />}
+                  symbol={<CalcSymbol>c3</CalcSymbol>}
                   value={c3}
                   onChange={onC3}
                   unit="мм"
@@ -228,9 +228,9 @@ export function AllowancesCalcSection({
 
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
-      <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<Var letter="c" sub="1" />} value={c1} onChange={onC1} unit="мм" />
-      <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<Var letter="c" sub="2" />} value={c2} onChange={onC2} unit="мм" />
-      <CalcRow label="Сумма технологических прибавок" symbol={<Var letter="c" sub="3" />} value={c3} onChange={onC3} unit="мм" />
+      <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<CalcSymbol>c1</CalcSymbol>} value={c1} onChange={onC1} unit="мм" />
+      <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<CalcSymbol>c2</CalcSymbol>} value={c2} onChange={onC2} unit="мм" />
+      <CalcRow label="Сумма технологических прибавок" symbol={<CalcSymbol>c3</CalcSymbol>} value={c3} onChange={onC3} unit="мм" />
       <CalcRow
         label="Сумма прибавок к расчётным толщинам стенок"
         symbol={ccSymbol}

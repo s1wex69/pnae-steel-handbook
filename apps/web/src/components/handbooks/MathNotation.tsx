@@ -13,6 +13,21 @@ export function MathSpan({
   return <span className={cn(math, className)}>{children}</span>;
 }
 
+/** Обозначение без нижних/верхних индексов (sp, ss, cc, c1…) */
+export function CalcSymbol({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <MathSpan className={cn("text-[var(--color-heading)]", className)}>
+      {children}
+    </MathSpan>
+  );
+}
+
 export function Sub({ children }: { children: ReactNode }) {
   return <sub className="text-[0.72em] leading-none">{children}</sub>;
 }

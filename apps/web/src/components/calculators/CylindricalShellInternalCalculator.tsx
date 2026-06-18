@@ -2,10 +2,7 @@ import { useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import {
   calculateCylindricalShellInternal,
-  calcAllowablePressure,
-  calcSsFromAllowablePressure,
   checkApplicability,
-  type ShellSolveTarget,
 } from "@/lib/cylindricalShellInternal";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
@@ -16,12 +13,10 @@ import {
   CalculatorPageShell,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
-import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmt, fmtIfSource, isBlank, num } from "@/lib/calcInputUtils";
-
-type ResultDrive = "ss" | "pp";
+import { fmt, isBlank, num } from "@/lib/calcInputUtils";
 
 export function CylindricalShellInternalCalculator({
   handbook,
@@ -35,13 +30,7 @@ export function CylindricalShellInternalCalculator({
   const sigma = num(sigmaStr, 130);
   const [phiP, setPhiP] = useState("1");
   const [p, setP] = useState("10");
-  const [sp, setSp] = useState("80");
-  const [drive, setDrive] = useState<ShellSolveTarget>("p");
-  const [ss, setSs] = useState("");
-  const [pp, setPp] = useState("");
-  const [driveResult, setDriveResult] = useState<ResultDrive>("ss");
 
-  const solveFor: ShellSolveTarget = drive === "p" ? "sp" : "p";
   const ccNum = num(allowances.cc);
   const dNum = num(D);
   const phiPNum = num(phiP, 1);
@@ -53,8 +42,8 @@ export function CylindricalShellInternalCalculator({
         sigma,
         phiP: phiPNum,
         p: num(p),
-        sp: num(sp),
-        solveFor,
+        sp: 0,
+        solveFor: "sp",
         allowances: {
           c1: num(allowances.c1),
           c2: num(allowances.c2),
@@ -65,62 +54,21 @@ export function CylindricalShellInternalCalculator({
           cc: ccNum,
         },
       }),
-    [allowances, dNum, sigma, phiPNum, p, sp, solveFor, ccNum]
+    [allowances, dNum, sigma, phiPNum, p, ccNum]
   );
 
-  const thicknessInputBlank = isBlank(drive === "p" ? p : sp);
-  const displayP = drive === "p" ? p : fmtIfSource(result.p, sp, 2);
-  const displaySp = drive === "sp" ? sp : fmtIfSource(result.sp, p);
-
-  const effectiveSs = useMemo(() => {
-    if (driveResult === "ss") {
-      if (!isBlank(ss)) return num(ss);
-      if (thicknessInputBlank) return 0;
-      return result.ss;
-    }
-    if (thicknessInputBlank) return 0;
-    return (
-      calcSsFromAllowablePressure(
-        num(pp || fmt(result.pp, 2)),
-        ccNum,
-        dNum,
-        sigma,
-        phiPNum
-      ) ?? result.ss
-    );
-  }, [driveResult, ss, pp, result.ss, result.pp, ccNum, dNum, sigma, phiPNum, thicknessInputBlank]);
-
-  const displaySs =
-    driveResult === "ss" && !isBlank(ss)
-      ? ss
-      : thicknessInputBlank
-        ? ""
-        : fmt(result.ss);
-
-  const effectivePp = useMemo(() => {
-    if (driveResult === "pp") return isBlank(pp) ? 0 : num(pp);
-    if (thicknessInputBlank) return 0;
-    return calcAllowablePressure(effectiveSs, ccNum, dNum, sigma, phiPNum) ?? result.pp;
-  }, [driveResult, pp, effectiveSs, result.pp, ccNum, dNum, sigma, phiPNum, thicknessInputBlank]);
+  const inputsReady = !isBlank(p) && dNum > 0 && sigma > 0 && phiPNum > 0;
+  const displaySp = inputsReady && result.error == null ? fmt(result.sp) : "";
+  const displaySs = inputsReady && result.error == null ? fmt(result.ss) : "";
 
   const applicability = useMemo(
-    () => checkApplicability(effectiveSs - ccNum, dNum),
-    [effectiveSs, ccNum, dNum]
+    () => checkApplicability(result.ss - ccNum, dNum),
+    [result.ss, ccNum, dNum]
   );
-
-  const activateP = () => {
-    if (drive !== "p") {
-      setDrive("p");
-      if (result.error == null && !isBlank(sp)) setP(fmt(result.p, 2));
-    }
-  };
-
-  const activateSp = () => setDrive("sp");
 
   return (
     <CalculatorPageShell>
       <CalculatorPageHeader
-        eyebrow="Калькулятор"
         title="Расчёт на прочность цилиндрической обечайки при внутреннем избыточном давлении"
         standard="по ГОСТ 34233.2-2017"
       />
@@ -136,7 +84,6 @@ export function CylindricalShellInternalCalculator({
           onC2={allowances.setC2}
           onC3={allowances.setC3}
           onCc={allowances.setCc}
-          ccSymbol={<Var letter="c" sub="c" />}
         />
 
         <CalcSection title="Исходные данные" titleAccent={false} twoColumns>
@@ -153,12 +100,8 @@ export function CylindricalShellInternalCalculator({
               inColumn
               label="Расчётное внутреннее избыточное давление"
               symbol="p"
-              value={displayP}
-              onFocus={activateP}
-              onChange={(v) => {
-                setDrive("p");
-                setP(v);
-              }}
+              value={p}
+              onChange={setP}
               unit="МПа"
             />
             <CalcRow
@@ -209,37 +152,20 @@ export function CylindricalShellInternalCalculator({
 
         <CalcSection title="Результаты расчёта" titleAccent={false}>
           <CalcRow
+            variant="result"
+            disabled
             label="Расчётная толщина стенки цилиндрической обечайки"
-            symbol={<Var letter="s" sub="p" />}
+            symbol={<CalcSymbol>sp</CalcSymbol>}
             value={displaySp}
-            onFocus={activateSp}
-            onChange={(v) => {
-              setDrive("sp");
-              setSp(v);
-            }}
             unit="мм"
           />
           <CalcRow
+            variant="result"
+            disabled
             label="Исполнительная толщина стенки цилиндрической обечайки"
-            symbol={<Var letter="s" sub="s" />}
+            symbol={<CalcSymbol>ss</CalcSymbol>}
             value={displaySs}
-            onFocus={() => setDriveResult("ss")}
-            onChange={(v) => {
-              setDriveResult("ss");
-              setSs(v);
-            }}
             unit="мм"
-          />
-          <CalcRow
-            label="Допускаемое внутреннее избыточное давление"
-            symbol={<Var letter="p" sub="p" />}
-            value={driveResult === "pp" ? pp : thicknessInputBlank ? "" : fmt(effectivePp, 2)}
-            onFocus={() => setDriveResult("pp")}
-            onChange={(v) => {
-              setDriveResult("pp");
-              setPp(v);
-            }}
-            unit="МПа"
             borderless
           />
         </CalcSection>
@@ -274,7 +200,7 @@ export function CylindricalShellInternalCalculator({
       <CalculatorDiagramCard>
         <VesselDiagram
           diameter={dNum || 2000}
-          thickness={effectiveSs || num(displaySp, 80)}
+          thickness={result.ss > 0 ? result.ss : num(displaySp, 80) + ccNum}
         />
       </CalculatorDiagramCard>
     </CalculatorPageShell>
