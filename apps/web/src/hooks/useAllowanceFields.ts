@@ -6,10 +6,10 @@ export function useAllowanceFields(initial?: {
   c2?: string;
   c3?: string;
 }) {
-  const [c1, setC1State] = useState(initial?.c1 ?? "0.20");
-  const [c2, setC2State] = useState(initial?.c2 ?? "0.20");
-  const [c3, setC3State] = useState(initial?.c3 ?? "0.30");
-  const [cc, setCcState] = useState("0.70");
+  const [c1, setC1State] = useState(initial?.c1 ?? "0.2");
+  const [c2, setC2State] = useState(initial?.c2 ?? "0.2");
+  const [c3, setC3State] = useState(initial?.c3 ?? "0.3");
+  const [cc, setCcState] = useState("0.7");
   const [ccManual, setCcManual] = useState(false);
 
   useEffect(() => {
