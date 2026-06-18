@@ -35,9 +35,9 @@ const GITLAB_URLS = {
 };
 
 const GITHUB_URLS = {
-  "01-spravochnik": "https://intechatom.github.io/pnae-steel-handbook/pnae/",
-  "02-kalkulyator-vnutrennee-davlenie": "https://intechatom.github.io/pnae-steel-handbook/calc1/",
-  "03-kalkulyator-naruzhnoe-davlenie": "https://intechatom.github.io/pnae-steel-handbook/calc2/",
+  "01-spravochnik": "https://s1wex69.github.io/pnae-steel-handbook/pnae/",
+  "02-kalkulyator-vnutrennee-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc1/",
+  "03-kalkulyator-naruzhnoe-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc2/",
 };
 
 function loadUrlsFromFile(filePath, defaults, placeholders) {
