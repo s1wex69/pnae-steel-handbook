@@ -52,9 +52,9 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
         allowances: {
           c1: num(allowances.c1),
           c2: num(allowances.c2),
-          c31: num(allowances.c31),
-          c32: num(allowances.c32),
-          c33: num(allowances.c33),
+          c31: 0,
+          c32: 0,
+          c33: 0,
           c3: num(allowances.c3),
           cc: ccNum,
         },
@@ -101,21 +101,14 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
 
       <section className="space-y-8">
         <AllowancesCalcSection
-          expanded={allowances.expanded}
-          onToggle={allowances.toggleExpanded}
           c1={allowances.c1}
           c2={allowances.c2}
-          c31={allowances.c31}
-          c32={allowances.c32}
-          c33={allowances.c33}
           c3={allowances.c3}
           cc={allowances.cc}
           onC1={allowances.setC1}
           onC2={allowances.setC2}
-          onC31={allowances.setC31}
-          onC32={allowances.setC32}
-          onC33={allowances.setC33}
-          onC3={allowances.setC3} onCc={allowances.setCc}
+          onC3={allowances.setC3}
+          onCc={allowances.setCc}
         />
 
         <CalcSection title="Исходные данные">

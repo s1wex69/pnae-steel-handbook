@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import {
   calculateCylindricalShellExternal,
@@ -7,6 +7,7 @@ import {
   type ExternalShellSolveTarget,
 } from "@/lib/cylindricalShellExternal";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
+import { AllowancesCalcSection } from "@/components/calculators/calculatorFields";
 import {
   CALC_ROW_GRID,
   CALC_VALUE_GRID,
@@ -20,7 +21,8 @@ import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { fmt, fmtIfSource, isBlank, num, sumFmt } from "@/lib/calcInputUtils";
+import { useAllowanceFields } from "@/hooks/useAllowanceFields";
+import { fmt, fmtIfSource, isBlank, num } from "@/lib/calcInputUtils";
 
 type RowVariant = "default" | "result";
 
@@ -95,15 +97,7 @@ export function CylindricalShellExternalCalculator({
 }: {
   handbook: SteelHandbook;
 }) {
-  const [c1, setC1] = useState("0.2");
-  const [c2, setC2] = useState("0.2");
-  const [c31, setC31] = useState("0.1");
-  const [c32, setC32] = useState("0.1");
-  const [c33, setC33] = useState("0.1");
-  const [c3, setC3] = useState("0.3");
-  const [cc, setCc] = useState("0.7");
-  const [c3Manual, setC3Manual] = useState(false);
-  const [ccManual, setCcManual] = useState(false);
+  const a = useAllowanceFields();
   const [D, setD] = useState("2000");
   const [p, setP] = useState("2");
   const [sigmaStr, setSigmaStr] = useState("120");
@@ -118,35 +112,24 @@ export function CylindricalShellExternalCalculator({
   const [ss, setSs] = useState("");
   const [pp, setPp] = useState("");
   const [driveResult, setDriveResult] = useState<ResultDrive>("ss");
-  const [allowancesExpanded, setAllowancesExpanded] = useState(false);
 
   const solveFor: ExternalShellSolveTarget = drive === "p" ? "sp" : "p";
-  const ccNum = num(cc);
+  const ccNum = num(a.cc);
   const dNum = num(D);
   const l1Num = num(l1);
   const nyNum = num(ny, 2.4);
 
-  useEffect(() => {
-    if (c3Manual) return;
-    setC3(sumFmt([c31, c32, c33]));
-  }, [c31, c32, c33, c3Manual]);
-
-  useEffect(() => {
-    if (ccManual) return;
-    setCc(sumFmt([c1, c2, c3]));
-  }, [c1, c2, c3, ccManual]);
-
   const allowances = useMemo(
     () => ({
-      c1: num(c1),
-      c2: num(c2),
-      c31: num(c31),
-      c32: num(c32),
-      c33: num(c33),
-      c3: num(c3),
-      cc: num(cc),
+      c1: num(a.c1),
+      c2: num(a.c2),
+      c31: 0,
+      c32: 0,
+      c33: 0,
+      c3: num(a.c3),
+      cc: num(a.cc),
     }),
-    [c1, c2, c31, c32, c33, c3, cc]
+    [a.c1, a.c2, a.c3, a.cc]
   );
 
   const result = useMemo(
@@ -231,89 +214,17 @@ export function CylindricalShellExternalCalculator({
       />
 
       <section className="space-y-8">
-        <CalcSection
-            title="Прибавки к расчётной толщине"
-            collapsible
-            expanded={allowancesExpanded}
-            onToggle={() => setAllowancesExpanded((v) => !v)}
-            details={
-              <>
-                <CalcRow
-                  label="Прибавка для компенсации коррозии и эрозии"
-                  symbol={<Var letter="c" sub="1" />}
-                  value={c1}
-                  onChange={(v) => {
-                    setCcManual(false);
-                    setC1(v);
-                  }}
-                  unit="мм"
-                />
-                <CalcRow
-                  label="Прибавка для компенсации минусового допуска"
-                  symbol={<Var letter="c" sub="2" />}
-                  value={c2}
-                  onChange={(v) => {
-                    setCcManual(false);
-                    setC2(v);
-                  }}
-                  unit="мм"
-                />
-                <CalcRow
-                  label="Технологическая прибавка (утонение с внешней стороны отвода)"
-                  symbol={<Var letter="c" sub="31" />}
-                  value={c31}
-                  onChange={(v) => {
-                    setC3Manual(false);
-                    setC31(v);
-                  }}
-                  unit="мм"
-                />
-                <CalcRow
-                  label="Технологическая прибавка (утонение с внутренней стороны отвода)"
-                  symbol={<Var letter="c" sub="32" />}
-                  value={c32}
-                  onChange={(v) => {
-                    setC3Manual(false);
-                    setC32(v);
-                  }}
-                  unit="мм"
-                />
-                <CalcRow
-                  label="Технологическая прибавка (средняя часть отвода, ±15 % нейтральной линии)"
-                  symbol={<Var letter="c" sub="33" />}
-                  value={c33}
-                  onChange={(v) => {
-                    setC3Manual(false);
-                    setC33(v);
-                  }}
-                  unit="мм"
-                />
-                <CalcRow
-                  label="Технологическая прибавка"
-                  symbol={<Var letter="c" sub="3" />}
-                  value={c3}
-                  onChange={(v) => {
-                    setC3Manual(true);
-                    setC3(v);
-                  }}
-                  unit="мм"
-                  borderless
-                />
-              </>
-            }
-          >
-            <CalcRow
-              label="Сумма прибавок к расчётным толщинам стенок"
-              symbol={<Var letter="c" sub="c" />}
-              value={cc}
-              onChange={(v) => {
-                setCcManual(true);
-                setCc(v);
-              }}
-              unit="мм"
-              borderless
-            />
-          </CalcSection>
+        <AllowancesCalcSection
+          c1={a.c1}
+          c2={a.c2}
+          c3={a.c3}
+          cc={a.cc}
+          onC1={a.setC1}
+          onC2={a.setC2}
+          onC3={a.setC3}
+          onCc={a.setCc}
+          ccSymbol={<Var letter="c" sub="c" />}
+        />
 
           <CalcSection title="Исходные данные">
             <CalcRow label="Внутренний диаметр сосуда или аппарата" symbol="D" value={D} onChange={setD} unit="мм" />

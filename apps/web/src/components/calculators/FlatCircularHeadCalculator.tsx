@@ -76,9 +76,9 @@ export function FlatCircularHeadCalculator({ handbook }: { handbook: SteelHandbo
         allowances: {
           c1: num(a.c1),
           c2: num(a.c2),
-          c31: num(a.c31),
-          c32: num(a.c32),
-          c33: num(a.c33),
+          c31: 0,
+          c32: 0,
+          c33: 0,
           c3: num(a.c3),
           cc: ccNum,
         },
@@ -111,10 +111,8 @@ export function FlatCircularHeadCalculator({ handbook }: { handbook: SteelHandbo
 
       <section className="space-y-8">
         <AllowancesCalcSection
-          expanded={a.expanded} onToggle={a.toggleExpanded}
-          c1={a.c1} c2={a.c2} c31={a.c31} c32={a.c32} c33={a.c33} c3={a.c3} cc={a.cc}
-          onC1={a.setC1} onC2={a.setC2} onC31={a.setC31} onC32={a.setC32} onC33={a.setC33}
-          onC3={a.setC3} onCc={a.setCc}
+          c1={a.c1} c2={a.c2} c3={a.c3} cc={a.cc}
+          onC1={a.setC1} onC2={a.setC2} onC3={a.setC3} onCc={a.setCc}
         />
 
         <CalcSection title="Схема соединения">
