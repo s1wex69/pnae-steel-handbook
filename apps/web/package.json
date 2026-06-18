@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:netlify": "tsc -b && vite build --base=/",
+    "build:tilda": "node ../../scripts/build-tilda-export.mjs",
+    "build:tilda-calc-internal": "node ../../scripts/build-tilda-export.mjs 02-kalkulyator-vnutrennee-davlenie",
+    "build:tilda-calc-external": "node ../../scripts/build-tilda-export.mjs 03-kalkulyator-naruzhnoe-davlenie",
+    "build:tilda-t123": "node ../../scripts/build-tilda-t123.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,6 +39,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "tailwindcss": "^4.1.7",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-singlefile": "^2.2.0"
   }
 }

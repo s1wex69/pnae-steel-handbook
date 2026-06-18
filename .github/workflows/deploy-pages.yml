@@ -26,12 +26,12 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build -w apps/web
-      - run: cp apps/web/dist/index.html apps/web/dist/404.html
+      # Tilda-сборка с VITE_EMBED_GUARD — ПНАЭ только через iframe intech-atom.ru
+      - run: npm run publish:github
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/web/dist
+          path: public
 
   deploy:
     needs: build

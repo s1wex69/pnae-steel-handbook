@@ -19,8 +19,8 @@ interface Props {
   selectedMark: string;
   onCategoryChange: (categoryId: string) => void;
   onSelectMark: (mark: string) => void;
-  /** Блок между категорией и поиском (сортамент, температура) */
-  middleSlot?: ReactNode;
+  /** Блок после выбора марки (сортамент, температура) */
+  afterMarkSlot?: ReactNode;
   className?: string;
 }
 
@@ -30,7 +30,7 @@ export function SteelMarkCatalog({
   selectedMark,
   onCategoryChange,
   onSelectMark,
-  middleSlot,
+  afterMarkSlot,
   className,
 }: Props) {
   const [markFilter, setMarkFilter] = useState("");
@@ -95,7 +95,7 @@ export function SteelMarkCatalog({
   };
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("min-w-0 space-y-3", className)}>
       <div className="space-y-2">
         <Label htmlFor="steel-category">Категория стали</Label>
         <StyledSelect
@@ -118,17 +118,17 @@ export function SteelMarkCatalog({
         </StyledSelect>
       </div>
 
-      {middleSlot}
-
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <Label htmlFor="mark-filter" className="text-xs text-[var(--color-muted-foreground)]">
-            Поиск марки
-            {categoryId
-              ? activeCategory
-                ? ` · ${activeCategory.label} (${allMarks.length})`
-                : ""
-              : ` · все виды (${allMarks.length})`}
+          <Label htmlFor="mark-filter">
+            Марка
+            <span className="ml-1 text-xs font-normal text-[var(--color-muted-foreground)]">
+              {categoryId
+                ? activeCategory
+                  ? `· ${activeCategory.label}`
+                  : ""
+                : "· все виды"}
+            </span>
           </Label>
           <Button
             type="button"
@@ -182,18 +182,16 @@ export function SteelMarkCatalog({
           }}
         />
 
-        {!listVisible ? (
+        {!listVisible && !selectedMark ? (
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            {selectedMark
-              ? `Выбрана марка ${selectedMark}. Начните ввод — откроется поиск по маркам.`
-              : categoryId
-                ? `Список из ${allMarks.length} марок скрыт. Введите текст в поиск или нажмите «Показать список».`
-                : `Список из ${allMarks.length} марок скрыт. Введите текст в поиск или нажмите «Показать список».`}
+            {categoryId
+              ? `Список из ${allMarks.length} марок скрыт. Введите текст в поиск или нажмите «Показать список».`
+              : `Список из ${allMarks.length} марок скрыт. Введите текст в поиск или нажмите «Показать список».`}
           </p>
-        ) : (
+        ) : !listVisible ? null : (
           <div
             className={cn(
-              "min-h-80 max-h-[32rem] overflow-y-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)] p-3",
+              "min-h-80 min-w-0 max-h-[32rem] overflow-x-hidden overflow-y-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)] p-3",
               marks.length === 0 &&
                 "flex items-center justify-center py-16 text-base text-[var(--color-muted-foreground)]"
             )}
@@ -205,13 +203,13 @@ export function SteelMarkCatalog({
                 "Нет марок"
               )
             ) : (
-              <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <ul className="grid min-w-0 grid-cols-2 gap-1.5 sm:grid-cols-3">
                 {marks.map((mark) => (
-                  <li key={mark}>
+                  <li key={mark} className="min-w-0">
                     <button
                       type="button"
                       className={cn(
-                        "w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium leading-snug transition-colors sm:text-base",
+                        "w-full min-w-0 truncate rounded-lg px-3 py-2.5 text-left text-sm font-medium leading-snug transition-colors sm:text-base",
                         mark === selectedMark
                           ? "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] shadow-sm"
                           : "text-[var(--color-foreground)] hover:bg-[var(--color-primary)] hover:text-[var(--color-primary-foreground)]"
@@ -228,6 +226,8 @@ export function SteelMarkCatalog({
           </div>
         )}
       </div>
+
+      {afterMarkSlot}
     </div>
   );
 }

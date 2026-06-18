@@ -4,6 +4,7 @@ import {
   MathSpan,
   MinExpr,
   Or,
+  SafetyN,
   Sigma13,
   Stress,
   Times,
@@ -11,16 +12,14 @@ import {
 } from "@/components/handbooks/MathNotation";
 
 /** [σ] = min(R_m/n_m; R_p0,2/n_0,2; R_mt/n_mt) */
-export function FormulaPressure({ external = false }: { external?: boolean }) {
-  const n02 = external ? "2" : "1,5";
-  const nmt = external ? "2" : "1,5";
+export function FormulaPressure() {
   return (
     <MathSpan className="text-[0.95em] leading-relaxed">
       <AllowSigma /> ={" "}
       <MinExpr>
-        <Frac num={<Var letter="R" sub="m" />} den="2,6" />;{" "}
-        <Frac num={<Var letter="R" sub="p0,2" />} den={n02} />;{" "}
-        <Frac num={<Var letter="R" sub="mt" />} den={nmt} />
+        <Frac num={<Var letter="R" sub="m" />} den={<SafetyN sub="m" />} />;{" "}
+        <Frac num={<Var letter="R" sub="p0,2" />} den={<SafetyN sub="0,2" />} />;{" "}
+        <Frac num={<Var letter="R" sub="mt" />} den={<SafetyN sub="mt" />} />
       </MinExpr>
     </MathSpan>
   );
@@ -29,7 +28,8 @@ export function FormulaPressure({ external = false }: { external?: boolean }) {
 export function FormulaBoltW() {
   return (
     <MathSpan>
-      <AllowSigma sub="w" /> = <Frac num={<Var letter="R" sub="p0,2" />} den="2" />
+      <AllowSigma sub="w" /> ={" "}
+      <Frac num={<Var letter="R" sub="p0,2" />} den={<SafetyN sub="0,2" />} />
     </MathSpan>
   );
 }
@@ -37,7 +37,7 @@ export function FormulaBoltW() {
 export function FormulaBoltWt() {
   return (
     <MathSpan>
-      <AllowSigma sub="wt" /> = <Frac num={<Var letter="R" sub="m" />} den="3" />
+      <AllowSigma sub="wt" /> = <Frac num={<Var letter="R" sub="m" />} den={<SafetyN sub="m" />} />
     </MathSpan>
   );
 }
@@ -47,8 +47,8 @@ export function FormulaShell() {
     <MathSpan>
       <AllowSigma sub="c" /> ={" "}
       <MinExpr>
-        <Frac num={<Var letter="R" sub="m" />} den="1,85" />;{" "}
-        <Frac num={<Var letter="R" sub="p0,2" />} den="1,07" />
+        <Frac num={<Var letter="R" sub="m" />} den={<SafetyN sub="m" />} />;{" "}
+        <Frac num={<Var letter="R" sub="p0,2" />} den={<SafetyN sub="0,2" />} />
       </MinExpr>
     </MathSpan>
   );
@@ -59,11 +59,13 @@ export function FormulaStressRangeLimit({ symbol }: { symbol: "RV" | "RK" }) {
     <MathSpan className="text-[0.95em] leading-relaxed">
       <Stress sub={symbol} grouped /> ={" "}
       <span className="whitespace-nowrap">
-        (2,5 − <Frac num={<Var letter="R" sub="p0,2" />} den={<Var letter="R" sub="m" />} />)
+        (<SafetyN sub="σ" /> − <Frac num={<Var letter="R" sub="p0,2" />} den={<Var letter="R" sub="m" />} />)
         <Times />
         <Var letter="R" sub="p0,2" />
       </span>{" "}
-      ≤ 2<Var letter="R" sub="p0,2" />
+      ≤ <SafetyN sub="0,2" />
+      <Times />
+      <Var letter="R" sub="p0,2" />
     </MathSpan>
   );
 }

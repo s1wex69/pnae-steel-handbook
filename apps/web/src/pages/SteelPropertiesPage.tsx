@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { BookOpen } from "lucide-react";
 import type { SteelHandbook } from "@/types/steel";
 import {
   applyGradeToRow,
@@ -14,6 +13,8 @@ import {
   type PnaeTableRow,
 } from "@/components/handbooks/PnaeSteelWorktable";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { loadHandbookData } from "@/lib/handbookDataLoader";
 import { newRowId } from "@/lib/utils";
 
 function rowFromUrl(handbook: SteelHandbook, params: URLSearchParams): PnaeTableRow | null {
@@ -48,11 +49,7 @@ export function SteelPropertiesPage() {
   const [rows, setRows] = useState<PnaeTableRow[]>([]);
 
   useEffect(() => {
-    fetch("/data/pnae-steel-properties.json")
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json() as Promise<SteelHandbook>;
-      })
+    loadHandbookData()
       .then((d) => {
         setData(d);
         setRows([rowFromUrl(d, searchParams) ?? buildEmptyRow()]);
@@ -141,24 +138,23 @@ export function SteelPropertiesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] p-6 shadow-[var(--shadow-card)]">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-[var(--color-primary-foreground)]">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-[var(--color-muted-foreground)]">ПНАЭ Г-7-002-86</p>
-            <h1 className="mt-0.5 text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-heading)]">
-              Справочник свойств сталей
-            </h1>
-            <p className="mt-1 max-w-3xl text-base leading-snug text-[var(--color-muted-foreground)]">
-              Каталог марок по классификации ПНАЭ — выберите марку, сортамент и температуру.
-            </p>
-            <p className="mt-1 max-w-3xl text-base leading-snug text-[var(--color-muted-foreground)]">
-              Можно добавить несколько строк: разные марки или одну марку при разных температурах.
-            </p>
-          </div>
+    <div className="min-w-0 space-y-10">
+      <div className="relative min-w-0 max-w-full rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-6 shadow-[var(--shadow-card)] sm:p-10">
+        <ThemeToggle className="absolute top-4 right-4 sm:top-6 sm:right-6" />
+        <div className="pr-12">
+        <p className="text-sm font-normal text-[var(--color-muted-foreground)] sm:text-base">
+          Физико-механические свойства сталей
+        </p>
+        <h1 className="mt-0.5 font-sans text-2xl font-bold uppercase leading-tight tracking-wide text-[var(--color-heading)] sm:text-3xl">
+          ПНАЭ Г-7-002-86
+        </h1>
+        <p className="mt-3 w-full text-lg font-semibold leading-snug text-[var(--color-heading)]">
+          Предел текучести, предел прочности, допускаемые напряжения, модуль упругости и коэффициент
+          линейного расширения
+        </p>
+        <p className="mt-2 w-full text-base leading-snug text-[var(--color-muted-foreground)]">
+          Можно добавить несколько строк: разные марки или одну марку при разных температурах
+        </p>
         </div>
       </div>
 

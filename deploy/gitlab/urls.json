@@ -1,0 +1,11 @@
+{
+  "_comment": "Подставьте свои URL после первого деплоя GitLab Pages. Формат: https://<логин-или-группа>.gitlab.io/<имя-репозитория>/<путь>/",
+  "01-spravochnik": "https://USERNAME.gitlab.io/PROJECT/pnae/",
+  "02-kalkulyator-vnutrennee-davlenie": "https://USERNAME.gitlab.io/PROJECT/calc1/",
+  "03-kalkulyator-naruzhnoe-davlenie": "https://USERNAME.gitlab.io/PROJECT/calc2/",
+  "paths": {
+    "01-spravochnik": "pnae",
+    "02-kalkulyator-vnutrennee-davlenie": "calc1",
+    "03-kalkulyator-naruzhnoe-davlenie": "calc2"
+  }
+}

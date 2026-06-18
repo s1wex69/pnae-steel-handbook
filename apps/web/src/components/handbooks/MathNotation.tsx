@@ -30,13 +30,30 @@ export function AllowSigma({ sub }: { sub?: ReactNode }) {
   );
 }
 
-/** σ или (σ) — напряжение */
+/** σ или (σ) — напряжение; при grouped в скобках только σ, индекс снаружи */
 export function Stress({ sub, grouped }: { sub?: ReactNode; grouped?: boolean }) {
   return (
     <MathSpan>
       {grouped ? "(σ)" : "σ"}
       {sub != null && <Sub>{sub}</Sub>}
     </MathSpan>
+  );
+}
+
+/** Коэффициент запаса n_m, n_0,2, n_mt … */
+export function SafetyN({ sub }: { sub: ReactNode }) {
+  return <Var letter="n" sub={sub} />;
+}
+
+/** T (или K для α) над нижним индексом; нижний индекс на одной линии с буквой R. */
+function StackedSubSup({ sub, sup }: { sub: ReactNode; sup: ReactNode }) {
+  return (
+    <span className="relative inline-block align-baseline leading-none">
+      <span className="absolute bottom-full left-1/2 mb-px -translate-x-1/2 text-[0.62em] leading-none whitespace-nowrap">
+        {sup}
+      </span>
+      <span className="text-[0.82em] leading-none">{sub}</span>
+    </span>
   );
 }
 
@@ -52,11 +69,29 @@ export function Var({
   sup?: ReactNode;
   className?: string;
 }) {
+  const stacked = sub != null && sup != null;
+
   return (
-    <MathSpan className={className}>
-      {letter}
-      {sub != null && <Sub>{sub}</Sub>}
-      {sup != null && <Sup>{sup}</Sup>}
+    <MathSpan className={cn(stacked && "inline-flex items-baseline", className)}>
+      <span>{letter}</span>
+      {stacked ? (
+        <StackedSubSup sub={sub} sup={sup} />
+      ) : (
+        <>
+          {sub != null && <Sub>{sub}</Sub>}
+          {sup != null && <Sup>{sup}</Sup>}
+        </>
+      )}
+    </MathSpan>
+  );
+}
+
+function withBaselineUnit(symbol: ReactNode, suffix: ReactNode | null) {
+  if (suffix == null) return <MathSpan>{symbol}</MathSpan>;
+  return (
+    <MathSpan className="inline-flex items-baseline">
+      {symbol}
+      <span>{suffix}</span>
     </MathSpan>
   );
 }
@@ -94,21 +129,36 @@ export function Or() {
   return <span className="mx-1 font-sans text-[0.92em]">или</span>;
 }
 
-/** 1,3[σ] */
+/** 1,3[σ] — группа приведённых напряжений */
 export function Sigma13() {
   return (
     <span>
-      1,3<AllowSigma />
+      1,3
+      <AllowSigma />
     </span>
   );
 }
 
 /** Единицы измерения с верхними индексами (как в ПНАЭ / ИН № 1) */
 export function UnitText({ unit }: { unit: string }) {
+  if (unit === "мкК⁻¹") {
+    return (
+      <>
+        мкК<Sup>−1</Sup>
+      </>
+    );
+  }
   if (unit === "10⁻⁶·°C⁻¹") {
     return (
       <>
         10<Sup>−6</Sup>·°C<Sup>−1</Sup>
+      </>
+    );
+  }
+  if (unit === "10⁻⁶·К⁻¹") {
+    return (
+      <>
+        10<Sup>−6</Sup>·К<Sup>−1</Sup>
       </>
     );
   }
@@ -127,14 +177,11 @@ export type MechPropertyKey =
 export function MechPropertyHeader({
   propertyKey,
   unit = "",
-  atTemperature = false,
 }: {
   propertyKey: MechPropertyKey;
   unit?: string;
-  /** Верхний индекс T — значение при расчётной температуре (ИН № 1) */
   atTemperature?: boolean;
 }) {
-  const tempSup = atTemperature ? "T" : undefined;
   const suffix =
     unit.length > 0 ? (
       <>
@@ -144,55 +191,35 @@ export function MechPropertyHeader({
 
   switch (propertyKey) {
     case "rp02":
-      return (
-        <>
-          <Var letter="R" sub="p0,2" sup={tempSup} />
-          {suffix}
-        </>
-      );
+      return withBaselineUnit(<Var letter="R" sub="p0,2" />, suffix);
     case "rm":
-      return (
-        <>
-          <Var letter="R" sub="m" sup={tempSup} />
-          {suffix}
-        </>
-      );
+      return withBaselineUnit(<Var letter="R" sub="m" />, suffix);
     case "elasticModulusE":
-      return (
-        <>
-          <MathSpan>
-            E{tempSup != null && <Sup>{tempSup}</Sup>}
-          </MathSpan>
-          {suffix}
-        </>
+      return withBaselineUnit(
+        <MathSpan>
+          <span>E</span>
+        </MathSpan>,
+        suffix
       );
     case "thermalExpansionAlpha":
     case "elongationA":
-      return (
-        <>
-          <MathSpan>
-            α{tempSup != null && <Sup>{tempSup}</Sup>}
-          </MathSpan>
-          {suffix}
-        </>
+      return withBaselineUnit(
+        <MathSpan>
+          <span>α</span>
+        </MathSpan>,
+        suffix
       );
     case "reductionZ":
-      return (
-        <>
-          <MathSpan>
-            Z{tempSup != null && <Sup>{tempSup}</Sup>}
-          </MathSpan>
-          {suffix}
-        </>
+      return withBaselineUnit(
+        <MathSpan>
+          <span>Z</span>
+        </MathSpan>,
+        suffix
       );
   }
 }
 
 /** Расчётная температура */
 export function TemperatureHeader() {
-  return (
-    <>
-      <MathSpan>T</MathSpan>, °C
-    </>
-  );
+  return withBaselineUnit(<span>T</span>, <>, °C</>);
 }

@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-background: #0c1817;
+  --color-foreground: #f2f7f6;
+  --color-card: #142422;
+  --color-card-foreground: #f2f7f6;
+  --color-primary: #003837;
+  --color-primary-foreground: #ffffff;
+  --color-heading: #f2f7f6;
+  --color-emphasis: #8ee4dc;
+  --color-muted: #1c302f;
+  --color-muted-foreground: #b8ccc9;
+  --color-border: #2f4a48;
+  --color-accent: #1f3836;
+  --color-accent-foreground: #e8f4f3;
+  --color-destructive: #e87070;
+  --color-header: #003837;
+  --color-header-foreground: #ffffff;
+  --color-link: #8ee4dc;
+  --color-success: #003837;
+  --color-success-muted: #00383755;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.25);
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --font-heading: "PT Serif", Georgia, "Times New Roman", serif;
+  /* Крупная шкала для встраивания в Tilda */
+  --text-xs: 1rem;
+  --text-xs--line-height: calc(1.375 / 1);
+  --text-sm: 1.125rem;
+  --text-sm--line-height: calc(1.625 / 1.125);
+  --text-base: 1.3125rem;
+  --text-base--line-height: calc(1.75 / 1.3125);
+  --text-lg: 1.5rem;
+  --text-lg--line-height: calc(2 / 1.5);
+  --text-xl: 1.75rem;
+  --text-xl--line-height: calc(2.125 / 1.75);
+  --text-2xl: 2.125rem;
+  --text-2xl--line-height: calc(2.5 / 2.125);
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.2;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: calc(3.25 / 3);
+}
+
+:root.light {
+  --color-background: #ffffff;
+  --color-foreground: #1a2e2d;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a2e2d;
+  --color-primary: #003837;
+  --color-primary-foreground: #ffffff;
+  --color-heading: #003837;
+  --color-emphasis: #003837;
+  --color-muted: #f2f4f5;
+  --color-muted-foreground: #4a5654;
+  --color-border: #d4dcdb;
+  --color-accent: #e8edec;
+  --color-accent-foreground: #003837;
+  --color-destructive: #c44b4b;
+  --color-header: #003837;
+  --color-header-foreground: #ffffff;
+  --color-link: #003837;
+  --color-success: #003837;
+  --color-success-muted: #00383714;
+  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.08);
+}
+
+#root.pnae-tilda-embed {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  overflow-x: clip;
+  isolation: isolate;
+  background: #ffffff;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root.pnae-tilda-embed *,
+#root.pnae-tilda-embed *::before,
+#root.pnae-tilda-embed *::after {
+  box-sizing: border-box;
+  border-color: var(--color-border);
+}
+
+#root.pnae-tilda-embed .pnae-tilda-embed {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+#root.pnae-tilda-embed [class*="rounded-2xl"],
+#root.pnae-tilda-embed [class*="rounded-xl"] {
+  max-width: 100%;
+  min-width: 0;
+}
+
+#root.pnae-tilda-embed ul[class*="grid-cols"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  #root.pnae-tilda-embed ul[class*="grid-cols"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Произвольные мелкие размеры в компонентах */
+#root.pnae-tilda-embed .text-\[9px\] {
+  font-size: 0.8125rem;
+}
+
+#root.pnae-tilda-embed .text-\[10px\] {
+  font-size: 0.875rem;
+}
+
+#root.pnae-tilda-embed .text-\[14px\] {
+  font-size: 1rem;
+}
+
+#root.pnae-tilda-embed .text-\[22px\] {
+  font-size: 1.5rem;
+}
+
+#root.pnae-tilda-embed table {
+  border-collapse: collapse;
+}
+
+#root.pnae-tilda-embed tbody td {
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+  font-size: var(--text-lg);
+}
+
+#root.pnae-tilda-embed thead th {
+  white-space: normal;
+  word-break: normal;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  font-size: var(--text-base);
+}
+
+#root.pnae-tilda-embed thead th > div {
+  min-width: 0;
+}
+
+#root.pnae-tilda-embed input[type="checkbox"] {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}
+
+#root.pnae-tilda-embed .pnae-section-gap > * + * {
+  margin-top: 2.5rem;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+#root.pnae-tilda-embed .font-heading {
+  font-family: var(--font-heading) !important;
+}
+
+#root.pnae-tilda-embed .calc-input {
+  height: 2.75rem;
+  font-size: var(--text-lg);
+}
+
+.t-rec:has(#root.pnae-tilda-embed),
+.t-rec:has(.pnae-t123-svc) {
+  background: #ffffff !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.t-rec:has(#root.pnae-tilda-embed) .t-container,
+.t-rec:has(#root.pnae-tilda-embed) .t-col,
+.t-rec:has(#root.pnae-tilda-embed) [class*="t-cell"] {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin-inline: auto !important;
+  box-sizing: border-box !important;
+}

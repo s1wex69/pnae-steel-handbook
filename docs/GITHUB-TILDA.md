@@ -1,62 +1,49 @@
-# Публикация на GitHub Pages и вставка в Tilda
+# GitHub Pages + Tilda: публичный репо, закрытый ПНАЭ
 
-## Адрес справочника после публикации
+Репозиторий **Public** — для бесплатного GitHub Pages.  
+Справочник **не открывается** при прямой ссылке: только во iframe на **intech-atom.ru**.
 
-https://s1wex69.github.io/pnae-steel-handbook/
+## Адреса после публикации
 
-## 1. Отправить код на GitHub (один раз)
+| Виджет | URL |
+|--------|-----|
+| Справочник | https://intechatom.github.io/pnae-steel-handbook/pnae/ |
+| Калькулятор (внутр.) | https://intechatom.github.io/pnae-steel-handbook/calc1/ |
+| Калькулятор (наруж.) | https://intechatom.github.io/pnae-steel-handbook/calc2/ |
 
-На ПК уже выполнены: `git init`, коммит, remote `origin`.
-
-### Вариант A — GitHub Desktop (проще всего)
-
-1. Установите [GitHub Desktop](https://desktop.github.com/)
-2. **File → Add local repository** → папка `C:\Users\user\Desktop\stresscalc`
-3. Войдите в аккаунт `s1wex69`
-4. Нажмите **Publish repository** или **Push origin**
-5. Если спросит про конфликт с README на GitHub — выберите **force push** / перезапись (на GitHub только пустой README)
-
-### Вариант B — командная строка
+## 1. Загрузить на GitHub
 
 ```powershell
 cd C:\Users\user\Desktop\stresscalc
-git push -u origin main --force
+git push -u origin main
 ```
 
-При запросе логина: Personal Access Token с правом `repo` вместо пароля.  
-Создать: GitHub → Settings → Developer settings → Personal access tokens.
+Репозиторий: **Public**, имя например `pnae-steel-handbook`.
 
-## 2. Включить GitHub Pages
+## 2. Включить Pages
 
-1. Репозиторий **pnae-steel-handbook** → **Settings** → **Pages**
-2. **Source**: **GitHub Actions**
-3. После push откроется workflow **Deploy handbook to GitHub Pages**
-4. Дождитесь зелёной галочки в **Actions** (1–3 мин)
+**Settings → Pages → Source: GitHub Actions**
 
-## 3. Проверка
+После push — workflow **Deploy handbook to GitHub Pages** (1–3 мин).
 
-Откройте: https://s1wex69.github.io/pnae-steel-handbook/
+## 3. Вставка в Tilda
 
-## 4. Вставка в Tilda
-
-Блок **T123** (HTML-код), содержимое — файл `docs/tilda-embed.html`:
+Блок **T123**, файл `tilda-hosted/01-spravochnik/TILDA-ВСТАВКА.html` или `docs/tilda-embed.html`:
 
 ```html
 <div style="width:100%;max-width:1200px;margin:0 auto;">
   <iframe
-    src="https://s1wex69.github.io/pnae-steel-handbook/"
-    title="Справочник свойств сталей ПНАЭ"
-    width="100%"
-    height="1000"
-    style="border:0;border-radius:12px;min-height:85vh;"
+    src="https://intechatom.github.io/pnae-steel-handbook/pnae/"
+    title="Справочник ПНАЭ"
+    style="width:100%;height:min(92vh,1400px);min-height:900px;border:0;border-radius:12px;"
     loading="lazy"
   ></iframe>
 </div>
 ```
 
-## Обновление справочника
+**Опубликуйте** страницу Tilda.
 
-После изменений в коде:
+## 4. Обновление
 
 ```powershell
 git add .
@@ -64,8 +51,10 @@ git commit -m "Обновление справочника"
 git push
 ```
 
-Сайт на GitHub Pages обновится автоматически.
+## Защита доступа
 
-## Примечание про приватный репозиторий
+- Прямой заход на GitHub Pages → заглушка «только на сайте ИНТЕХ-АТОМ»
+- Iframe с чужого домена → отказ
+- Iframe с intech-atom.ru → справочник работает
 
-Если Pages не публикуется: **Settings → Pages** — проверьте видимость сайта, либо сделайте репозиторий **Public** (для бесплатного тарифа это надёжнее).
+Полная инструкция: `deploy/github/ИНСТРУКЦИЯ.md`

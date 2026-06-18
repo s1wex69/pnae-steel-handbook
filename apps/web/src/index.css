@@ -28,6 +28,8 @@
   --radius-xl: 1rem;
   --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.25);
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --font-heading: "PT Serif", Georgia, "Times New Roman", serif;
 }
 
 :root.light {
@@ -68,6 +70,10 @@ body {
 :root.light body {
   background-image: radial-gradient(circle at 1px 1px, rgba(0, 56, 55, 0.06) 1px, transparent 0);
   background-size: 28px 28px;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 .methodology-content h1,

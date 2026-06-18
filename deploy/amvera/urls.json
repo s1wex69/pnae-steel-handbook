@@ -1,0 +1,6 @@
+{
+  "_comment": "Подставьте свои URL после создания проектов в Amvera (Настройки → Доменные имена → Бесплатный домен). Формат: https://<имя-проекта>.<логин>.amvera.io/",
+  "01-spravochnik": "https://intech-pnae.ВАШ_ЛОГИН.amvera.io/",
+  "02-kalkulyator-vnutrennee-davlenie": "https://intech-calc1.ВАШ_ЛОГИН.amvera.io/",
+  "03-kalkulyator-naruzhnoe-davlenie": "https://intech-calc2.ВАШ_ЛОГИН.amvera.io/"
+}

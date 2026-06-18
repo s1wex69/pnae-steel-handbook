@@ -1,0 +1,18 @@
+# GitLab Pages: справочник и калькуляторы для вставки в Tilda (iframe)
+# https://docs.gitlab.com/ee/user/project/pages/
+
+image: node:22-bookworm
+
+stages:
+  - build
+
+pages:
+  stage: build
+  script:
+    - npm ci
+    - npm run publish:gitlab
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

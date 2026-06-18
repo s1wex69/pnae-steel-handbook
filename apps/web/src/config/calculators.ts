@@ -67,6 +67,12 @@ export const CALCULATOR_CONFIGS: Record<string, CalculatorConfig> = {
   },
 };
 
-export const CALCULATOR_LABELS: Record<string, string> = Object.fromEntries(
-  Object.values(CALCULATOR_CONFIGS).map((c) => [c.id, c.title])
-);
+export const CALCULATOR_LABELS: Record<string, string> = {
+  ...Object.fromEntries(Object.values(CALCULATOR_CONFIGS).map((c) => [c.id, c.title])),
+  "cylindrical-shell-internal": "Цилиндрическая обечайка — внутреннее давление",
+  "cylindrical-shell-external": "Цилиндрическая обечайка — наружное давление",
+  "hemispherical-head": "ИН № 6 — Полусферическое днище",
+  "pipe-collector": "ИН № 7 — Коллектор, штуцер, труба",
+  "elbow": "ИН № 8 — Колено",
+  "flat-circular-head": "ИН № 9 — Плоские днища и крышки",
+};

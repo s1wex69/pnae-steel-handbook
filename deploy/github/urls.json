@@ -1,0 +1,11 @@
+{
+  "_comment": "URL GitHub Pages после деплоя. Формат: https://<логин>.github.io/<репозиторий>/<путь>/",
+  "01-spravochnik": "https://intechatom.github.io/pnae-steel-handbook/pnae/",
+  "02-kalkulyator-vnutrennee-davlenie": "https://intechatom.github.io/pnae-steel-handbook/calc1/",
+  "03-kalkulyator-naruzhnoe-davlenie": "https://intechatom.github.io/pnae-steel-handbook/calc2/",
+  "paths": {
+    "01-spravochnik": "pnae",
+    "02-kalkulyator-vnutrennee-davlenie": "calc1",
+    "03-kalkulyator-naruzhnoe-davlenie": "calc2"
+  }
+}

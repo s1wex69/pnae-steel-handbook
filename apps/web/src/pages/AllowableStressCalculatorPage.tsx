@@ -36,7 +36,7 @@ function ModeDesc({ mode }: { mode: Mode }) {
     case "pressure_internal":
       return <FormulaPressure />;
     case "pressure_external":
-      return <FormulaPressure external />;
+      return <FormulaPressure />;
     case "bolt":
       return <FormulaBoltW />;
     case "bolt_high_temp":

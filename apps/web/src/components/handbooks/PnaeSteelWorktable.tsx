@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Copy, Plus, Trash2 } from "lucide-react";
 import type { SteelHandbook, SteelPropertyKey } from "@/types/steel";
 import {
@@ -15,15 +15,20 @@ import {
   PNAE_ALLOWABLE_MODES,
   type PnaeAllowableMode,
 } from "@/lib/steelHandbook";
-import { In1Symbol, in1SymbolIdForMode } from "@/components/handbooks/In1Symbol";
-import { MechPropertyHeader, TemperatureHeader } from "@/components/handbooks/MathNotation";
+import { In1Symbol, type In1SymbolId } from "@/components/handbooks/In1Symbol";
+import {
+  MathSpan,
+  MechPropertyHeader,
+  TemperatureHeader,
+  type MechPropertyKey,
+} from "@/components/handbooks/MathNotation";
 import { PnaeSteelLegend } from "@/components/handbooks/PnaeSteelLegend";
 import { SteelMarkCatalog } from "@/components/handbooks/SteelMarkCatalog";
 import { StyledSelect } from "@/components/handbooks/SelectStep";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn, newRowId } from "@/lib/utils";
 
 export interface PnaeTableRow {
@@ -124,13 +129,15 @@ function MarkCell({
   mark,
   sortament,
   prominent = false,
+  align = "center",
 }: {
   mark: string;
   sortament: string;
   prominent?: boolean;
+  align?: "left" | "center";
 }) {
   return (
-    <div>
+    <div className={cn(align === "left" ? "text-left" : "text-center")}>
       <div
         className={cn(
           "font-semibold text-[var(--color-heading)]",
@@ -141,8 +148,9 @@ function MarkCell({
       </div>
       <div
         className={cn(
-          "mt-1 leading-snug text-[var(--color-muted-foreground)]",
-          prominent ? "text-sm" : "text-xs"
+          "mt-2 leading-relaxed text-[var(--color-muted-foreground)]",
+          prominent ? "text-sm" : "text-xs",
+          align === "center" && "mx-auto max-w-[20rem]"
         )}
       >
         {sortament}
@@ -217,7 +225,7 @@ function SortamentAndTemp({
   const sortOpts = row.mark ? getSortamentsInGroups(handbook, filterGroups, row.mark) : [];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid min-w-0 gap-4 sm:grid-cols-2">
       <div className="space-y-2">
         <Label>Сортамент</Label>
         <StyledSelect
@@ -261,6 +269,104 @@ function toggleAllowableMode(
   return next.length > 0 ? next : DEFAULT_PNAE_ALLOWABLE_MODES;
 }
 
+const RESULT_CARD =
+  "min-w-0 max-w-full border border-[var(--color-border)]/80 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
+const TABLE_WRAP =
+  "overflow-x-auto overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
+const TABLE_HEAD =
+  "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-base font-semibold";
+const TH_BASE =
+  "border-r border-white/25 px-4 py-4 text-center align-middle last:border-r-0";
+const TH_MARK = cn(TH_BASE, "min-w-[18rem] w-[24%] rounded-tl-xl");
+const TH_COND = cn(TH_BASE, "min-w-[9rem]");
+const TH_TEMP = cn(TH_BASE, "min-w-[5rem]");
+const TH_VALUE = cn(TH_BASE, "min-w-[7rem]");
+const TD_BASE =
+  "border-r border-[var(--color-border)]/35 bg-[var(--color-card)] px-4 py-5 text-center align-middle last:border-r-0";
+const TD_MARK = cn(TD_BASE, "px-5");
+const TD_VALUE = cn(
+  TD_BASE,
+  "text-lg font-bold tabular-nums text-[var(--color-heading)]"
+);
+const TEMP_BADGE =
+  "inline-flex min-w-[3.5rem] items-center justify-center rounded-md bg-[var(--color-muted)] px-3 py-1.5 text-base font-bold tabular-nums text-[var(--color-heading)]";
+
+function mechColumnUnit(key: SteelPropertyKey, unit: string): string {
+  if (key === "thermalExpansionAlpha") return "10⁻⁶·К⁻¹";
+  return unit;
+}
+
+function SectionHeading({
+  children,
+  subtitle,
+  action,
+}: {
+  children: ReactNode;
+  subtitle?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="min-w-0">
+        <h2 className="text-2xl font-bold text-[var(--color-heading)] sm:text-3xl">{children}</h2>
+        {subtitle ? (
+          <p className="mt-1 text-sm font-normal text-[var(--color-muted-foreground)] sm:text-base">
+            {subtitle}
+          </p>
+        ) : null}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function InlineColumnHeader({ children }: { children: ReactNode }) {
+  return (
+    <div className="mx-auto max-w-[10rem] text-center font-serif text-base font-semibold leading-snug">
+      {children}
+    </div>
+  );
+}
+
+function MechTableColumnHeader({
+  propertyKey,
+  unit,
+  atTemperature = false,
+}: {
+  propertyKey: MechPropertyKey;
+  unit: string;
+  atTemperature?: boolean;
+}) {
+  return (
+    <InlineColumnHeader>
+      <MechPropertyHeader
+        propertyKey={propertyKey}
+        unit={unit}
+        atTemperature={atTemperature}
+      />
+    </InlineColumnHeader>
+  );
+}
+
+function SymbolTableColumnHeader({ id, unit }: { id: In1SymbolId; unit: string }) {
+  return (
+    <InlineColumnHeader>
+      <MathSpan className="inline-flex items-baseline justify-center">
+        <In1Symbol id={id} />
+        <span>, {unit}</span>
+      </MathSpan>
+    </InlineColumnHeader>
+  );
+}
+
+function TempTableColumnHeader() {
+  return (
+    <InlineColumnHeader>
+      <TemperatureHeader />
+    </InlineColumnHeader>
+  );
+}
+
 function ResultsBlock({
   handbook,
   calcs,
@@ -298,81 +404,62 @@ function ResultsBlock({
     });
   });
 
-  const colLabel = (key: SteelPropertyKey) => {
-    const unit = handbook.properties[key]?.unit ?? "";
-    return <MechPropertyHeader propertyKey={key} unit={unit} atTemperature />;
-  };
-
-  const tableHead =
-    "bg-[var(--color-primary)] text-[var(--color-primary-foreground)] text-sm font-semibold";
-  const tableWrap =
-    "overflow-x-auto rounded-xl border-2 border-[var(--color-primary)]/25 bg-[var(--color-card)] shadow-[var(--shadow-card)]";
-  const thCell =
-    "border-r border-[var(--color-primary-foreground)]/12 px-4 py-4 text-center align-middle last:border-r-0";
-  const tdCell =
-    "border-r border-[var(--color-border)]/35 px-4 py-4 text-center align-middle last:border-r-0";
-  const valueCell = cn(
-    tdCell,
-    "text-lg font-bold tabular-nums text-[var(--color-heading)]"
-  );
-  const tempBadge =
-    "inline-flex min-w-[3rem] items-center justify-center rounded-md bg-[var(--color-primary)]/12 px-2.5 py-1 text-base font-bold tabular-nums text-[var(--color-heading)]";
-
   return (
-    <Card className="border-2 border-[var(--color-primary)]/35 shadow-[var(--shadow-card)]">
-      <CardContent className="space-y-10 p-6 sm:p-8">
-        <section>
-          <div className="flex flex-wrap items-end justify-between gap-4 border-l-4 border-[var(--color-primary)] pl-4">
-            <h2 className="text-xl font-bold text-[var(--color-heading)] sm:text-2xl">
-              Физико-механические характеристики сталей
-              <span className="mt-1 block text-sm font-normal text-[var(--color-muted-foreground)]">
-                ПНАЭ Г-7-002-86
-              </span>
-            </h2>
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/60 px-3 py-2 text-sm text-[var(--color-foreground)]">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-[var(--color-primary)]"
-                checked={showExtraProps}
-                onChange={(e) => onShowExtraPropsChange(e.target.checked)}
-              />
-              Показать α и Z
-            </label>
-          </div>
-          <div className={cn(tableWrap, "mt-5")}>
-            <table className="w-full border-collapse">
+    <div className="space-y-10">
+      <Card className={RESULT_CARD}>
+        <CardContent className="space-y-6 p-6 sm:p-10">
+          <SectionHeading
+            action={
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-2.5 text-sm text-[var(--color-foreground)] sm:text-base">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 accent-[var(--color-primary)]"
+                  checked={showExtraProps}
+                  onChange={(e) => onShowExtraPropsChange(e.target.checked)}
+                />
+                Показать α и Z
+              </label>
+            }
+          >
+            Физико-механические характеристики сталей
+          </SectionHeading>
+
+          <div className={TABLE_WRAP}>
+            <table className="w-full min-w-[48rem] border-collapse">
               <thead>
-                <tr className={tableHead}>
-                  <th className={cn(thCell, "px-5 whitespace-nowrap")}>Марка стали</th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>
-                    <TemperatureHeader />
+                <tr className={TABLE_HEAD}>
+                  <th className={TH_MARK}>Марка стали</th>
+                  <th className={TH_TEMP}>
+                    <TempTableColumnHeader />
                   </th>
-                  {mechCols.map((c) => (
-                    <th key={c.key} className={cn(thCell, "whitespace-nowrap")}>
-                      {colLabel(c.key)}
+                  {mechCols.map((c, colIdx) => (
+                    <th
+                      key={c.key}
+                      className={cn(
+                        TH_VALUE,
+                        colIdx === mechCols.length - 1 && "rounded-tr-xl"
+                      )}
+                    >
+                      <MechTableColumnHeader
+                        propertyKey={c.key as MechPropertyKey}
+                        unit={mechColumnUnit(c.key, handbook.properties[c.key]?.unit ?? "")}
+                        atTemperature
+                      />
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {ready.map(({ row, mech }, i) => (
-                  <tr
-                    key={row.id}
-                    className={cn(
-                      "border-t border-[var(--color-border)]/60",
-                      i % 2 === 1 && "bg-[var(--color-muted)]/50"
-                    )}
-                  >
-                    <td className={cn(tdCell, "px-5")}>
-                      <div className="flex flex-col items-center text-center">
-                        <MarkCell mark={row.mark} sortament={row.sortament} prominent />
-                      </div>
+                {ready.map(({ row, mech }) => (
+                  <tr key={row.id} className="border-t border-[var(--color-border)]/50">
+                    <td className={TD_MARK}>
+                      <MarkCell mark={row.mark} sortament={row.sortament} prominent />
                     </td>
-                    <td className={tdCell}>
-                      <span className={tempBadge}>{row.temperature}</span>
+                    <td className={TD_BASE}>
+                      <span className={TEMP_BADGE}>{row.temperature}</span>
                     </td>
                     {mechCols.map((c) => (
-                      <td key={c.key} className={valueCell}>
+                      <td key={c.key} className={TD_VALUE}>
                         {fmt(mech[c.key], c.key === "elasticModulusE" ? 0 : 1)}
                       </td>
                     ))}
@@ -381,61 +468,60 @@ function ResultsBlock({
               </tbody>
             </table>
           </div>
-        </section>
+        </CardContent>
+      </Card>
 
-        <section>
-          <div className="border-l-4 border-[var(--color-primary)] pl-4">
-            <h2 className="text-xl font-bold text-[var(--color-heading)] sm:text-2xl">
-              Допускаемые напряжения
-              <span className="mt-1 block text-sm font-normal text-[var(--color-muted-foreground)]">
-                ПНАЭ Г-7-002-86
-              </span>
-            </h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {PNAE_ALLOWABLE_MODES.map((mode) => (
-                <label
-                  key={mode.id}
-                  title={mode.fullLabel}
-                  className="flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/50 px-3 py-2 text-sm text-[var(--color-foreground)]"
-                >
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 accent-[var(--color-primary)]"
-                    checked={allowableModes.includes(mode.id)}
-                    onChange={(e) =>
-                      onAllowableModesChange(
-                        toggleAllowableMode(allowableModes, mode.id, e.target.checked)
-                      )
-                    }
-                  />
-                  {mode.shortLabel}
-                </label>
-              ))}
-            </div>
+      <Card className={RESULT_CARD}>
+        <CardContent className="space-y-6 p-6 sm:p-10">
+          <SectionHeading>
+            Допускаемые напряжения
+          </SectionHeading>
+
+          <div className="flex flex-wrap gap-3">
+            {PNAE_ALLOWABLE_MODES.map((mode) => (
+              <label
+                key={mode.id}
+                title={mode.fullLabel}
+                className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)]/40 px-5 py-3.5 text-base text-[var(--color-foreground)]"
+              >
+                <input
+                  type="checkbox"
+                  className="h-5 w-5 accent-[var(--color-primary)]"
+                  checked={allowableModes.includes(mode.id)}
+                  onChange={(e) =>
+                    onAllowableModesChange(
+                      toggleAllowableMode(allowableModes, mode.id, e.target.checked)
+                    )
+                  }
+                />
+                {mode.shortLabel}
+              </label>
+            ))}
           </div>
-          <div className={cn(tableWrap, "mt-5 ring-2 ring-[var(--color-primary)]/15")}>
-            <table className="w-full border-collapse">
+
+          <div className={TABLE_WRAP}>
+            <table className="w-full min-w-[50rem] border-collapse">
               <thead>
-                <tr className={tableHead}>
-                  <th className={cn(thCell, "px-5 whitespace-nowrap")}>Марка стали</th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>Условие</th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>
-                    <TemperatureHeader />
+                <tr className={TABLE_HEAD}>
+                  <th className={TH_MARK}>Марка стали</th>
+                  <th className={TH_COND}>Условие</th>
+                  <th className={TH_TEMP}>
+                    <TempTableColumnHeader />
                   </th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>
-                    <In1Symbol id="sigma" />, МПа
+                  <th className={TH_VALUE}>
+                    <SymbolTableColumnHeader id="sigma" unit="МПа" />
                   </th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>
-                    <In1Symbol id="sigma13" />, МПа
+                  <th className={TH_VALUE}>
+                    <SymbolTableColumnHeader id="sigma13" unit="МПа" />
                   </th>
-                  <th className={cn(thCell, "whitespace-nowrap")}>
-                    <In1Symbol id="sigma_rv" />, МПа
+                  <th className={cn(TH_VALUE, "rounded-tr-xl")}>
+                    <SymbolTableColumnHeader id="sigma_rv" unit="МПа" />
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {allowableRows.length === 0 ? (
-                  <tr className="border-t border-[var(--color-border)]/60">
+                  <tr className="border-t border-[var(--color-border)]/50">
                     <td
                       colSpan={6}
                       className="px-5 py-8 text-center text-sm text-[var(--color-muted-foreground)]"
@@ -444,51 +530,55 @@ function ResultsBlock({
                     </td>
                   </tr>
                 ) : (
-                  allowableRows.map(({ calc, def, result }, i) => (
+                  allowableRows.map(({ calc, def, result }) => (
                     <tr
                       key={`${calc.row.id}-${def.id}`}
-                      className={cn(
-                        "border-t border-[var(--color-border)]/60",
-                        i % 2 === 1 && "bg-[var(--color-muted)]/50"
-                      )}
+                      className="border-t border-[var(--color-border)]/50"
                     >
-                      <td className={cn(tdCell, "px-5")}>
-                        <div className="flex flex-col items-center text-center">
-                          <MarkCell mark={calc.row.mark} sortament={calc.row.sortament} prominent />
-                        </div>
+                      <td className={TD_MARK}>
+                        <MarkCell
+                          mark={calc.row.mark}
+                          sortament={calc.row.sortament}
+                          prominent
+                        />
                       </td>
                       <td
-                        className={cn(tdCell, "text-sm font-medium text-[var(--color-foreground)]")}
+                        className={cn(
+                          TD_BASE,
+                          "py-6 text-sm font-medium text-[var(--color-foreground)]"
+                        )}
                         title={def.fullLabel}
                       >
                         {def.shortLabel}
                       </td>
-                      <td className={tdCell}>
-                        <span className={tempBadge}>{calc.row.temperature}</span>
+                      <td className={TD_BASE}>
+                        <span className={TEMP_BADGE}>{calc.row.temperature}</span>
                       </td>
                       <td
-                        className={tdCell}
+                        className={TD_VALUE}
                         title={
-                          result.incomplete ? "При T > Tt не задан R_mt — значение может быть завышено" : undefined
+                          result.incomplete
+                            ? "При T > Tt не задан R_mt — значение может быть завышено"
+                            : undefined
                         }
                       >
-                        <div className="flex flex-col items-center gap-0.5">
-                          <In1Symbol
-                            id={in1SymbolIdForMode(def.id)}
-                            className="text-sm font-semibold text-[var(--color-muted-foreground)]"
-                          />
-                          <span className="text-xl font-bold tabular-nums text-[var(--color-emphasis)]">
-                            {result.applicable ? fmt(result.sigma) : "—"}
-                            {result.incomplete ? (
-                              <span className="ml-1 text-sm text-amber-600">⚠</span>
-                            ) : null}
-                          </span>
-                        </div>
+                        <span className="text-[var(--color-emphasis)]">
+                          {result.applicable ? (
+                            <>
+                              {fmt(result.sigma)}
+                              {result.incomplete ? (
+                                <span className="ml-1 text-sm text-amber-600">⚠</span>
+                              ) : null}
+                            </>
+                          ) : (
+                            "—"
+                          )}
+                        </span>
                       </td>
-                      <td className={valueCell}>
+                      <td className={TD_VALUE}>
                         {result.sigma13 != null ? fmt(result.sigma13) : "—"}
                       </td>
-                      <td className={valueCell}>
+                      <td className={TD_VALUE}>
                         {result.sigmaRV != null ? fmt(result.sigmaRV) : "—"}
                       </td>
                     </tr>
@@ -497,9 +587,9 @@ function ResultsBlock({
               </tbody>
             </table>
           </div>
-        </section>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -558,21 +648,12 @@ export function PnaeSteelWorktable({
   );
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl text-[var(--color-heading)]">
-            Предел текучести, предел прочности, допускаемые напряжения, модуль упругости и коэффициент
-            линейного расширения
-          </CardTitle>
-          <CardDescription>
-            Выберите материал, марку, сортамент и температуру. Несколько строк — для разных марок или
-            одной марки при разных температурах.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-medium text-[var(--color-muted-foreground)]">Материал:</span>
+    <div className="pnae-section-gap min-w-0">
+      <section>
+        <Card className="min-w-0 max-w-full border border-[var(--color-border)]/80 shadow-[var(--shadow-card)]">
+          <CardContent className="min-w-0 space-y-6 p-6 sm:p-10">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm font-medium text-[var(--color-muted-foreground)]">Материал:</span>
             {rows.map((row, i) => (
               <button
                 key={row.id}
@@ -636,7 +717,7 @@ export function PnaeSteelWorktable({
             selectedMark={activeRow?.mark ?? ""}
             onCategoryChange={selectCategory}
             onSelectMark={selectMark}
-            middleSlot={
+            afterMarkSlot={
               activeRow ? (
                 <SortamentAndTemp
                   handbook={handbook}
@@ -648,7 +729,9 @@ export function PnaeSteelWorktable({
           />
         </CardContent>
       </Card>
+      </section>
 
+      <section>
       {hasResults ? (
         <ResultsBlock
           handbook={handbook}
@@ -659,12 +742,15 @@ export function PnaeSteelWorktable({
           onAllowableModesChange={setAllowableModes}
         />
       ) : (
-        <div className="rounded-xl border border-dashed border-[var(--color-border)] px-6 py-12 text-center text-sm text-[var(--color-muted-foreground)]">
+        <div className="rounded-2xl border-2 border-dashed border-[var(--color-border)] bg-[var(--color-muted)]/30 px-8 py-16 text-center text-base text-[var(--color-muted-foreground)]">
           Выберите марку, сортамент и температуру — результаты появятся здесь автоматически
         </div>
       )}
+      </section>
 
-      <PnaeSteelLegend />
+      <section>
+        <PnaeSteelLegend />
+      </section>
     </div>
   );
 }

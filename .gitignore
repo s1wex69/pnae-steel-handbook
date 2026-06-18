@@ -9,3 +9,5 @@ data/pnae.zip
 .DS_Store
 coverage/
 .vite/
+tilda-hosted/
+public/

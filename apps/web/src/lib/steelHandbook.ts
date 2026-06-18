@@ -64,6 +64,16 @@ export function getSortaments(
     .sort((a, b) => a.sortament.localeCompare(b.sortament, "ru"));
 }
 
+/** Все записи справочника для выбора без отдельного поля марки */
+export function getAllGradeOptions(handbook: SteelHandbook): { gradeName: string; label: string }[] {
+  return handbook.grades
+    .map((g) => ({
+      gradeName: g.name,
+      label: `${displayMark(g)} — ${extractSortament(g.name)}`,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, "ru"));
+}
+
 export function valueAt(
   grade: SteelGrade,
   key: SteelPropertyKey,
@@ -82,22 +92,43 @@ function tempPoints(map: Record<string, number>): { t: number; v: number }[] {
     .sort((a, b) => a.t - b.t);
 }
 
-/** Линейная интерполяция по табличным точкам температуры */
+function lerpAtTemp(
+  temp: number,
+  a: { t: number; v: number },
+  b: { t: number; v: number }
+): number {
+  if (a.t === b.t) return a.v;
+  const w = (temp - a.t) / (b.t - a.t);
+  return a.v + w * (b.v - a.v);
+}
+
+/**
+ * Линейная интерполяция по табличным точкам температуры.
+ * Ниже минимальной и выше максимальной табличной T — линейная экстраполяция
+ * по ближайшему сегменту (в т.ч. для отрицательных температур).
+ */
 export function interpolateAtTemp(
   map: Record<string, number> | undefined,
   temp: number
 ): number | null {
-  if (!map) return null;
+  if (!map || !Number.isFinite(temp)) return null;
   const points = tempPoints(map);
   if (points.length === 0) return null;
-  if (temp <= points[0].t) return points[0].v;
-  if (temp >= points[points.length - 1].t) return points[points.length - 1].v;
+  if (points.length === 1) return points[0].v;
+
+  if (temp <= points[0].t) {
+    return lerpAtTemp(temp, points[0], points[1]);
+  }
+  if (temp >= points[points.length - 1].t) {
+    const last = points.length - 1;
+    return lerpAtTemp(temp, points[last - 1], points[last]);
+  }
+
   for (let i = 0; i < points.length - 1; i++) {
     const a = points[i];
     const b = points[i + 1];
     if (temp >= a.t && temp <= b.t) {
-      const w = (temp - a.t) / (b.t - a.t);
-      return a.v + w * (b.v - a.v);
+      return lerpAtTemp(temp, a, b);
     }
   }
   return null;
