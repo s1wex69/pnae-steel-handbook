@@ -40,6 +40,7 @@ export function CalcRow({
   disabled,
   wide,
   borderless,
+  inColumn = false,
   children,
 }: {
   label: string;
@@ -54,6 +55,7 @@ export function CalcRow({
   disabled?: boolean;
   wide?: boolean;
   borderless?: boolean;
+  inColumn?: boolean;
   children?: ReactNode;
 }) {
   const isCheck = variant === "check";
@@ -91,8 +93,12 @@ export function CalcRow({
     <div
       className={cn(
         "grid grid-cols-1 gap-x-6 py-3",
-        wide || isCheck ? "sm:col-span-2" : cn(CALC_ROW_GRID, "sm:col-span-2 sm:grid-cols-subgrid"),
-        "sm:items-center",
+        inColumn
+          ? cn(CALC_ROW_GRID, "sm:items-center")
+          : wide || isCheck
+            ? "sm:col-span-2"
+            : cn(CALC_ROW_GRID, "sm:col-span-2 sm:grid-cols-subgrid"),
+        !inColumn && "sm:items-center",
         !borderless && !isCheck && "border-b border-[var(--color-border)]/50 last:border-b-0"
       )}
     >

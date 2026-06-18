@@ -138,62 +138,72 @@ export function CylindricalShellInternalCalculator({
           ccSymbol={<Var letter="c" sub="c" />}
         />
 
-        <CalcSection title="Исходные данные" titleAccent={false}>
-          <CalcRow
-            label="Внутренний диаметр обечайки"
-            symbol="D"
-            value={D}
-            onChange={setD}
-            unit="мм"
-          />
-          <CalcRow
-            label="Расчётное внутреннее избыточное давление"
-            symbol="p"
-            value={displayP}
-            onFocus={activateP}
-            onChange={(v) => {
-              setDrive("p");
-              setP(v);
-            }}
-            unit="МПа"
-          />
-          <CalcRow
-            label="Расчётная температура"
-            symbol="T"
-            value={sigmaTemp}
-            onChange={setSigmaTemp}
-            unit="°C"
-          />
-          <CalcRow
-            label="Коэффициент прочности продольного сварного шва"
-            symbol={<Var letter="φ" sub="p" />}
-            value={phiP}
-            onChange={setPhiP}
-          />
-          <CalcRow
-            label="Допускаемое напряжение при расчётной температуре"
-            labelExtra={
-              <div className="mt-1.5">
-                <AllowableStressFromHandbook
-                  handbook={handbook}
-                  value={sigmaStr}
-                  onChange={(n) => setSigmaStr(String(n))}
-                  embedded
-                  pickersOnly
-                  stacked
-                  collapsibleSteelPickers
-                  externalTemperature
-                  temperature={sigmaTemp}
-                  onTemperatureChange={setSigmaTemp}
-                />
-              </div>
-            }
-            symbol={<AllowSigma />}
-            value={sigmaStr}
-            onChange={setSigmaStr}
-            unit="МПа"
-            borderless
-          />
+        <CalcSection title="Исходные данные" titleAccent={false} twoColumns>
+          <div className="min-w-0">
+            <CalcRow
+              inColumn
+              label="Внутренний диаметр обечайки"
+              symbol="D"
+              value={D}
+              onChange={setD}
+              unit="мм"
+            />
+            <CalcRow
+              inColumn
+              label="Расчётное внутреннее избыточное давление"
+              symbol="p"
+              value={displayP}
+              onFocus={activateP}
+              onChange={(v) => {
+                setDrive("p");
+                setP(v);
+              }}
+              unit="МПа"
+            />
+            <CalcRow
+              inColumn
+              label="Допускаемое напряжение при расчётной температуре"
+              labelExtra={
+                <div className="mt-1.5">
+                  <AllowableStressFromHandbook
+                    handbook={handbook}
+                    value={sigmaStr}
+                    onChange={(n) => setSigmaStr(String(n))}
+                    embedded
+                    pickersOnly
+                    stacked
+                    collapsibleSteelPickers
+                    externalTemperature
+                    temperature={sigmaTemp}
+                    onTemperatureChange={setSigmaTemp}
+                  />
+                </div>
+              }
+              symbol={<AllowSigma />}
+              value={sigmaStr}
+              onChange={setSigmaStr}
+              unit="МПа"
+              borderless
+            />
+          </div>
+          <div className="min-w-0">
+            <CalcRow
+              inColumn
+              label="Температура"
+              symbol="T"
+              value={sigmaTemp}
+              onChange={setSigmaTemp}
+              unit="°C"
+            />
+            <CalcRow
+              inColumn
+              label="Коэффициент прочности продольного сварного шва"
+              symbol={<Var letter="φ" sub="p" />}
+              value={phiP}
+              onChange={setPhiP}
+              borderless
+            />
+          </div>
         </CalcSection>
 
         <CalcSection title="Результаты расчёта" titleAccent={false}>
@@ -233,11 +243,12 @@ export function CylindricalShellInternalCalculator({
           />
         </CalcSection>
 
-        <CalcSection title="Проверка применимости" titleAccent={false}>
-          <CalcRow label="Проверка применимости расчётной методики" variant="check" borderless>
+        <CalcSection title="Условие применения расчётных формул" titleAccent={false} twoColumns>
+          <div className="hidden min-w-0 xl:block" aria-hidden />
+          <div className="flex min-h-[3rem] items-center justify-start xl:justify-end">
             <span
               className={cn(
-                "inline-flex w-full flex-wrap items-center justify-start gap-x-2 text-xl font-semibold tabular-nums",
+                "inline-flex flex-wrap items-center justify-end gap-x-2 text-xl font-semibold tabular-nums",
                 applicability.ok
                   ? "text-[var(--color-emphasis)]"
                   : "text-[var(--color-destructive)]"
@@ -250,7 +261,7 @@ export function CylindricalShellInternalCalculator({
                 {applicability.ok ? "выполнено" : "не выполнено"}
               </span>
             </span>
-          </CalcRow>
+          </div>
         </CalcSection>
       </section>
 

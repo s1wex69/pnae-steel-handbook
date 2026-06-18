@@ -81,6 +81,7 @@ export function CalcSection({
   onToggle,
   titleAccent = true,
   className,
+  twoColumns = false,
 }: {
   title: string;
   children: ReactNode;
@@ -90,6 +91,7 @@ export function CalcSection({
   onToggle?: () => void;
   titleAccent?: boolean;
   className?: string;
+  twoColumns?: boolean;
 }) {
   const toggleButton =
     collapsible && onToggle ? (
@@ -115,15 +117,19 @@ export function CalcSection({
   return (
     <section className={cn(CALC_SECTION_CARD, className)}>
       <CalcSectionHeading title={title} action={toggleButton} accent={titleAccent} />
-      <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_19rem] sm:gap-x-6">
-        {collapsible && expanded && details ? (
-          <>
-            <div className="contents">{details}</div>
-            <div className="col-span-2 my-2 border-b border-[var(--color-border)]/50" aria-hidden />
-          </>
-        ) : null}
-        <div className="contents">{children}</div>
-      </div>
+      {twoColumns ? (
+        <div className="grid grid-cols-1 gap-x-8 gap-y-0 xl:grid-cols-2">{children}</div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_19rem] sm:gap-x-6">
+          {collapsible && expanded && details ? (
+            <>
+              <div className="contents">{details}</div>
+              <div className="col-span-2 my-2 border-b border-[var(--color-border)]/50" aria-hidden />
+            </>
+          ) : null}
+          <div className="contents">{children}</div>
+        </div>
+      )}
     </section>
   );
 }
