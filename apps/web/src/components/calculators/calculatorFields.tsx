@@ -139,7 +139,7 @@ export function AllowancesCalcSection({
   onC2,
   onC3,
   onCc,
-  ccSymbol = <CalcSymbol>cc</CalcSymbol>,
+  ccSymbol = <CalcSymbol>c</CalcSymbol>,
   collapsible = false,
   defaultExpanded = true,
 }: {

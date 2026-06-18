@@ -155,7 +155,7 @@ export function CylindricalShellInternalCalculator({
             variant="result"
             disabled
             label="Расчётная толщина стенки цилиндрической обечайки"
-            symbol={<CalcSymbol>sp</CalcSymbol>}
+            symbol={<CalcSymbol>s</CalcSymbol>}
             value={displaySp}
             unit="мм"
           />
@@ -163,7 +163,7 @@ export function CylindricalShellInternalCalculator({
             variant="result"
             disabled
             label="Исполнительная толщина стенки цилиндрической обечайки"
-            symbol={<CalcSymbol>ss</CalcSymbol>}
+            symbol={<CalcSymbol>s</CalcSymbol>}
             value={displaySs}
             unit="мм"
             borderless
