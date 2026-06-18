@@ -14,6 +14,18 @@ export function fmt(n: number, digits = 1): string {
   return n.toFixed(digits);
 }
 
+/** Округление ввода до сотых; не форматирует незавершённый ввод (например «10.»). */
+export function normalizeHundredths(raw: string): string {
+  const normalized = raw.replace(",", ".");
+  const t = normalized.trim();
+  if (t === "" || t === "-" || t.endsWith(".")) return normalized;
+  const n = Number(t);
+  if (!Number.isFinite(n)) return normalized;
+  return fmt(n, 2);
+}
+
+export const CALC_HUNDREDTHS = 2;
+
 export function sumFmt(parts: string[], digits = 1): string {
   if (parts.every(isBlank)) return "";
   return fmt(parts.reduce((acc, s) => acc + num(s), 0), digits);

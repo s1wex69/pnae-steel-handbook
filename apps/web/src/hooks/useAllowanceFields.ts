@@ -6,15 +6,15 @@ export function useAllowanceFields(initial?: {
   c2?: string;
   c3?: string;
 }) {
-  const [c1, setC1State] = useState(initial?.c1 ?? "0.2");
-  const [c2, setC2State] = useState(initial?.c2 ?? "0.2");
-  const [c3, setC3State] = useState(initial?.c3 ?? "0.3");
-  const [cc, setCcState] = useState("0.7");
+  const [c1, setC1State] = useState(initial?.c1 ?? "0.20");
+  const [c2, setC2State] = useState(initial?.c2 ?? "0.20");
+  const [c3, setC3State] = useState(initial?.c3 ?? "0.30");
+  const [cc, setCcState] = useState("0.70");
   const [ccManual, setCcManual] = useState(false);
 
   useEffect(() => {
     if (ccManual) return;
-    setCcState(sumFmt([c1, c2, c3]));
+    setCcState(sumFmt([c1, c2, c3], 2));
   }, [c1, c2, c3, ccManual]);
 
   const setC1 = useCallback((v: string) => {

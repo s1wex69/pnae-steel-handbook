@@ -16,7 +16,7 @@ import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmt, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, isBlank, normalizeHundredths, num, CALC_HUNDREDTHS } from "@/lib/calcInputUtils";
 
 export function CylindricalShellInternalCalculator({
   handbook,
@@ -24,12 +24,12 @@ export function CylindricalShellInternalCalculator({
   handbook: SteelHandbook;
 }) {
   const allowances = useAllowanceFields();
-  const [D, setD] = useState("2000");
-  const [sigmaStr, setSigmaStr] = useState("130");
+  const [D, setD] = useState("2000.00");
+  const [sigmaStr, setSigmaStr] = useState("130.00");
   const [sigmaTemp, setSigmaTemp] = useState("20");
   const sigma = num(sigmaStr, 130);
   const [phiP, setPhiP] = useState("1");
-  const [p, setP] = useState("10");
+  const [p, setP] = useState("10.00");
 
   const ccNum = num(allowances.cc);
   const dNum = num(D);
@@ -58,8 +58,8 @@ export function CylindricalShellInternalCalculator({
   );
 
   const inputsReady = !isBlank(p) && dNum > 0 && sigma > 0 && phiPNum > 0;
-  const displaySp = inputsReady && result.error == null ? fmt(result.sp) : "";
-  const displaySs = inputsReady && result.error == null ? fmt(result.ss) : "";
+  const displaySp = inputsReady && result.error == null ? fmt(result.sp, CALC_HUNDREDTHS) : "";
+  const displaySs = inputsReady && result.error == null ? fmt(result.ss, CALC_HUNDREDTHS) : "";
 
   const applicability = useMemo(
     () => checkApplicability(result.ss - ccNum, dNum),
@@ -80,10 +80,10 @@ export function CylindricalShellInternalCalculator({
           c2={allowances.c2}
           c3={allowances.c3}
           cc={allowances.cc}
-          onC1={allowances.setC1}
-          onC2={allowances.setC2}
-          onC3={allowances.setC3}
-          onCc={allowances.setCc}
+          onC1={(v) => allowances.setC1(normalizeHundredths(v))}
+          onC2={(v) => allowances.setC2(normalizeHundredths(v))}
+          onC3={(v) => allowances.setC3(normalizeHundredths(v))}
+          onCc={(v) => allowances.setCc(normalizeHundredths(v))}
         />
 
         <CalcSection title="Исходные данные" titleAccent={false} twoColumns>
@@ -93,7 +93,7 @@ export function CylindricalShellInternalCalculator({
               label="Внутренний диаметр обечайки"
               symbol="D"
               value={D}
-              onChange={setD}
+              onChange={(v) => setD(normalizeHundredths(v))}
               unit="мм"
             />
             <CalcRow
@@ -101,7 +101,7 @@ export function CylindricalShellInternalCalculator({
               label="Расчётное внутреннее избыточное давление"
               symbol="p"
               value={p}
-              onChange={setP}
+              onChange={(v) => setP(normalizeHundredths(v))}
               unit="МПа"
             />
             <CalcRow
@@ -112,7 +112,7 @@ export function CylindricalShellInternalCalculator({
                   <AllowableStressFromHandbook
                     handbook={handbook}
                     value={sigmaStr}
-                    onChange={(n) => setSigmaStr(String(n))}
+                    onChange={(n) => setSigmaStr(fmt(n, CALC_HUNDREDTHS))}
                     embedded
                     pickersOnly
                     stacked
@@ -125,7 +125,7 @@ export function CylindricalShellInternalCalculator({
               }
               symbol={<AllowSigma />}
               value={sigmaStr}
-              onChange={setSigmaStr}
+              onChange={(v) => setSigmaStr(normalizeHundredths(v))}
               unit="МПа"
               borderless
             />
@@ -181,7 +181,7 @@ export function CylindricalShellInternalCalculator({
               )}
             >
               <Frac num={<>s − c</>} den="D" />
-              <span>= {fmt(applicability.ratio, 3)}</span>
+              <span>= {fmt(applicability.ratio, CALC_HUNDREDTHS)}</span>
               <span>
                 {applicability.ok ? "≤" : ">"} {applicability.limit} —{" "}
                 {applicability.ok ? "выполнено" : "не выполнено"}
