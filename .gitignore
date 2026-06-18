@@ -11,3 +11,4 @@ coverage/
 .vite/
 tilda-hosted/
 public/
+scripts/_in-*.txt
