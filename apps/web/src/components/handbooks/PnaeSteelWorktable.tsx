@@ -23,6 +23,7 @@ import {
   type MechPropertyKey,
 } from "@/components/handbooks/MathNotation";
 import { PnaeSteelLegend } from "@/components/handbooks/PnaeSteelLegend";
+import { HANDBOOK_SECTION_HEADING } from "@/components/handbooks/handbookTypography";
 import { SteelMarkCatalog } from "@/components/handbooks/SteelMarkCatalog";
 import { StyledSelect } from "@/components/handbooks/SelectStep";
 import { Button } from "@/components/ui/button";
@@ -277,8 +278,7 @@ const HANDBOOK_TOGGLE_BOX =
   "flex cursor-pointer items-center gap-1.5 border border-[var(--color-border)]";
 const TABLE_HEAD_FONT =
   "pnae-handbook-table-th text-[0.9375rem] font-semibold leading-snug sm:text-[1rem]";
-const SECTION_HEADING_FONT =
-  "pnae-handbook-section-title text-[1.5rem] font-bold leading-snug text-[var(--color-heading)] sm:text-[1.75rem]";
+const SECTION_HEADING_FONT = HANDBOOK_SECTION_HEADING;
 const TABLE_WRAP =
   "overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] shadow-[var(--shadow-card)]";
 const TABLE_CLASS = "w-full table-fixed border-collapse";
