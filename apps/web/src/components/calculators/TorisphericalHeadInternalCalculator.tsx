@@ -12,7 +12,7 @@ import {
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
 const METHODOLOGY_TITLE =
   "Расчёт на прочность торосферического днища, нагруженного внутренним избыточным давлением";
@@ -193,7 +193,7 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
                   <p className="text-base font-semibold tabular-nums sm:text-lg">
                     <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                       <Frac num={<>s − c</>} den="D" />
-                      <span>= {fmtHundredths(result.thinnessRatio)}</span>
+                      <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
                     </span>
                   </p>
                   <p
@@ -222,7 +222,7 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
                   <p className="text-base font-semibold tabular-nums sm:text-lg">
                     <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                       <Frac num="H" den="D" />
-                      <span>= {fmtHundredths(heightRatio)}</span>
+                      <span>= {fmtHundredthsRu(heightRatio)}</span>
                     </span>
                   </p>
                   <p

@@ -15,7 +15,7 @@ import { CalcSection, CalculatorPageHeader, CalculatorPageShell } from "@/compon
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmt, fmtIfSource, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 const CONNECTION_LABELS: Record<FlatHeadConnectionType, string> = {
   1: "Тип 1 — D_R = D, K₀ = 0,53",
@@ -179,7 +179,7 @@ export function FlatCircularHeadCalculator({ handbook }: { handbook: SteelHandbo
         <CalcSection title="Проверка применимости">
           <CalcRow label="(s₁ − c) / D_R ≤ 0,2" variant="check" borderless>
             <span className={cn("text-xl font-semibold tabular-nums", result.applicabilityOk ? "text-[var(--color-emphasis)]" : "text-[var(--color-destructive)]")}>
-              <Frac num={<>s₁ − c</>} den={<Var letter="D" sub="R" />} /> = {fmt(result.thinnessRatio, 3)} {result.applicabilityOk ? "≤" : ">"} 0,2
+              <Frac num={<>s₁ − c</>} den={<Var letter="D" sub="R" />} /> = {fmtRu(result.thinnessRatio, 3)} {result.applicabilityOk ? "≤" : ">"} 0,2
             </span>
           </CalcRow>
         </CalcSection>

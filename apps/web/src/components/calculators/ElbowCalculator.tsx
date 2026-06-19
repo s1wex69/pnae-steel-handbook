@@ -15,7 +15,7 @@ import {
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
 const METHODOLOGY_TITLE =
   "Расчёт толщины стенки колен, гибов и змеевиков, нагруженных внутренним давлением";
@@ -304,7 +304,7 @@ export function ElbowCalculator({ handbook }: { handbook: SteelHandbook }) {
                 <Frac num={<Var letter="R" sub="s" />} den={<Var letter="D" sub="a" />} />
                 <span>≥ 1</span>
                 <Frac num={<Var letter="R" sub="s" />} den={<Var letter="D" sub="a" />} />
-                <span>= {fmtHundredths(result.rsRatio)}</span>
+                <span>= {fmtHundredthsRu(result.rsRatio)}</span>
                 <span
                   className={
                     result.applicabilityOk

@@ -19,7 +19,7 @@ import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmt, fmtIfSource, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 type ResultDrive = "ss" | "pp";
 
@@ -133,7 +133,7 @@ export function PipeCollectorCalculator({ handbook }: { handbook: SteelHandbook 
           <CalcRow label="Предел применимости формулы" variant="check" borderless>
             <span className={cn("inline-flex flex-wrap items-center gap-x-2 text-xl font-semibold tabular-nums", applicability.ok ? "text-[var(--color-emphasis)]" : "text-[var(--color-destructive)]")}>
               <Frac num={<>s − c</>} den={<Var letter="D" sub="a" />} />
-              <span>= {fmt(applicability.ratio, 3)} {applicability.ok ? "≤" : ">"} {applicability.limit}</span>
+              <span>= {fmtRu(applicability.ratio, 3)} {applicability.ok ? "≤" : ">"} {fmtRu(applicability.limit, 2)}</span>
             </span>
           </CalcRow>
         </CalcSection>

@@ -17,7 +17,7 @@ import {
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { cn } from "@/lib/utils";
-import { fmt, fmtIfSource, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 type ResultDrive = "ss" | "pp";
 
@@ -186,9 +186,9 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
               )}
             >
               <Frac num={<>s − c</>} den="D" />
-              <span>= {fmt(applicability.ratio, 4)}</span>
+              <span>= {fmtRu(applicability.ratio, 4)}</span>
               <span>
-                {applicability.ok ? "в пределах" : "вне пределов"} [{fmt(applicability.min, 4)}; {fmt(applicability.max, 2)}]
+                {applicability.ok ? "в пределах" : "вне пределов"} [{fmtRu(applicability.min, 4)}; {fmtRu(applicability.max, 2)}]
               </span>
             </span>
           </CalcRow>

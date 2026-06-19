@@ -22,10 +22,16 @@ export function fmtHundredths(n: number): string {
   return String(Number(n.toFixed(CALC_HUNDREDTHS)));
 }
 
+/** Число с заданным округлением и запятой как десятичным разделителем. */
+export function fmtRu(n: number, digits: number = CALC_HUNDREDTHS): string {
+  if (!Number.isFinite(n)) return "—";
+  const s = digits === CALC_HUNDREDTHS ? fmtHundredths(n) : fmt(n, digits);
+  return s.replace(".", ",");
+}
+
 /** То же, но с запятой как десятичным разделителем (0,07). */
 export function fmtHundredthsRu(n: number): string {
-  const s = fmtHundredths(n);
-  return s === "—" ? s : s.replace(".", ",");
+  return fmtRu(n, CALC_HUNDREDTHS);
 }
 
 export function sumFmt(parts: string[], digits = 1): string {
