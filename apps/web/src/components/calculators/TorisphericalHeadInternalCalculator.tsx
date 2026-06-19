@@ -176,7 +176,7 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
           />
         </CalcSection>
 
-        <CalcSection title="Условия применимости расчетных формул для торосферических днищ" titleAccent={false}>
+        <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
           <div className="grid min-w-0 grid-cols-1 gap-6 sm:col-span-2 xl:grid-cols-2 xl:items-start">
             <div className="flex flex-col gap-2">
               <p className="text-base font-semibold sm:text-lg">

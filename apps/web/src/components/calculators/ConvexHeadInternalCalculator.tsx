@@ -217,14 +217,7 @@ export function ConvexHeadInternalCalculator({
           />
         </CalcSection>
 
-        <CalcSection
-          title={
-            kind === "elliptical"
-              ? "Условия применимости расчетных формул для эллиптических днищ"
-              : "Условия применимости расчетных формул для полусферических днищ"
-          }
-          titleAccent={false}
-        >
+        <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
           {kind === "elliptical" ? (
             <div className="grid min-w-0 grid-cols-1 gap-6 sm:col-span-2 xl:grid-cols-2 xl:items-start">
               <div className="flex flex-col gap-2">
