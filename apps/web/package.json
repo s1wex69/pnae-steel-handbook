@@ -10,6 +10,9 @@
     "build:tilda": "node ../../scripts/build-tilda-export.mjs",
     "build:tilda-calc-internal": "node ../../scripts/build-tilda-export.mjs 02-kalkulyator-vnutrennee-davlenie",
     "build:tilda-calc-external": "node ../../scripts/build-tilda-export.mjs 03-kalkulyator-naruzhnoe-davlenie",
+    "build:tilda-calc-hemispherical": "node ../../scripts/build-tilda-export.mjs 04-kalkulyator-polusfericheskoe-dnishche",
+    "build:tilda-calc-elliptical": "node ../../scripts/build-tilda-export.mjs 05-kalkulyator-ellipticheskoe-dnishche",
+    "build:tilda-calc-torispherical": "node ../../scripts/build-tilda-export.mjs 06-kalkulyator-torosfericheskoe-dnishche",
     "build:tilda-t123": "node ../../scripts/build-tilda-t123.mjs",
     "preview": "vite preview"
   },

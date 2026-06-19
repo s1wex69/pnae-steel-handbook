@@ -22,7 +22,7 @@ export function CalcSymbol({
   className?: string;
 }) {
   return (
-    <MathSpan className={cn("text-[var(--color-heading)]", className)}>
+    <MathSpan className={cn("text-xl font-semibold text-[var(--color-heading)]", className)}>
       {children}
     </MathSpan>
   );

@@ -3,9 +3,15 @@
   "01-spravochnik": "https://s1wex69.github.io/pnae-steel-handbook/pnae/",
   "02-kalkulyator-vnutrennee-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc1/",
   "03-kalkulyator-naruzhnoe-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc2/",
+  "04-kalkulyator-polusfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc3/",
+  "05-kalkulyator-ellipticheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc4/",
+  "06-kalkulyator-torosfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc5/",
   "paths": {
     "01-spravochnik": "pnae",
     "02-kalkulyator-vnutrennee-davlenie": "calc1",
-    "03-kalkulyator-naruzhnoe-davlenie": "calc2"
+    "03-kalkulyator-naruzhnoe-davlenie": "calc2",
+    "04-kalkulyator-polusfericheskoe-dnishche": "calc3",
+    "05-kalkulyator-ellipticheskoe-dnishche": "calc4",
+    "06-kalkulyator-torosfericheskoe-dnishche": "calc5"
   }
 }

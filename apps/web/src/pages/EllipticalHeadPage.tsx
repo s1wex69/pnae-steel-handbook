@@ -1,10 +1,10 @@
 import { ConvexHeadInternalCalculator } from "@/components/calculators/ConvexHeadInternalCalculator";
 import { CalculatorHandbookPage } from "@/pages/CalculatorHandbookPage";
 
-export function HemisphericalHeadPage() {
+export function EllipticalHeadPage() {
   return (
     <CalculatorHandbookPage>
-      {(handbook) => <ConvexHeadInternalCalculator handbook={handbook} kind="hemispherical" />}
+      {(handbook) => <ConvexHeadInternalCalculator handbook={handbook} kind="elliptical" />}
     </CalculatorHandbookPage>
   );
 }

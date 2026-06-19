@@ -106,7 +106,7 @@ export function PipeCollectorCalculator({ handbook }: { handbook: SteelHandbook 
 
         <CalcSection title="Исходные данные">
           <CalcRow label="Номинальный наружный диаметр D_a" symbol={<Var letter="D" sub="a" />} value={Da} onChange={setDa} unit="мм" />
-          <CalcRow label="Расчётное давление" symbol="p" value={displayP} onFocus={() => setDrive("p")} onChange={(v) => { setDrive("p"); setP(v); }} unit="МПа" />
+          <CalcRow label="Расчётное внутреннее избыточное давление" symbol="p" value={displayP} onFocus={() => setDrive("p")} onChange={(v) => { setDrive("p"); setP(v); }} unit="МПа" />
           <CalcRow
             label="Допускаемое напряжение"
             labelExtra={
@@ -119,7 +119,7 @@ export function PipeCollectorCalculator({ handbook }: { handbook: SteelHandbook 
             onChange={setSigmaStr}
             unit="МПа"
           />
-          <CalcRow label="Температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
+          <CalcRow label="Расчётная температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
           <CalcRow label="Коэффициент снижения прочности" symbol={<Var letter="φ" />} value={phiP} onChange={setPhiP} />
           <CalcRow label="Расчётная толщина стенки" symbol={<Var letter="s" sub="R" />} value={displaySp} onFocus={() => setDrive("sp")} onChange={(v) => { setDrive("sp"); setSp(v); }} unit="мм" borderless />
         </CalcSection>

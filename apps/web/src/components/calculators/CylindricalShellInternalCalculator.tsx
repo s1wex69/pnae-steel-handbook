@@ -11,6 +11,7 @@ import {
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_RESULT_SP_SYMBOL,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
@@ -69,8 +70,7 @@ export function CylindricalShellInternalCalculator({
   return (
     <CalculatorPageShell>
       <CalculatorPageHeader
-        title="Расчёт на прочность цилиндрической обечайки при внутреннем избыточном давлении"
-        standard="по ГОСТ 34233.2-2017"
+        title="Расчёт на прочность цилиндрической обечайки, нагруженной внутренним избыточным давлением"
       />
 
       <section className="space-y-8">
@@ -106,7 +106,26 @@ export function CylindricalShellInternalCalculator({
             />
             <CalcRow
               inColumn
-              label="Допускаемое напряжение при расчётной температуре"
+              label="Расчётная температура"
+              symbol="T"
+              value={sigmaTemp}
+              onChange={setSigmaTemp}
+              unit="°C"
+            />
+            <CalcRow
+              inColumn
+              label="Коэффициент прочности продольного сварного шва"
+              symbol={<Var letter="φ" sub="p" />}
+              value={phiP}
+              onChange={setPhiP}
+              borderless
+            />
+          </div>
+          <div className="min-w-0">
+            <CalcRow
+              inColumn
+              inlineLabelExtra
+              label="Допускаемое напряжение"
               labelExtra={
                 <div className="mt-1.5">
                   <AllowableStressFromHandbook
@@ -130,24 +149,6 @@ export function CylindricalShellInternalCalculator({
               borderless
             />
           </div>
-          <div className="min-w-0">
-            <CalcRow
-              inColumn
-              label="Температура"
-              symbol="T"
-              value={sigmaTemp}
-              onChange={setSigmaTemp}
-              unit="°C"
-            />
-            <CalcRow
-              inColumn
-              label="Коэффициент прочности продольного сварного шва"
-              symbol={<Var letter="φ" sub="p" />}
-              value={phiP}
-              onChange={setPhiP}
-              borderless
-            />
-          </div>
         </CalcSection>
 
         <CalcSection title="Результаты расчёта" titleAccent={false}>
@@ -155,7 +156,7 @@ export function CylindricalShellInternalCalculator({
             variant="result"
             disabled
             label="Расчётная толщина стенки цилиндрической обечайки"
-            symbol={<CalcSymbol>s</CalcSymbol>}
+            symbol={CALC_RESULT_SP_SYMBOL}
             value={displaySp}
             unit="мм"
           />
@@ -163,7 +164,7 @@ export function CylindricalShellInternalCalculator({
             variant="result"
             disabled
             label="Исполнительная толщина стенки цилиндрической обечайки"
-            symbol={<CalcSymbol>s</CalcSymbol>}
+            symbol={<CalcSymbol className="!text-2xl">s</CalcSymbol>}
             value={displaySs}
             unit="мм"
             borderless
@@ -172,21 +173,29 @@ export function CylindricalShellInternalCalculator({
 
         <CalcSection title="Условие применения расчётных формул" titleAccent={false}>
           <div className="sm:col-span-2">
-            <span
-              className={cn(
-                "inline-flex flex-wrap items-center gap-x-2 text-xl font-semibold tabular-nums",
-                applicability.ok
-                  ? "text-[var(--color-emphasis)]"
-                  : "text-[var(--color-destructive)]"
-              )}
-            >
-              <Frac num={<>s − c</>} den="D" />
-              <span>= {fmtHundredths(applicability.ratio)}</span>
-              <span>
-                {applicability.ok ? "≤" : ">"} {applicability.limit} —{" "}
-                {applicability.ok ? "выполнено" : "не выполнено"}
+            <p className="text-base font-semibold sm:text-lg">
+              <span
+                className={cn(
+                  "inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 tabular-nums"
+                )}
+              >
+                <Frac num={<>s − c</>} den="D" />
+                <span>
+                  {applicability.ok ? "≤" : ">"} {fmtHundredths(applicability.limit)}
+                </span>
+                <Frac num={<>s − c</>} den="D" />
+                <span>= {fmtHundredths(applicability.ratio)}</span>
+                <span
+                  className={
+                    applicability.ok
+                      ? "text-[var(--color-emphasis)]"
+                      : "text-[var(--color-destructive)]"
+                  }
+                >
+                  {applicability.ok ? "Выполнено" : "Не выполнено"}
+                </span>
               </span>
-            </span>
+            </p>
           </div>
         </CalcSection>
       </section>

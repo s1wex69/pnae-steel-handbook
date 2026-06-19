@@ -114,7 +114,7 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
         <CalcSection title="Исходные данные">
           <CalcRow label="Номинальный внутренний диаметр днища в месте стыка с обечайкой" symbol="D" value={D} onChange={setD} unit="мм" />
           <CalcRow
-            label="Расчётное давление"
+            label="Расчётное внутреннее избыточное давление"
             symbol="p"
             value={displayP}
             onFocus={activateP}
@@ -144,7 +144,7 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
             onChange={setSigmaStr}
             unit="МПа"
           />
-          <CalcRow label="Температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
+          <CalcRow label="Расчётная температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
           <CalcRow label="Коэффициент снижения прочности" symbol={<Var letter="φ" />} value={phiP} onChange={setPhiP} />
           <CalcRow
             label="Расчётная толщина стенки днища"

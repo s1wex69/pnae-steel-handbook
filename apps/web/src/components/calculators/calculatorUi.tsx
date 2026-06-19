@@ -1,19 +1,41 @@
 import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { Var } from "@/components/handbooks/MathNotation";
 import { cn } from "@/lib/utils";
 
-export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_11rem]";
+export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_minmax(10.5rem,14rem)]";
+export const CALC_ROW_GRID_IN_COLUMN =
+  "grid-cols-1 gap-y-2 xl:grid-cols-[minmax(0,1fr)_minmax(10.5rem,14rem)] xl:items-start xl:gap-y-0";
+
 export const CALC_VALUE_GRID =
-  "grid w-full max-w-[11rem] grid-cols-[2.75rem_5.5rem_2rem] items-center justify-self-end gap-x-1.5";
+  "grid w-full min-w-0 max-w-[14rem] grid-cols-[minmax(2.25rem,auto)_minmax(5.5rem,1fr)_minmax(2rem,auto)] items-center justify-self-end gap-x-1.5";
+
+export const CALC_VALUE_GRID_WIDE =
+  "grid w-full min-w-0 max-w-[min(100%,22rem)] grid-cols-[minmax(2.25rem,auto)_minmax(8rem,1fr)_minmax(2rem,auto)] items-center justify-self-end gap-x-1.5";
+
+export const CALC_VALUE_GRID_NO_SYMBOL =
+  "grid w-full min-w-0 max-w-[min(100%,22rem)] grid-cols-[minmax(0,1fr)_minmax(2rem,auto)] items-center justify-self-end gap-x-1.5 sm:col-start-2";
+
+export const CALC_SYMBOL_CLASS =
+  "min-w-0 shrink-0 justify-self-end text-right text-xl font-semibold text-[var(--color-heading)]";
 
 export const calcInputClass =
-  "calc-input box-border h-9 w-full min-w-0 max-w-[5.5rem] text-right text-base tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
+  "calc-input box-border h-9 w-full min-w-0 text-right text-base tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
 
 export const calcResultBoxClass =
-  "flex h-9 w-full min-w-0 max-w-[5.5rem] items-center justify-end rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-base tabular-nums text-[var(--color-foreground)]";
+  "flex h-9 w-full min-w-0 items-center justify-end overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-base tabular-nums whitespace-nowrap text-[var(--color-foreground)]";
 
 export const CALC_SECTION_CARD =
   "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)] sm:p-8";
+
+export const CALC_SECTION_TITLE =
+  "text-xl font-bold leading-snug text-[var(--color-heading)] sm:text-2xl";
+
+export const CALC_PAGE_TITLE =
+  "text-balance text-2xl font-bold leading-snug text-[var(--color-heading)] sm:text-3xl";
+
+/** s_p — расчётная толщина в результатах */
+export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-2xl" />;
 
 export function CalculatorPageShell({ children }: { children: ReactNode }) {
   return <div className="pnae-section-gap min-w-0 max-w-full">{children}</div>;
@@ -41,7 +63,7 @@ export function CalculatorPageHeader({
         {eyebrow ? (
           <p className="text-base font-medium text-[var(--color-muted-foreground)]">{eyebrow}</p>
         ) : null}
-        <h1 className="font-heading text-2xl font-bold leading-snug text-[var(--color-heading)] sm:text-3xl">
+        <h1 className={CALC_PAGE_TITLE}>
           {title}
           {standard ? <> {standard}</> : null}
         </h1>
@@ -56,7 +78,7 @@ export function CalculatorPageHeader({
 export function CalcSectionHeading({
   title,
   action,
-  accent = true,
+  accent = false,
 }: {
   title: string;
   action?: ReactNode;
@@ -69,7 +91,7 @@ export function CalcSectionHeading({
         accent && "border-l-4 border-[var(--color-primary)] pl-4"
       )}
     >
-      <h2 className="text-xl font-bold text-[var(--color-heading)] sm:text-2xl">{title}</h2>
+      <h2 className={CALC_SECTION_TITLE}>{title}</h2>
       {action}
     </div>
   );
@@ -82,7 +104,7 @@ export function CalcSection({
   collapsible = false,
   expanded = false,
   onToggle,
-  titleAccent = true,
+  titleAccent = false,
   className,
   twoColumns = false,
 }: {
@@ -122,9 +144,11 @@ export function CalcSection({
       <CalcSectionHeading title={title} action={toggleButton} accent={titleAccent} />
       {(!collapsible || expanded) &&
         (twoColumns ? (
-          <div className="grid grid-cols-1 gap-x-8 gap-y-0 xl:grid-cols-2">{children}</div>
+          <div className="grid min-w-0 grid-cols-1 gap-x-8 gap-y-0 xl:grid-cols-2 xl:items-start">
+            {children}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_11rem] sm:gap-x-6">
+          <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_12rem] sm:gap-x-6">
             {collapsible && expanded && details ? (
               <>
                 <div className="contents">{details}</div>

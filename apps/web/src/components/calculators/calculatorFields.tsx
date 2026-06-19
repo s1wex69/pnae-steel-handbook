@@ -4,14 +4,18 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   CALC_ROW_GRID,
+  CALC_ROW_GRID_IN_COLUMN,
   CALC_VALUE_GRID,
+  CALC_VALUE_GRID_NO_SYMBOL,
+  CALC_VALUE_GRID_WIDE,
   CALC_SECTION_CARD,
+  CALC_SYMBOL_CLASS,
   CalcSection,
   CalcSectionHeading,
   calcInputClass,
   calcResultBoxClass,
 } from "@/components/calculators/calculatorUi";
-import { CalcSymbol } from "@/components/handbooks/MathNotation";
+import { CalcSymbol, Var } from "@/components/handbooks/MathNotation";
 
 type RowVariant = "default" | "check" | "result";
 type RowLayout = "inline" | "stacked";
@@ -43,8 +47,11 @@ export function CalcRow({
   onFocus,
   disabled,
   wide,
+  wideValue = false,
   borderless,
   inColumn = false,
+  /** Подпись и поле ввода в одной строке; labelExtra — только под текстом слева */
+  inlineLabelExtra = false,
   children,
 }: {
   label: string;
@@ -58,22 +65,37 @@ export function CalcRow({
   onFocus?: () => void;
   disabled?: boolean;
   wide?: boolean;
+  /** Широкая ячейка значения (несколько чисел, длинный результат) */
+  wideValue?: boolean;
   borderless?: boolean;
   inColumn?: boolean;
+  inlineLabelExtra?: boolean;
   children?: ReactNode;
 }) {
   const isCheck = variant === "check";
   const isResult = variant === "result";
-  const isStacked = layout === "stacked" && !isCheck;
+  const hasSymbol = symbol != null && symbol !== "";
+  const forceStacked = layout === "stacked" || (Boolean(labelExtra) && !inlineLabelExtra);
+  const isStacked = (forceStacked && !isCheck) || (inColumn && Boolean(labelExtra) && !inlineLabelExtra);
 
-  const symbolClass = "justify-self-end text-right text-base font-medium text-[var(--color-heading)]";
-  const unitClass = "text-base text-[var(--color-muted-foreground)]";
+  const symbolClass = CALC_SYMBOL_CLASS;
+  const unitClass = "shrink-0 text-base text-[var(--color-muted-foreground)]";
+
+  const valueGridClass = cn(
+    !hasSymbol
+      ? CALC_VALUE_GRID_NO_SYMBOL
+      : wideValue
+        ? CALC_VALUE_GRID_WIDE
+        : CALC_VALUE_GRID,
+    isCheck && "mt-1",
+    isStacked && "justify-self-stretch xl:justify-self-end"
+  );
 
   const valueBlock = children ? (
-    <div className={cn(isCheck ? "mt-2 justify-self-start" : "justify-self-end")}>{children}</div>
+    <div className={cn(isCheck ? "mt-2 justify-self-start" : "min-w-0 justify-self-end")}>{children}</div>
   ) : (
-    <div className={cn(CALC_VALUE_GRID, isCheck && "mt-1")}>
-      {symbol ? <span className={symbolClass}>{symbol}</span> : <span />}
+    <div className={valueGridClass}>
+      {hasSymbol ? <span className={symbolClass}>{symbol}</span> : null}
       {isResult && disabled ? (
         <ResultValue value={value ?? "—"} unit={unit} />
       ) : (
@@ -93,35 +115,42 @@ export function CalcRow({
     </div>
   );
 
+  const labelBlock = (
+    <div
+      className={cn(
+        "min-w-0 text-lg leading-snug text-[var(--color-foreground)] [overflow-wrap:anywhere]",
+        isCheck && "font-medium text-[var(--color-heading)]"
+      )}
+    >
+      {label ? <div>{label}</div> : null}
+      {labelExtra}
+    </div>
+  );
+
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-x-6 py-3",
+        "grid grid-cols-1 gap-x-4 py-3",
         inColumn
-          ? cn(CALC_ROW_GRID, "sm:items-center")
+          ? cn(
+              CALC_ROW_GRID_IN_COLUMN,
+              !isStacked && (inlineLabelExtra ? "xl:items-start" : "xl:items-center")
+            )
           : wide || isCheck
             ? "sm:col-span-2"
             : cn(CALC_ROW_GRID, "sm:col-span-2 sm:grid-cols-subgrid"),
-        !inColumn && "sm:items-center",
+        !inColumn && !isStacked && "sm:items-center",
         !borderless && !isCheck && "border-b border-[var(--color-border)]/50 last:border-b-0"
       )}
     >
       {isStacked ? (
-        <div className="space-y-1.5 sm:col-span-2">
-          <div className="text-lg leading-snug text-[var(--color-foreground)]">{label}</div>
+        <div className="space-y-2 sm:col-span-2">
+          {labelBlock}
           {valueBlock}
         </div>
       ) : (
         <>
-          <div
-            className={cn(
-              "min-w-0 text-lg leading-snug text-[var(--color-foreground)]",
-              isCheck && "font-medium text-[var(--color-heading)]"
-            )}
-          >
-            {label ? <div>{label}</div> : null}
-            {labelExtra}
-          </div>
+          {labelBlock}
           {!isCheck && valueBlock}
           {isCheck && valueBlock}
         </>
@@ -140,7 +169,7 @@ export function AllowancesCalcSection({
   onC3,
   onCc,
   ccSymbol = <CalcSymbol>c</CalcSymbol>,
-  collapsible = false,
+  collapsible = true,
   defaultExpanded = true,
 }: {
   c1: string;
@@ -185,27 +214,27 @@ export function AllowancesCalcSection({
           action={toggleButton}
           accent={false}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_11rem] sm:gap-x-6">
+        <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
           <div className="contents">
             {expanded ? (
               <>
                 <CalcRow
                   label="Прибавка для компенсации коррозии и эрозии"
-                  symbol={<CalcSymbol>c1</CalcSymbol>}
+                  symbol={<Var letter="c" sub="1" />}
                   value={c1}
                   onChange={onC1}
                   unit="мм"
                 />
                 <CalcRow
                   label="Прибавка для компенсации минусового допуска"
-                  symbol={<CalcSymbol>c2</CalcSymbol>}
+                  symbol={<Var letter="c" sub="2" />}
                   value={c2}
                   onChange={onC2}
                   unit="мм"
                 />
                 <CalcRow
                   label="Сумма технологических прибавок"
-                  symbol={<CalcSymbol>c3</CalcSymbol>}
+                  symbol={<Var letter="c" sub="3" />}
                   value={c3}
                   onChange={onC3}
                   unit="мм"
@@ -228,9 +257,9 @@ export function AllowancesCalcSection({
 
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
-      <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<CalcSymbol>c1</CalcSymbol>} value={c1} onChange={onC1} unit="мм" />
-      <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<CalcSymbol>c2</CalcSymbol>} value={c2} onChange={onC2} unit="мм" />
-      <CalcRow label="Сумма технологических прибавок" symbol={<CalcSymbol>c3</CalcSymbol>} value={c3} onChange={onC3} unit="мм" />
+      <CalcRow label="Прибавка для компенсации коррозии и эрозии" symbol={<Var letter="c" sub="1" />} value={c1} onChange={onC1} unit="мм" />
+      <CalcRow label="Прибавка для компенсации минусового допуска" symbol={<Var letter="c" sub="2" />} value={c2} onChange={onC2} unit="мм" />
+      <CalcRow label="Сумма технологических прибавок" symbol={<Var letter="c" sub="3" />} value={c3} onChange={onC3} unit="мм" />
       <CalcRow
         label="Сумма прибавок к расчётным толщинам стенок"
         symbol={ccSymbol}

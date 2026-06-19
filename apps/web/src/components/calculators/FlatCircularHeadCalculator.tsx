@@ -151,7 +151,7 @@ export function FlatCircularHeadCalculator({ handbook }: { handbook: SteelHandbo
               <CalcRow label="[σ] обечайки" symbol={<AllowSigma />} value={sigmaShellStr} onChange={setSigmaShellStr} unit="МПа" />
             </>
           ) : null}
-          <CalcRow label="Расчётное давление" symbol="p" value={displayP} onFocus={() => setDrive("p")} onChange={(v) => { setDrive("p"); setP(v); }} unit="МПа" />
+          <CalcRow label="Расчётное внутреннее избыточное давление" symbol="p" value={displayP} onFocus={() => setDrive("p")} onChange={(v) => { setDrive("p"); setP(v); }} unit="МПа" />
           <CalcRow
             label="[σ] материала днища / крышки"
             labelExtra={<div className="mt-1.5"><AllowableStressFromHandbook handbook={handbook} value={sigmaHeadStr} onChange={(n) => setSigmaHeadStr(String(n))} embedded pickersOnly stacked collapsibleSteelPickers externalTemperature temperature={sigmaTemp} onTemperatureChange={setSigmaTemp} /></div>}
@@ -160,7 +160,7 @@ export function FlatCircularHeadCalculator({ handbook }: { handbook: SteelHandbo
             onChange={setSigmaHeadStr}
             unit="МПа"
           />
-          <CalcRow label="Температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
+          <CalcRow label="Расчётная температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
           <CalcRow label="Коэффициент снижения прочности" symbol={<Var letter="φ" />} value={phiP} onChange={setPhiP} />
           <CalcRow label="Расчётная толщина s₁R" symbol={<Var letter="s" sub="1R" />} value={displaySp} onFocus={() => setDrive("sp")} onChange={(v) => { setDrive("sp"); setSp(v); }} unit="мм" borderless />
         </CalcSection>

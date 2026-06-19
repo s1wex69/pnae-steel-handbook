@@ -18,6 +18,9 @@ const NETLIFY_URLS = {
   "01-spravochnik": "https://intech-pnae.netlify.app/",
   "02-kalkulyator-vnutrennee-davlenie": "https://intech-calc1.netlify.app/",
   "03-kalkulyator-naruzhnoe-davlenie": "https://intech-calc2.netlify.app/",
+  "04-kalkulyator-polusfericheskoe-dnishche": "https://intech-calc3.netlify.app/",
+  "05-kalkulyator-ellipticheskoe-dnishche": "https://intech-calc4.netlify.app/",
+  "06-kalkulyator-torosfericheskoe-dnishche": "https://intech-calc5.netlify.app/",
 };
 
 const useNetlify = process.argv.includes("--netlify") || process.env.TILDA_IFRAME_HOST === "netlify";
@@ -32,12 +35,18 @@ const GITLAB_URLS = {
   "01-spravochnik": "https://USERNAME.gitlab.io/PROJECT/pnae/",
   "02-kalkulyator-vnutrennee-davlenie": "https://USERNAME.gitlab.io/PROJECT/calc1/",
   "03-kalkulyator-naruzhnoe-davlenie": "https://USERNAME.gitlab.io/PROJECT/calc2/",
+  "04-kalkulyator-polusfericheskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc3/",
+  "05-kalkulyator-ellipticheskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc4/",
+  "06-kalkulyator-torosfericheskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc5/",
 };
 
 const GITHUB_URLS = {
   "01-spravochnik": "https://s1wex69.github.io/pnae-steel-handbook/pnae/",
   "02-kalkulyator-vnutrennee-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc1/",
   "03-kalkulyator-naruzhnoe-davlenie": "https://s1wex69.github.io/pnae-steel-handbook/calc2/",
+  "04-kalkulyator-polusfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc3/",
+  "05-kalkulyator-ellipticheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc4/",
+  "06-kalkulyator-torosfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc5/",
 };
 
 function loadUrlsFromFile(filePath, defaults, placeholders) {
@@ -121,6 +130,30 @@ const projects = [
     title: "Калькулятор — наружное давление",
     iframeTitle: "Калькулятор — наружное давление",
     embedSiteUrl: "https://intech-atom.ru/calc2",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "04-kalkulyator-polusfericheskoe-dnishche",
+    input: "tilda-calc-hemispherical.html",
+    title: "Калькулятор — полусферическое днище",
+    iframeTitle: "Калькулятор — полусферическое днище",
+    embedSiteUrl: "https://intech-atom.ru/calc3",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "05-kalkulyator-ellipticheskoe-dnishche",
+    input: "tilda-calc-elliptical.html",
+    title: "Калькулятор — эллиптическое днище",
+    iframeTitle: "Калькулятор — эллиптическое днище",
+    embedSiteUrl: "https://intech-atom.ru/calc4",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "06-kalkulyator-torosfericheskoe-dnishche",
+    input: "tilda-calc-torispherical.html",
+    title: "Калькулятор — торосферическое днище",
+    iframeTitle: "Калькулятор — торосферическое днище",
+    embedSiteUrl: "https://intech-atom.ru/calc5",
     embedSiteName: "ИНТЕХ-АТОМ",
   },
 ].map((p) => ({ ...p, iframeSrc: iframeUrls[p.id] }));

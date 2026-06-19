@@ -15,6 +15,7 @@ import {
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_RESULT_SP_SYMBOL,
   calcInputClass,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
@@ -49,7 +50,7 @@ function CalcRow({
 }) {
   const isResult = variant === "result";
   const symbolClass = cn(
-    "justify-self-end text-right text-base font-medium",
+    "justify-self-end text-right text-xl font-semibold",
     isResult ? "text-[var(--color-primary)]" : "text-[var(--color-heading)]"
   );
   const unitClass = cn(
@@ -210,7 +211,7 @@ export function CylindricalShellExternalCalculator({
     <CalculatorPageShell>
       <CalculatorPageHeader
         eyebrow="Калькулятор · ПНАЭ Г-7-002-86"
-        title="Расчёт на прочность цилиндрической обечайки при действии наружного избыточного давления"
+        title="Расчёт на прочность цилиндрической обечайки, нагруженной наружным избыточным давлением"
       />
 
       <section className="space-y-8">
@@ -229,7 +230,7 @@ export function CylindricalShellExternalCalculator({
           <CalcSection title="Исходные данные">
             <CalcRow label="Внутренний диаметр сосуда или аппарата" symbol="D" value={D} onChange={setD} unit="мм" />
             <CalcRow
-              label="Расчётное избыточное наружное давление"
+              label="Расчётное наружное избыточное давление"
               symbol="p"
               value={displayP}
               onFocus={activateP}
@@ -262,7 +263,7 @@ export function CylindricalShellExternalCalculator({
               onChange={setSigmaStr}
               unit="МПа"
             />
-            <CalcRow label="Температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
+            <CalcRow label="Расчётная температура" symbol="T" value={sigmaTemp} onChange={setSigmaTemp} unit="°C" />
             <CalcRow
               label="Модуль продольной упругости при расчётной температуре"
               symbol="E"
@@ -290,7 +291,7 @@ export function CylindricalShellExternalCalculator({
             <CalcRow
               variant="result"
               label="Расчётная толщина стенки цилиндрической обечайки"
-              symbol="s"
+              symbol={CALC_RESULT_SP_SYMBOL}
               value={displaySp}
               onFocus={activateSp}
               onChange={(v) => {
@@ -313,7 +314,7 @@ export function CylindricalShellExternalCalculator({
             />
             <CalcRow
               variant="result"
-              label="Допускаемое избыточное наружное давление"
+              label="Допускаемое наружное избыточное давление"
               symbol="p"
               value={displayPp}
               onFocus={activatePp}

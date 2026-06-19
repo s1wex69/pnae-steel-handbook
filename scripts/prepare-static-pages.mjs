@@ -21,12 +21,18 @@ const PROJECT_IDS = [
   "01-spravochnik",
   "02-kalkulyator-vnutrennee-davlenie",
   "03-kalkulyator-naruzhnoe-davlenie",
+  "04-kalkulyator-polusfericheskoe-dnishche",
+  "05-kalkulyator-ellipticheskoe-dnishche",
+  "06-kalkulyator-torosfericheskoe-dnishche",
 ];
 
 const DEFAULT_PATHS = {
   "01-spravochnik": "pnae",
   "02-kalkulyator-vnutrennee-davlenie": "calc1",
   "03-kalkulyator-naruzhnoe-davlenie": "calc2",
+  "04-kalkulyator-polusfericheskoe-dnishche": "calc3",
+  "05-kalkulyator-ellipticheskoe-dnishche": "calc4",
+  "06-kalkulyator-torosfericheskoe-dnishche": "calc5",
 };
 
 const SKIP_FILES = new Set(["TILDA-ВСТАВКА.html", "README.txt"]);
@@ -96,8 +102,11 @@ const indexHtml = `<!DOCTYPE html>
     <p class="note">Справочник и калькуляторы работают только во встроенном окне на intech-atom.ru.</p>
     <ul>
       <li><a href="./${paths["01-spravochnik"]}/">Справочник ПНАЭ</a></li>
-      <li><a href="./${paths["02-kalkulyator-vnutrennee-davlenie"]}/">Калькулятор — внутреннее давление</a></li>
-      <li><a href="./${paths["03-kalkulyator-naruzhnoe-davlenie"]}/">Калькулятор — наружное давление</a></li>
+      <li><a href="./${paths["02-kalkulyator-vnutrennee-davlenie"]}/">Калькулятор — внутреннее давление (обечайка)</a></li>
+      <li><a href="./${paths["03-kalkulyator-naruzhnoe-davlenie"]}/">Калькулятор — наружное давление (обечайка)</a></li>
+      <li><a href="./${paths["04-kalkulyator-polusfericheskoe-dnishche"]}/">Калькулятор — полусферическое днище</a></li>
+      <li><a href="./${paths["05-kalkulyator-ellipticheskoe-dnishche"]}/">Калькулятор — эллиптическое днище</a></li>
+      <li><a href="./${paths["06-kalkulyator-torosfericheskoe-dnishche"]}/">Калькулятор — торосферическое днище</a></li>
     </ul>
   </body>
 </html>

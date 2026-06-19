@@ -7,6 +7,8 @@ import { PnaeCalculatorsPage } from "@/pages/PnaeCalculatorsPage";
 import { CylindricalShellInternalPage } from "@/pages/CylindricalShellInternalPage";
 import { CylindricalShellExternalPage } from "@/pages/CylindricalShellExternalPage";
 import { HemisphericalHeadPage } from "@/pages/HemisphericalHeadPage";
+import { EllipticalHeadPage } from "@/pages/EllipticalHeadPage";
+import { TorisphericalHeadPage } from "@/pages/TorisphericalHeadPage";
 import { PipeCollectorPage } from "@/pages/PipeCollectorPage";
 import { ElbowPage } from "@/pages/ElbowPage";
 import { FlatCircularHeadPage } from "@/pages/FlatCircularHeadPage";
@@ -28,6 +30,8 @@ export default function App() {
               <Route path="calculators/cylindrical-shell-internal" element={<CylindricalShellInternalPage />} />
               <Route path="calculators/cylindrical-shell-external" element={<CylindricalShellExternalPage />} />
               <Route path="calculators/hemispherical-head" element={<HemisphericalHeadPage />} />
+              <Route path="calculators/elliptical-head" element={<EllipticalHeadPage />} />
+              <Route path="calculators/torispherical-head" element={<TorisphericalHeadPage />} />
               <Route path="calculators/pipe-collector" element={<PipeCollectorPage />} />
               <Route path="calculators/elbow" element={<ElbowPage />} />
               <Route path="calculators/flat-circular-head" element={<FlatCircularHeadPage />} />

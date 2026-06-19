@@ -37,6 +37,7 @@ interface Props {
   externalTemperature?: boolean;
   temperature?: string;
   onTemperatureChange?: (t: string) => void;
+  onSteelCategoryChange?: (categoryId: string | null) => void;
 }
 function StandardToggle({
   standard,
@@ -107,6 +108,7 @@ export function AllowableStressFromHandbook({
   externalTemperature = false,
   temperature: temperatureProp,
   onTemperatureChange,
+  onSteelCategoryChange,
 }: Props) {
   const [standard, setStandard] = useState<SigmaStandard>("pnae");
   const [steelExpanded, setSteelExpanded] = useState(!collapsibleSteelPickers);
@@ -149,6 +151,10 @@ export function AllowableStressFromHandbook({
     });
     return allow?.sigma ?? null;
   }, [handbook, standard, hasSteelSelection, group, activeMark, sortament, temperature]);
+
+  useEffect(() => {
+    onSteelCategoryChange?.(categoryId || null);
+  }, [categoryId, onSteelCategoryChange]);
 
   useEffect(() => {
     if (standard !== "pnae" || handbookSigma == null) return;

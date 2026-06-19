@@ -1,4 +1,4 @@
-/** Расчёт колена (ПНАЭ / ИН № 8) */
+/** Расчёт толщины стенки колена (ИН № 8; Mathcad «Стенка колена») */
 
 import {
   type ShellAllowances,
@@ -14,19 +14,25 @@ const TEMP_LIMITS: Record<ElbowSteelClass, { low: number; high: number }> = {
   austenitic: { low: 450, high: 525 },
 };
 
+export function elbowSteelClassFromCategory(categoryId: string | null): ElbowSteelClass {
+  if (categoryId === "pearlitic_crmo") return "crmov";
+  if (categoryId === "austenitic" || categoryId === "high_chrome" || categoryId === "fe_ni") {
+    return "austenitic";
+  }
+  return "carbon";
+}
+
 export interface ElbowInputs {
   Da: number;
   Rs: number;
+  daMax: number;
+  daMin: number;
   sigma: number;
   phiP: number;
   p: number;
   sp: number;
   temperatureC: number;
   steelClass: ElbowSteelClass;
-  /** Овальность поперечного сечения, % */
-  ovalityA: number;
-  /** Радиус закругления внутренней поверхности, мм (0 — если не задан) */
-  filletR: number;
   allowances: ShellAllowances;
   solveFor: ShellSolveTarget;
 }
@@ -39,6 +45,7 @@ export interface ElbowCoefficients {
   Y2: number;
   Y3: number;
   K: number;
+  a: number;
   b: number;
   q: number;
 }
@@ -68,6 +75,12 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
+export function calcOvalityPercent(daMax: number, daMin: number): number {
+  const sum = daMax + daMin;
+  if (!(sum > 0)) return 0;
+  return (2 * (daMax - daMin)) / sum * 100;
+}
+
 export function calcToroidalCoefficients(Rs: number, Da: number) {
   const K1 = (4 * Rs + Da) / (4 * Rs + 2 * Da);
   const K2 = (4 * Rs - Da) / (4 * Rs - 2 * Da);
@@ -75,31 +88,51 @@ export function calcToroidalCoefficients(Rs: number, Da: number) {
   return { K1, K2, K3 };
 }
 
+export function calcB(p: number, sigma: number): number {
+  const denom = 2 * sigma + p;
+  if (!(denom > 0)) return 0;
+  return p / denom;
+}
+
+export function calcQ(b: number, Rs: number, Da: number): number {
+  if (!(Rs > 0) || !(Da > 0)) return 0;
+  const raw = 2 * b * (Rs / Da) + 0.5;
+  return raw > 1 ? 1 : raw;
+}
+
+function calcShapeAtLowTemp(a: number, b: number, q: number) {
+  const ratio = b > 0 ? a / b : 0;
+  const Y1 = clampMin1(0.12 * (1 + Math.sqrt(1 + 0.4 * ratio * q)));
+  const Y3 = clampMin1(0.12 * (1 + Math.sqrt(1 + 0.4 * ratio)));
+  return { Y1, Y2: Y1, Y3 };
+}
+
+function calcShapeAtHighTemp(a: number, b: number, q: number) {
+  const ratio = b > 0 ? a / b : 0;
+  const Y1 = clampMin1(0.4 * (1 + Math.sqrt(1 + 0.015 * ratio * q)));
+  const Y3 = clampMin1(0.4 * (1 + Math.sqrt(1 + 0.015 * ratio)));
+  return { Y1, Y2: Y1, Y3 };
+}
+
 export function calcShapeCoefficients(
-  Rs: number,
-  Da: number,
-  temperatureC: number,
-  steelClass: ElbowSteelClass,
   ovalityA: number,
-  filletR: number
-): { Y1: number; Y2: number; Y3: number; b: number; q: number } {
-  let b = Rs / Da;
-  if (b < 0.03) b = 0.03;
+  bRaw: number,
+  q: number,
+  temperatureC: number,
+  steelClass: ElbowSteelClass
+): Pick<ElbowCoefficients, "Y1" | "Y2" | "Y3" | "a" | "b" | "q"> {
+  const a = Math.max(0, ovalityA);
+  const b = bRaw < 0.03 ? 0.03 : bRaw;
 
-  const r = Math.max(0, filletR);
-  const delta = b + (Da > 0 ? r / Da : 0);
-  let q = 2.6 * delta * (1 + (Da > 0 ? r / Da : 0));
-  if (q > 1) q = 1;
-
-  const low = calcShapeAtRegime(b, q, ovalityA, "low");
-  const high = calcShapeAtRegime(b, q, ovalityA, "high");
-
+  const low = calcShapeAtLowTemp(a, b, q);
+  const high = calcShapeAtHighTemp(a, b, q);
   const limits = TEMP_LIMITS[steelClass];
+
   if (temperatureC <= limits.low) {
-    return { ...low, b, q };
+    return { ...low, a, b, q };
   }
   if (temperatureC >= limits.high) {
-    return { ...high, b, q };
+    return { ...high, a, b, q };
   }
 
   const t = (temperatureC - limits.low) / (limits.high - limits.low);
@@ -107,26 +140,10 @@ export function calcShapeCoefficients(
     Y1: lerp(low.Y1, high.Y1, t),
     Y2: lerp(low.Y2, high.Y2, t),
     Y3: lerp(low.Y3, high.Y3, t),
+    a,
     b,
     q,
   };
-}
-
-function calcShapeAtRegime(
-  b: number,
-  q: number,
-  ovalityA: number,
-  regime: "low" | "high"
-) {
-  if (regime === "low") {
-    const Y1 = clampMin1(0.42 * (1 + q * Math.sqrt(1 + 0.4 * b)));
-    const Y3 = clampMin1(0.12 * (1 + Math.sqrt(1 + 0.4 * b)));
-    return { Y1, Y2: Y1, Y3 };
-  }
-  const a = Math.max(0, ovalityA);
-  const Y1 = clampMin1(0.4 * (1 + q * Math.sqrt(1 + 0.015 * a)));
-  const Y3 = clampMin1(0.4 * (1 + q * Math.sqrt(1 + 0.015 * a)));
-  return { Y1, Y2: Y1, Y3 };
 }
 
 export function calcElbowThicknessParts(
@@ -137,13 +154,12 @@ export function calcElbowThicknessParts(
   coeffs: Pick<ElbowCoefficients, "K1" | "K2" | "K3" | "Y1" | "Y2" | "Y3">
 ) {
   const { K1, K2, K3, Y1, Y2, Y3 } = coeffs;
-  const d12 = 2 * (phiP * sigma + p);
-  const d3 = 2 * phiP * sigma + p;
-  if (!(d12 > 0) || !(d3 > 0)) return null;
+  const denom = 2 * phiP * sigma + p;
+  if (!(denom > 0) || !(Da > 0) || !(p > 0)) return null;
 
-  const sp1 = (p * Da * Y1 * K1) / d12;
-  const sp2 = (p * Da * Y2 * K2) / d12;
-  const sp3 = (p * Da * Y3 * K3) / d3;
+  const sp1 = (p * Da * Y1 * K1) / denom;
+  const sp2 = (p * Da * Y2 * K2) / denom;
+  const sp3 = (p * Da * Y3 * K3) / denom;
   const sp = Math.max(sp1, sp2, sp3);
   return { sp1, sp2, sp3, sp };
 }
@@ -154,16 +170,10 @@ export function calcPressureFromSpPart(
   sigma: number,
   phiP: number,
   Y: number,
-  K: number,
-  middle: boolean
+  K: number
 ): number | null {
   if (!(sp > 0) || !(Da > 0)) return null;
-  if (middle) {
-    const denom = Da * Y * K - sp;
-    if (!(denom > 0)) return null;
-    return (2 * sp * phiP * sigma) / denom;
-  }
-  const denom = Da * Y * K - 2 * sp;
+  const denom = Da * Y * K - sp;
   if (!(denom > 0)) return null;
   return (2 * sp * phiP * sigma) / denom;
 }
@@ -175,9 +185,9 @@ export function calcPressureFromSp(
   phiP: number,
   coeffs: Pick<ElbowCoefficients, "K1" | "K2" | "K3" | "Y1" | "Y2" | "Y3">
 ): number | null {
-  const p1 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y1, coeffs.K1, false);
-  const p2 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y2, coeffs.K2, false);
-  const p3 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y3, coeffs.K3, true);
+  const p1 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y1, coeffs.K1);
+  const p2 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y2, coeffs.K2);
+  const p3 = calcPressureFromSpPart(sp, Da, sigma, phiP, coeffs.Y3, coeffs.K3);
   const values = [p1, p2, p3].filter((v): v is number => v != null);
   if (!values.length) return null;
   return Math.min(...values);
@@ -201,7 +211,7 @@ export function calcAllowablePressure(
 export function calculateElbow(input: ElbowInputs): ElbowResults {
   const { c3, cc } = resolveShellAllowances(input.allowances);
   const rsRatio = input.Da > 0 ? input.Rs / input.Da : 0;
-  const applicabilityNote = "R_s / D_a ≥ 1 — колено под внутренним давлением";
+  const applicabilityNote = "R_s / D_a ≥ 1";
   const base = {
     c3,
     cc,
@@ -220,6 +230,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
       Y2: 1,
       Y3: 1,
       K: 1,
+      a: 0,
       b: 0,
       q: 0,
     },
@@ -229,19 +240,15 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     error: null as string | null,
   };
 
-  if (!base.applicabilityOk) {
-    return { ...base, error: "Не выполнено условие R_s / D_a ≥ 1" };
+  if (!(input.Da > 0) || !(input.Rs > 0)) {
+    return { ...base, error: "Задайте D_a и R_s" };
   }
 
   const toroidal = calcToroidalCoefficients(input.Rs, input.Da);
-  const shape = calcShapeCoefficients(
-    input.Rs,
-    input.Da,
-    input.temperatureC,
-    input.steelClass,
-    input.ovalityA,
-    input.filletR
-  );
+  const ovalityA = calcOvalityPercent(input.daMax, input.daMin);
+  const bRaw = calcB(input.p, input.sigma);
+  const q = calcQ(bRaw, input.Rs, input.Da);
+  const shape = calcShapeCoefficients(ovalityA, bRaw, q, input.temperatureC, input.steelClass);
   const K = Math.max(toroidal.K1 * shape.Y1, toroidal.K2 * shape.Y2, toroidal.K3 * shape.Y3);
   const coeffs: ElbowCoefficients = { ...toroidal, ...shape, K };
 
@@ -280,7 +287,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
       ss,
       p,
       coeffs,
-      error: "Не удалось проверить допускаемое давление p_p",
+      error: "Не удалось проверить допускаемое давление [p]",
     };
   }
 
@@ -296,7 +303,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     pp,
     coeffs,
     rsRatio,
-    applicabilityOk: true,
+    applicabilityOk: rsRatio >= 1,
     applicabilityNote,
     error: null,
   };
