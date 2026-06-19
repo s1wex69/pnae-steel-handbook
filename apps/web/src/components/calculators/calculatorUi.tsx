@@ -162,6 +162,23 @@ export function CalcSection({
   );
 }
 
+export function ApplicabilityStatus({ ok }: { ok: boolean }) {
+  return (
+    <p className="mt-3 sm:mt-4">
+      <span
+        className={cn(
+          "inline-flex items-center rounded-lg px-3 py-1.5 text-base font-semibold sm:text-lg",
+          ok
+            ? "bg-[var(--color-emphasis)]/12 text-[var(--color-emphasis)]"
+            : "bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]"
+        )}
+      >
+        {ok ? "Выполнено" : "Не выполнено"}
+      </span>
+    </p>
+  );
+}
+
 export function CalculatorDiagramCard({ children }: { children: ReactNode }) {
   return (
     <section>

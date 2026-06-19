@@ -4,6 +4,7 @@ import { calculateConvexHeadInternal, type ConvexHeadKind } from "@/lib/convexHe
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
+  ApplicabilityStatus,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
@@ -11,7 +12,6 @@ import {
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { cn } from "@/lib/utils";
 import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
 function methodologyTitle(kind: ConvexHeadKind): string {
@@ -245,16 +245,7 @@ export function ConvexHeadInternalCalculator({
                         <span>= {fmtHundredths(result.thinnessRatio)}</span>
                       </span>
                     </p>
-                    <p
-                      className={cn(
-                        "text-base font-semibold sm:text-lg",
-                        ellipticalThinOk
-                          ? "text-[var(--color-emphasis)]"
-                          : "text-[var(--color-destructive)]"
-                      )}
-                    >
-                      {ellipticalThinOk ? "Выполнено" : "Не выполнено"}
-                    </p>
+                    <ApplicabilityStatus ok={ellipticalThinOk} />
                   </>
                 ) : null}
               </div>
@@ -276,46 +267,33 @@ export function ConvexHeadInternalCalculator({
                         <span>= {fmtHundredths(heightRatio)}</span>
                       </span>
                     </p>
-                    <p
-                      className={cn(
-                        "text-base font-semibold sm:text-lg",
-                        ellipticalHeightOk
-                          ? "text-[var(--color-emphasis)]"
-                          : "text-[var(--color-destructive)]"
-                      )}
-                    >
-                      {ellipticalHeightOk ? "Выполнено" : "Не выполнено"}
-                    </p>
+                    <ApplicabilityStatus ok={ellipticalHeightOk} />
                   </>
                 ) : null}
               </div>
             </div>
           ) : (
-            <div className="sm:col-span-2">
+            <div className="flex flex-col gap-2 sm:col-span-2">
               <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                   <span>0,0025</span>
                   <span>≤</span>
                   <Frac num={<>s − c</>} den="D" />
                   <span>≤</span>
                   <span>0,100</span>
-                  {hasResult ? (
-                    <>
-                      <Frac num={<>s − c</>} den="D" />
-                      <span className="tabular-nums">= {fmtHundredths(result.thinnessRatio)}</span>
-                      <span
-                        className={cn(
-                          hemisphericalThinOk
-                            ? "text-[var(--color-emphasis)]"
-                            : "text-[var(--color-destructive)]"
-                        )}
-                      >
-                        {hemisphericalThinOk ? "Выполнено" : "Не выполнено"}
-                      </span>
-                    </>
-                  ) : null}
                 </span>
               </p>
+              {hasResult ? (
+                <>
+                  <p className="text-base font-semibold tabular-nums sm:text-lg">
+                    <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
+                      <Frac num={<>s − c</>} den="D" />
+                      <span>= {fmtHundredths(result.thinnessRatio)}</span>
+                    </span>
+                  </p>
+                  <ApplicabilityStatus ok={hemisphericalThinOk} />
+                </>
+              ) : null}
             </div>
           )}
         </CalcSection>

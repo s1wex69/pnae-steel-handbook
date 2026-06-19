@@ -7,6 +7,7 @@ import {
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
+  ApplicabilityStatus,
   CalcSection,
   CalculatorDiagramCard,
   CalculatorPageHeader,
@@ -16,7 +17,6 @@ import {
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { cn } from "@/lib/utils";
 import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
 export function CylindricalShellInternalCalculator({
@@ -172,30 +172,22 @@ export function CylindricalShellInternalCalculator({
         </CalcSection>
 
         <CalcSection title="Условие применения расчётных формул" titleAccent={false}>
-          <div className="sm:col-span-2">
+          <div className="flex flex-col gap-2 sm:col-span-2">
             <p className="text-base font-semibold sm:text-lg">
-              <span
-                className={cn(
-                  "inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 tabular-nums"
-                )}
-              >
+              <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 tabular-nums">
                 <Frac num={<>s − c</>} den="D" />
                 <span>
                   {applicability.ok ? "≤" : ">"} {fmtHundredths(applicability.limit)}
                 </span>
-                <Frac num={<>s − c</>} den="D" />
-                <span>= {fmtHundredths(applicability.ratio)}</span>
-                <span
-                  className={
-                    applicability.ok
-                      ? "text-[var(--color-emphasis)]"
-                      : "text-[var(--color-destructive)]"
-                  }
-                >
-                  {applicability.ok ? "Выполнено" : "Не выполнено"}
-                </span>
               </span>
             </p>
+            <p className="text-base font-semibold tabular-nums sm:text-lg">
+              <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
+                <Frac num={<>s − c</>} den="D" />
+                <span>= {fmtHundredths(applicability.ratio)}</span>
+              </span>
+            </p>
+            <ApplicabilityStatus ok={applicability.ok} />
           </div>
         </CalcSection>
       </section>
