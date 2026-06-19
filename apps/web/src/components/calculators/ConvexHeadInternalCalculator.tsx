@@ -12,7 +12,7 @@ import {
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
 function methodologyTitle(kind: ConvexHeadKind): string {
   return kind === "hemispherical"
@@ -242,7 +242,7 @@ export function ConvexHeadInternalCalculator({
                     <p className="text-base font-semibold tabular-nums sm:text-lg">
                       <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                         <Frac num={<>s − c</>} den="D" />
-                        <span>= {fmtHundredths(result.thinnessRatio)}</span>
+                        <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
                       </span>
                     </p>
                     <ApplicabilityStatus ok={ellipticalThinOk} />
@@ -264,7 +264,7 @@ export function ConvexHeadInternalCalculator({
                     <p className="text-base font-semibold tabular-nums sm:text-lg">
                       <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                         <Frac num="H" den="D" />
-                        <span>= {fmtHundredths(heightRatio)}</span>
+                        <span>= {fmtHundredthsRu(heightRatio)}</span>
                       </span>
                     </p>
                     <ApplicabilityStatus ok={ellipticalHeightOk} />
@@ -288,7 +288,7 @@ export function ConvexHeadInternalCalculator({
                   <p className="text-base font-semibold tabular-nums sm:text-lg">
                     <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                       <Frac num={<>s − c</>} den="D" />
-                      <span>= {fmtHundredths(result.thinnessRatio)}</span>
+                      <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
                     </span>
                   </p>
                   <ApplicabilityStatus ok={hemisphericalThinOk} />

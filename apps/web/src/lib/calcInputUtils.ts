@@ -22,6 +22,12 @@ export function fmtHundredths(n: number): string {
   return String(Number(n.toFixed(CALC_HUNDREDTHS)));
 }
 
+/** То же, но с запятой как десятичным разделителем (0,07). */
+export function fmtHundredthsRu(n: number): string {
+  const s = fmtHundredths(n);
+  return s === "—" ? s : s.replace(".", ",");
+}
+
 export function sumFmt(parts: string[], digits = 1): string {
   if (parts.every(isBlank)) return "";
   const sum = parts.reduce((acc, s) => acc + num(s), 0);

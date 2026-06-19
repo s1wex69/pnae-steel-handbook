@@ -17,7 +17,7 @@ import {
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
 export function CylindricalShellInternalCalculator({
   handbook,
@@ -177,14 +177,14 @@ export function CylindricalShellInternalCalculator({
               <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 tabular-nums">
                 <Frac num={<>s − c</>} den="D" />
                 <span>
-                  {applicability.ok ? "≤" : ">"} {fmtHundredths(applicability.limit)}
+                  {applicability.ok ? "≤" : ">"} {fmtHundredthsRu(applicability.limit)}
                 </span>
               </span>
             </p>
             <p className="text-base font-semibold tabular-nums sm:text-lg">
               <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
                 <Frac num={<>s − c</>} den="D" />
-                <span>= {fmtHundredths(applicability.ratio)}</span>
+                <span>= {fmtHundredthsRu(applicability.ratio)}</span>
               </span>
             </p>
             <ApplicabilityStatus ok={applicability.ok} />
