@@ -17,10 +17,9 @@ import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUti
 export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
   const allowances = useAllowanceFields({ c1: "0.5", c2: "0.3", c3: "0" });
   const [D, setD] = useState("600");
-  const [D2, setD2] = useState("300");
   const [alpha, setAlpha] = useState("30");
   const [sigmaStr, setSigmaStr] = useState("140");
-  const [sigmaTemp, setSigmaTemp] = useState("200");
+  const [sigmaTemp, setSigmaTemp] = useState("20");
   const sigma = num(sigmaStr, 140);
   const [phiP, setPhiP] = useState("1");
   const [p, setP] = useState("1.6");
@@ -63,7 +62,7 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
 
   return (
     <CalculatorPageShell>
-      <CalculatorPageHeader title="Расчёт на прочность конической обечайки по ГОСТ 34233.2-2017" />
+      <CalculatorPageHeader title="Расчёт на прочность конической обечайки" />
 
       <section className="space-y-8">
         <AllowancesCalcSection
@@ -86,14 +85,6 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
               symbol="D"
               value={D}
               onChange={setD}
-              unit="мм"
-            />
-            <CalcRow
-              inColumn
-              label="Внутренний диаметр меньшего основания конуса"
-              symbol={<Var letter="D" sub="2" />}
-              value={D2}
-              onChange={setD2}
               unit="мм"
             />
             <CalcRow

@@ -1,9 +1,11 @@
-/** Расчёт конической обечайки при внутреннем избыточном давлении (ГОСТ 34233.2-2017, п. 5.4.1)
+/** Расчёт конической обечайки при внутреннем избыточном давлении (ГОСТ 34233.2-2017, §8.3.1)
  *
- * s_p = p·D / (2·[σ]·φ·cosα − p)
+ * α₁ — половина угла раствора при вершине (угол между осью и образующей).
+ *
+ * s_p = p·D / (2·[σ]·φ·cosα₁ − p)
  * s ≥ s_p + c
- * [p] = 2·[σ]·φ·(s − c)·cosα / (D + s − c)
- * Применимость: (s − c)/D ≤ 0,1; α ≤ 70°; p ≤ [p]
+ * [p] = 2·[σ]·φ·(s − c) / (D / cosα₁ + s − c)
+ * Применимость: (s − c)/D ≤ 0,1; α₁ ≤ 70°; p ≤ [p]
  */
 
 import {
@@ -41,8 +43,9 @@ export interface ConicalShellResults {
   error: string | null;
 }
 
-export function cosAlphaFromDeg(alphaDeg: number): number {
-  return Math.cos((alphaDeg * Math.PI) / 180);
+/** cos α₁; α₁ — полуугол при вершине (между осью конуса и образующей), град. */
+export function cosAlphaFromDeg(alphaHalfDeg: number): number {
+  return Math.cos((alphaHalfDeg * Math.PI) / 180);
 }
 
 export function calcConicalSpFromPressure(
@@ -85,9 +88,9 @@ export function calcConicalAllowablePressure(
   if (!(sEff > 0)) return null;
   const cosA = cosAlphaFromDeg(alphaDeg);
   if (!(cosA > 0)) return null;
-  const denom = D + sEff;
+  const denom = D / cosA + sEff;
   if (!(denom > 0)) return null;
-  return (2 * sigma * phiP * sEff * cosA) / denom;
+  return (2 * sigma * phiP * sEff) / denom;
 }
 
 export function checkConicalApplicability(

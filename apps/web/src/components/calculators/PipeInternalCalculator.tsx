@@ -69,7 +69,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
 
   return (
     <CalculatorPageShell>
-      <CalculatorPageHeader title="Расчёт на прочность трубы по ГОСТ 34233.2-2017" />
+      <CalculatorPageHeader title="Расчёт на прочность трубы" />
 
       <section className="space-y-8">
         <AllowancesCalcSection

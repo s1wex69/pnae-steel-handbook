@@ -31,8 +31,7 @@ export const CALC_SECTION_CARD =
 export const CALC_SECTION_TITLE =
   "text-xl font-bold leading-snug text-[var(--color-heading)] sm:text-2xl";
 
-export const CALC_PAGE_TITLE =
-  "text-balance text-2xl font-bold leading-snug text-[var(--color-heading)] sm:text-3xl";
+export const CALC_PAGE_TITLE = CALC_SECTION_TITLE;
 
 /** s_p — расчётная толщина в результатах */
 export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-2xl" />;
