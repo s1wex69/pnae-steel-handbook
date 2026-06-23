@@ -10,6 +10,8 @@ import { HemisphericalHeadPage } from "@/pages/HemisphericalHeadPage";
 import { EllipticalHeadPage } from "@/pages/EllipticalHeadPage";
 import { TorisphericalHeadPage } from "@/pages/TorisphericalHeadPage";
 import { PipeCollectorPage } from "@/pages/PipeCollectorPage";
+import { PipeInternalPage } from "@/pages/PipeInternalPage";
+import { ConicalShellInternalPage } from "@/pages/ConicalShellInternalPage";
 import { ElbowPage } from "@/pages/ElbowPage";
 import { FlatCircularHeadPage } from "@/pages/FlatCircularHeadPage";
 
@@ -32,6 +34,8 @@ export default function App() {
               <Route path="calculators/hemispherical-head" element={<HemisphericalHeadPage />} />
               <Route path="calculators/elliptical-head" element={<EllipticalHeadPage />} />
               <Route path="calculators/torispherical-head" element={<TorisphericalHeadPage />} />
+              <Route path="calculators/pipe-internal" element={<PipeInternalPage />} />
+              <Route path="calculators/conical-shell-internal" element={<ConicalShellInternalPage />} />
               <Route path="calculators/pipe-collector" element={<PipeCollectorPage />} />
               <Route path="calculators/elbow" element={<ElbowPage />} />
               <Route path="calculators/flat-circular-head" element={<FlatCircularHeadPage />} />

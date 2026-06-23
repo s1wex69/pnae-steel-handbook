@@ -22,6 +22,8 @@
     "build:tilda-calc-hemispherical": "node scripts/build-tilda-export.mjs 04-kalkulyator-polusfericheskoe-dnishche",
     "build:tilda-calc-elliptical": "node scripts/build-tilda-export.mjs 05-kalkulyator-ellipticheskoe-dnishche",
     "build:tilda-calc-torispherical": "node scripts/build-tilda-export.mjs 06-kalkulyator-torosfericheskoe-dnishche",
+    "build:tilda-calc-pipe-internal": "node scripts/build-tilda-export.mjs 07-kalkulyator-truba",
+    "build:tilda-calc-conical": "node scripts/build-tilda-export.mjs 08-kalkulyator-konicheskaya-obechajka",
     "prepare:amvera": "node scripts/prepare-amvera-deploy.mjs",
     "prepare:gitlab": "node scripts/prepare-static-pages.mjs gitlab",
     "prepare:github": "node scripts/prepare-static-pages.mjs github",

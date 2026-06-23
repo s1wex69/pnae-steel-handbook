@@ -74,6 +74,8 @@ export const CALCULATOR_LABELS: Record<string, string> = {
   "hemispherical-head": "Полусферическое днище — внутреннее давление",
   "elliptical-head": "Эллиптическое днище — внутреннее давление",
   "torispherical-head": "Торосферическое днище — внутреннее давление",
+  "pipe-internal": "Труба — внутреннее давление (ГОСТ 34233.2)",
+  "conical-shell-internal": "Коническая обечайка — внутреннее давление (ГОСТ 34233.2)",
   "pipe-collector": "ИН № 7 — Коллектор, штуцер, труба",
   "elbow": "ИН № 8 — Колено",
   "flat-circular-head": "ИН № 9 — Плоские днища и крышки",

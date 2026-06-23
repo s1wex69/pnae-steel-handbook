@@ -24,6 +24,8 @@ const PROJECT_IDS = [
   "04-kalkulyator-polusfericheskoe-dnishche",
   "05-kalkulyator-ellipticheskoe-dnishche",
   "06-kalkulyator-torosfericheskoe-dnishche",
+  "07-kalkulyator-truba",
+  "08-kalkulyator-konicheskaya-obechajka",
 ];
 
 const DEFAULT_PATHS = {
@@ -33,6 +35,8 @@ const DEFAULT_PATHS = {
   "04-kalkulyator-polusfericheskoe-dnishche": "calc3",
   "05-kalkulyator-ellipticheskoe-dnishche": "calc4",
   "06-kalkulyator-torosfericheskoe-dnishche": "calc5",
+  "07-kalkulyator-truba": "calc6",
+  "08-kalkulyator-konicheskaya-obechajka": "calc7",
 };
 
 const SKIP_FILES = new Set(["TILDA-ВСТАВКА.html", "README.txt"]);
@@ -107,6 +111,8 @@ const indexHtml = `<!DOCTYPE html>
       <li><a href="./${paths["04-kalkulyator-polusfericheskoe-dnishche"]}/">Калькулятор — полусферическое днище</a></li>
       <li><a href="./${paths["05-kalkulyator-ellipticheskoe-dnishche"]}/">Калькулятор — эллиптическое днище</a></li>
       <li><a href="./${paths["06-kalkulyator-torosfericheskoe-dnishche"]}/">Калькулятор — торосферическое днище</a></li>
+      <li><a href="./${paths["07-kalkulyator-truba"]}/">Калькулятор — труба</a></li>
+      <li><a href="./${paths["08-kalkulyator-konicheskaya-obechajka"]}/">Калькулятор — коническая обечайка</a></li>
     </ul>
   </body>
 </html>

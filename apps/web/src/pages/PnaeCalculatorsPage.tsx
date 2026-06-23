@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Circle, Cylinder, Disc, CornerDownRight, ChevronRight } from "lucide-react";
+import { Circle, Cylinder, Disc, CornerDownRight, ChevronRight, Cone } from "lucide-react";
 
 const CALCULATORS = [
   {
@@ -40,6 +40,22 @@ const CALCULATORS = [
     title: "Торосферическое днище — внутреннее давление",
     subtitle: "ИН № 5",
     icon: Circle,
+    available: true,
+  },
+  {
+    id: "pipe-internal",
+    to: "/calculators/pipe-internal",
+    title: "Труба — внутреннее давление",
+    subtitle: "ГОСТ 34233.2-2017",
+    icon: Cylinder,
+    available: true,
+  },
+  {
+    id: "conical-shell-internal",
+    to: "/calculators/conical-shell-internal",
+    title: "Коническая обечайка — внутреннее давление",
+    subtitle: "ГОСТ 34233.2-2017",
+    icon: Cone,
     available: true,
   },
   {
