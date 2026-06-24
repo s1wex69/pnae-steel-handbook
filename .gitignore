@@ -9,6 +9,6 @@ data/pnae.zip
 .DS_Store
 coverage/
 .vite/
+/public/
 tilda-hosted/
-public/
 scripts/_in-*.txt
