@@ -8,6 +8,9 @@
   "06-kalkulyator-torosfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc5/",
   "07-kalkulyator-truba": "https://s1wex69.github.io/pnae-steel-handbook/calc6/",
   "08-kalkulyator-konicheskaya-obechajka": "https://s1wex69.github.io/pnae-steel-handbook/calc7/",
+  "09-kalkulyator-koleno": "https://s1wex69.github.io/pnae-steel-handbook/calc8/",
+  "10-kalkulyator-ploskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc9/",
+  "11-kalkulyator-ploskaya-kryshka": "https://s1wex69.github.io/pnae-steel-handbook/calc10/",
   "paths": {
     "01-spravochnik": "pnae",
     "02-kalkulyator-vnutrennee-davlenie": "calc1",
@@ -16,6 +19,9 @@
     "05-kalkulyator-ellipticheskoe-dnishche": "calc4",
     "06-kalkulyator-torosfericheskoe-dnishche": "calc5",
     "07-kalkulyator-truba": "calc6",
-    "08-kalkulyator-konicheskaya-obechajka": "calc7"
+    "08-kalkulyator-konicheskaya-obechajka": "calc7",
+    "09-kalkulyator-koleno": "calc8",
+    "10-kalkulyator-ploskoe-dnishche": "calc9",
+    "11-kalkulyator-ploskaya-kryshka": "calc10"
   }
 }

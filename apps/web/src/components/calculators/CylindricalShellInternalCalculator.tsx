@@ -7,7 +7,7 @@ import {
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
-  ApplicabilityStatus,
+  CalcCheckRow,
   CalcSection,
   CalculatorDiagramCard,
   CalculatorPageHeader,
@@ -172,23 +172,11 @@ export function CylindricalShellInternalCalculator({
         </CalcSection>
 
         <CalcSection title="Условие применения расчётных формул" titleAccent={false}>
-          <div className="flex flex-col gap-2 sm:col-span-2">
-            <p className="text-base font-semibold sm:text-lg">
-              <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 tabular-nums">
-                <Frac num={<>s − c</>} den="D" />
-                <span>
-                  {applicability.ok ? "≤" : ">"} {fmtHundredthsRu(applicability.limit)}
-                </span>
-              </span>
-            </p>
-            <p className="text-base font-semibold tabular-nums sm:text-lg">
-              <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                <Frac num={<>s − c</>} den="D" />
-                <span>= {fmtHundredthsRu(applicability.ratio)}</span>
-              </span>
-            </p>
-            <ApplicabilityStatus ok={applicability.ok} />
-          </div>
+          <CalcCheckRow ok={applicability.ok}>
+            <Frac num={<>s − c</>} den="D" />
+            <span>= {fmtHundredthsRu(applicability.ratio)}</span>
+            <span>{applicability.ok ? "≤" : ">"} {fmtHundredthsRu(applicability.limit)}</span>
+          </CalcCheckRow>
         </CalcSection>
       </section>
 

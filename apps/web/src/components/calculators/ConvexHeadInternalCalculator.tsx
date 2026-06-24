@@ -4,7 +4,7 @@ import { calculateConvexHeadInternal, type ConvexHeadKind } from "@/lib/convexHe
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
-  ApplicabilityStatus,
+  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
@@ -219,76 +219,29 @@ export function ConvexHeadInternalCalculator({
 
         <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
           {kind === "elliptical" ? (
-            <div className="grid min-w-0 grid-cols-1 gap-6 sm:col-span-2 xl:grid-cols-2 xl:items-start">
-              <div className="flex flex-col gap-2">
-                <p className="text-base font-semibold sm:text-lg">
-                  <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                    <span>0,002</span>
-                    <span>≤</span>
-                    <Frac num={<>s − c</>} den="D" />
-                    <span>≤</span>
-                    <span>0,100</span>
-                  </span>
-                </p>
-                {hasResult ? (
-                  <>
-                    <p className="text-base font-semibold tabular-nums sm:text-lg">
-                      <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                        <Frac num={<>s − c</>} den="D" />
-                        <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                      </span>
-                    </p>
-                    <ApplicabilityStatus ok={ellipticalThinOk} />
-                  </>
-                ) : null}
-              </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-base font-semibold sm:text-lg">
-                  <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                    <span>0,2</span>
-                    <span>≤</span>
-                    <Frac num="H" den="D" />
-                    <span>≤</span>
-                    <span>0,5</span>
-                  </span>
-                </p>
-                {geometryReady ? (
-                  <>
-                    <p className="text-base font-semibold tabular-nums sm:text-lg">
-                      <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                        <Frac num="H" den="D" />
-                        <span>= {fmtHundredthsRu(heightRatio)}</span>
-                      </span>
-                    </p>
-                    <ApplicabilityStatus ok={ellipticalHeightOk} />
-                  </>
-                ) : null}
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 sm:col-span-2">
-              <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                  <span>0,0025</span>
-                  <span>≤</span>
-                  <Frac num={<>s − c</>} den="D" />
-                  <span>≤</span>
-                  <span>0,100</span>
-                </span>
-              </p>
+            <>
               {hasResult ? (
-                <>
-                  <p className="text-base font-semibold tabular-nums sm:text-lg">
-                    <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                      <Frac num={<>s − c</>} den="D" />
-                      <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                    </span>
-                  </p>
-                  <ApplicabilityStatus ok={hemisphericalThinOk} />
-                </>
+                <CalcCheckRow ok={ellipticalThinOk}>
+                  <Frac num={<>s − c</>} den="D" />
+                  <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+                  <span>в пределах [0,002; 0,100]</span>
+                </CalcCheckRow>
               ) : null}
-            </div>
-          )}
+              {geometryReady ? (
+                <CalcCheckRow ok={ellipticalHeightOk}>
+                  <Frac num="H" den="D" />
+                  <span>= {fmtHundredthsRu(heightRatio)}</span>
+                  <span>в пределах [0,2; 0,5]</span>
+                </CalcCheckRow>
+              ) : null}
+            </>
+          ) : hasResult ? (
+            <CalcCheckRow ok={hemisphericalThinOk}>
+              <Frac num={<>s − c</>} den="D" />
+              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+              <span>в пределах [0,0025; 0,100]</span>
+            </CalcCheckRow>
+          ) : null}
         </CalcSection>
       </section>
 

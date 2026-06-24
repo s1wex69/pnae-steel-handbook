@@ -9,11 +9,11 @@ import { CylindricalShellExternalPage } from "@/pages/CylindricalShellExternalPa
 import { HemisphericalHeadPage } from "@/pages/HemisphericalHeadPage";
 import { EllipticalHeadPage } from "@/pages/EllipticalHeadPage";
 import { TorisphericalHeadPage } from "@/pages/TorisphericalHeadPage";
-import { PipeCollectorPage } from "@/pages/PipeCollectorPage";
 import { PipeInternalPage } from "@/pages/PipeInternalPage";
 import { ConicalShellInternalPage } from "@/pages/ConicalShellInternalPage";
-import { ElbowPage } from "@/pages/ElbowPage";
-import { FlatCircularHeadPage } from "@/pages/FlatCircularHeadPage";
+import { FlatBottomPage } from "@/pages/FlatBottomPage";
+import { FlatCoverPage } from "@/pages/FlatCoverPage";
+import { ElbowInternalPage } from "@/pages/ElbowInternalPage";
 
 function LegacyPnaeRedirect() {
   const { search } = useLocation();
@@ -36,9 +36,9 @@ export default function App() {
               <Route path="calculators/torispherical-head" element={<TorisphericalHeadPage />} />
               <Route path="calculators/pipe-internal" element={<PipeInternalPage />} />
               <Route path="calculators/conical-shell-internal" element={<ConicalShellInternalPage />} />
-              <Route path="calculators/pipe-collector" element={<PipeCollectorPage />} />
-              <Route path="calculators/elbow" element={<ElbowPage />} />
-              <Route path="calculators/flat-circular-head" element={<FlatCircularHeadPage />} />
+              <Route path="calculators/flat-bottom" element={<FlatBottomPage />} />
+              <Route path="calculators/flat-cover" element={<FlatCoverPage />} />
+              <Route path="calculators/elbow" element={<ElbowInternalPage />} />
               <Route path="handbooks/pnae-steel" element={<LegacyPnaeRedirect />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

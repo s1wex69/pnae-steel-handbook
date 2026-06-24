@@ -23,6 +23,9 @@ const NETLIFY_URLS = {
   "06-kalkulyator-torosfericheskoe-dnishche": "https://intech-calc5.netlify.app/",
   "07-kalkulyator-truba": "https://intech-calc6.netlify.app/",
   "08-kalkulyator-konicheskaya-obechajka": "https://intech-calc7.netlify.app/",
+  "09-kalkulyator-koleno": "https://intech-calc8.netlify.app/",
+  "10-kalkulyator-ploskoe-dnishche": "https://intech-calc9.netlify.app/",
+  "11-kalkulyator-ploskaya-kryshka": "https://intech-calc10.netlify.app/",
 };
 
 const useNetlify = process.argv.includes("--netlify") || process.env.TILDA_IFRAME_HOST === "netlify";
@@ -42,6 +45,9 @@ const GITLAB_URLS = {
   "06-kalkulyator-torosfericheskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc5/",
   "07-kalkulyator-truba": "https://USERNAME.gitlab.io/PROJECT/calc6/",
   "08-kalkulyator-konicheskaya-obechajka": "https://USERNAME.gitlab.io/PROJECT/calc7/",
+  "09-kalkulyator-koleno": "https://USERNAME.gitlab.io/PROJECT/calc8/",
+  "10-kalkulyator-ploskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc9/",
+  "11-kalkulyator-ploskaya-kryshka": "https://USERNAME.gitlab.io/PROJECT/calc10/",
 };
 
 const GITHUB_URLS = {
@@ -53,6 +59,9 @@ const GITHUB_URLS = {
   "06-kalkulyator-torosfericheskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc5/",
   "07-kalkulyator-truba": "https://s1wex69.github.io/pnae-steel-handbook/calc6/",
   "08-kalkulyator-konicheskaya-obechajka": "https://s1wex69.github.io/pnae-steel-handbook/calc7/",
+  "09-kalkulyator-koleno": "https://s1wex69.github.io/pnae-steel-handbook/calc8/",
+  "10-kalkulyator-ploskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc9/",
+  "11-kalkulyator-ploskaya-kryshka": "https://s1wex69.github.io/pnae-steel-handbook/calc10/",
 };
 
 function loadUrlsFromFile(filePath, defaults, placeholders) {
@@ -176,6 +185,30 @@ const projects = [
     title: "Калькулятор — коническая обечайка",
     iframeTitle: "Калькулятор — коническая обечайка",
     embedSiteUrl: "https://intech-atom.ru/calc7",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "09-kalkulyator-koleno",
+    input: "tilda-calc-elbow.html",
+    title: "Калькулятор — колено",
+    iframeTitle: "Расчёт колена на внутреннее давление",
+    embedSiteUrl: "https://intech-atom.ru/calc8",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "10-kalkulyator-ploskoe-dnishche",
+    input: "tilda-calc-flat-bottom.html",
+    title: "Калькулятор — плоское круглое днище",
+    iframeTitle: "Плоское круглое днище",
+    embedSiteUrl: "https://intech-atom.ru/calc9",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "11-kalkulyator-ploskaya-kryshka",
+    input: "tilda-calc-flat-cover.html",
+    title: "Калькулятор — плоская круглая крышка",
+    iframeTitle: "Плоская круглая крышка с краевым моментом",
+    embedSiteUrl: "https://intech-atom.ru/calc10",
     embedSiteName: "ИНТЕХ-АТОМ",
   },
 ].map((p) => ({ ...p, iframeSrc: iframeUrls[p.id] }));

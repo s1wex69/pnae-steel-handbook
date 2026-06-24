@@ -10,13 +10,13 @@ import type { ShellSolveTarget } from "@/lib/shellCalcShared";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
+  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { cn } from "@/lib/utils";
 import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 type ResultDrive = "ss" | "pp";
@@ -178,20 +178,13 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
         </CalcSection>
 
         <CalcSection title="Проверка применимости">
-          <CalcRow label="Пределы применимости формулы" variant="check" borderless>
-            <span
-              className={cn(
-                "inline-flex w-full flex-wrap items-center justify-start gap-x-2 text-xl font-semibold tabular-nums",
-                applicability.ok ? "text-[var(--color-emphasis)]" : "text-[var(--color-destructive)]"
-              )}
-            >
-              <Frac num={<>s − c</>} den="D" />
-              <span>= {fmtRu(applicability.ratio, 4)}</span>
-              <span>
-                {applicability.ok ? "в пределах" : "вне пределов"} [{fmtRu(applicability.min, 4)}; {fmtRu(applicability.max, 2)}]
-              </span>
+          <CalcCheckRow ok={applicability.ok}>
+            <Frac num={<>s − c</>} den="D" />
+            <span>= {fmtRu(applicability.ratio, 4)}</span>
+            <span>
+              {applicability.ok ? "в пределах" : "вне пределов"} [{fmtRu(applicability.min, 4)}; {fmtRu(applicability.max, 2)}]
             </span>
-          </CalcRow>
+          </CalcCheckRow>
         </CalcSection>
       </section>
 

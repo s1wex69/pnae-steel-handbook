@@ -161,20 +161,50 @@ export function CalcSection({
   );
 }
 
-export function ApplicabilityStatus({ ok }: { ok: boolean }) {
+export function ApplicabilityStatus({ ok, inline = false }: { ok: boolean; inline?: boolean }) {
+  const badge = (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-lg px-3 py-1.5 font-semibold",
+        inline ? "text-sm sm:text-base" : "text-base sm:text-lg",
+        ok
+          ? "bg-[var(--color-emphasis)]/12 text-[var(--color-emphasis)]"
+          : "bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]"
+      )}
+    >
+      {ok ? "Выполнено" : "Не выполнено"}
+    </span>
+  );
+
+  if (inline) return badge;
+
+  return <p className="mt-3 sm:mt-4">{badge}</p>;
+}
+
+export function CalcCheckRow({
+  ok,
+  children,
+  placeholder,
+}: {
+  ok?: boolean;
+  children?: ReactNode;
+  placeholder?: string;
+}) {
+  if (placeholder != null && ok === undefined) {
+    return <p className="col-span-full py-3 text-[var(--color-muted-foreground)]">{placeholder}</p>;
+  }
+
   return (
-    <p className="mt-3 sm:mt-4">
-      <span
-        className={cn(
-          "inline-flex items-center rounded-lg px-3 py-1.5 text-base font-semibold sm:text-lg",
-          ok
-            ? "bg-[var(--color-emphasis)]/12 text-[var(--color-emphasis)]"
-            : "bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]"
-        )}
-      >
-        {ok ? "Выполнено" : "Не выполнено"}
+    <div className="col-span-full flex min-w-0 flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <span className="min-w-0 shrink text-lg font-semibold tabular-nums text-[var(--color-heading)] sm:text-xl">
+        <span className="inline-flex max-w-full items-center gap-x-2 whitespace-nowrap">{children}</span>
       </span>
-    </p>
+      {ok !== undefined ? (
+        <span className="shrink-0 self-start sm:self-center">
+          <ApplicabilityStatus ok={ok} inline />
+        </span>
+      ) : null}
+    </div>
   );
 }
 

@@ -4,7 +4,7 @@ import { calculateConicalShellInternal } from "@/lib/conicalShellInternal";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
-  ApplicabilityStatus,
+  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
@@ -179,48 +179,22 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
         </CalcSection>
 
         <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
-          <div className="grid min-w-0 grid-cols-1 gap-6 sm:col-span-2 xl:grid-cols-2 xl:items-start">
-            <div className="flex flex-col gap-2">
-              <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 tabular-nums">
-                  <Frac num={<>s − c</>} den="D" />
-                  <span>≤ 0,1</span>
-                </span>
-              </p>
-              {hasResult ? (
-                <>
-                  <p className="text-base font-semibold tabular-nums sm:text-lg">
-                    <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                      <Frac num={<>s − c</>} den="D" />
-                      <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                    </span>
-                  </p>
-                  <ApplicabilityStatus ok={result.thinnessOk} />
-                </>
-              ) : null}
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2 tabular-nums">
-                  <span>α ≤ 70°</span>
-                  <span>→ α = {fmtHundredthsRu(alphaNum)}°</span>
-                </span>
-              </p>
-              <ApplicabilityStatus ok={result.alphaOk} />
-            </div>
-          </div>
           {hasResult ? (
-            <div className="mt-2 flex flex-col gap-2 sm:col-span-2">
-              <p className="text-base font-semibold tabular-nums sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                  <span>p ≤ [p]</span>
-                  <span>
-                    → {fmtHundredthsRu(pNum)} МПа ≤ {fmtHundredthsRu(result.pp)} МПа
-                  </span>
-                </span>
-              </p>
-              <ApplicabilityStatus ok={result.pressureOk} />
-            </div>
+            <CalcCheckRow ok={result.thinnessOk}>
+              <Frac num={<>s − c</>} den="D" />
+              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+              <span>{result.thinnessOk ? "≤" : ">"} 0,1</span>
+            </CalcCheckRow>
+          ) : null}
+          <CalcCheckRow ok={result.alphaOk}>
+            <span>α ≤ 70° → α = {fmtHundredthsRu(alphaNum)}°</span>
+          </CalcCheckRow>
+          {hasResult ? (
+            <CalcCheckRow ok={result.pressureOk}>
+              <span>
+                p ≤ [p] → {fmtHundredthsRu(pNum)} МПа ≤ {fmtHundredthsRu(result.pp)} МПа
+              </span>
+            </CalcCheckRow>
           ) : null}
         </CalcSection>
       </section>

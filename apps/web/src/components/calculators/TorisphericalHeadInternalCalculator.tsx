@@ -4,6 +4,7 @@ import { calculateTorisphericalHeadExternal } from "@/lib/torisphericalHeadGost3
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
+  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
@@ -11,7 +12,6 @@ import {
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { cn } from "@/lib/utils";
 import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
 const METHODOLOGY_TITLE =
@@ -177,66 +177,20 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
         </CalcSection>
 
         <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
-          <div className="grid min-w-0 grid-cols-1 gap-6 sm:col-span-2 xl:grid-cols-2 xl:items-start">
-            <div className="flex flex-col gap-2">
-              <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                  <span>0,0025</span>
-                  <span>≤</span>
-                  <Frac num={<>s − c</>} den="D" />
-                  <span>≤</span>
-                  <span>0,100</span>
-                </span>
-              </p>
-              {hasResult ? (
-                <>
-                  <p className="text-base font-semibold tabular-nums sm:text-lg">
-                    <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                      <Frac num={<>s − c</>} den="D" />
-                      <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                    </span>
-                  </p>
-                  <p
-                    className={cn(
-                      "text-base font-semibold sm:text-lg",
-                      thinOk ? "text-[var(--color-emphasis)]" : "text-[var(--color-destructive)]"
-                    )}
-                  >
-                    {thinOk ? "Выполнено" : "Не выполнено"}
-                  </p>
-                </>
-              ) : null}
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-base font-semibold sm:text-lg">
-                <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                  <span>0,2</span>
-                  <span>≤</span>
-                  <Frac num="H" den="D" />
-                  <span>≤</span>
-                  <span>0,5</span>
-                </span>
-              </p>
-              {geometryReady ? (
-                <>
-                  <p className="text-base font-semibold tabular-nums sm:text-lg">
-                    <span className="inline-flex max-w-full flex-wrap items-center gap-x-2">
-                      <Frac num="H" den="D" />
-                      <span>= {fmtHundredthsRu(heightRatio)}</span>
-                    </span>
-                  </p>
-                  <p
-                    className={cn(
-                      "text-base font-semibold sm:text-lg",
-                      heightOk ? "text-[var(--color-emphasis)]" : "text-[var(--color-destructive)]"
-                    )}
-                  >
-                    {heightOk ? "Выполнено" : "Не выполнено"}
-                  </p>
-                </>
-              ) : null}
-            </div>
-          </div>
+          {hasResult ? (
+            <CalcCheckRow ok={thinOk}>
+              <Frac num={<>s − c</>} den="D" />
+              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+              <span>в пределах [0,0025; 0,100]</span>
+            </CalcCheckRow>
+          ) : null}
+          {geometryReady ? (
+            <CalcCheckRow ok={heightOk}>
+              <Frac num="H" den="D" />
+              <span>= {fmtHundredthsRu(heightRatio)}</span>
+              <span>в пределах [0,2; 0,5]</span>
+            </CalcCheckRow>
+          ) : null}
         </CalcSection>
       </section>
 

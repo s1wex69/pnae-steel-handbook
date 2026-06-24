@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Circle, Cylinder, Disc, CornerDownRight, ChevronRight, Cone } from "lucide-react";
+import { Circle, Cylinder, Disc, ChevronRight, Cone, CornerDownRight } from "lucide-react";
 
 const CALCULATORS = [
   {
@@ -45,9 +45,17 @@ const CALCULATORS = [
   {
     id: "pipe-internal",
     to: "/calculators/pipe-internal",
-    title: "Труба — внутреннее давление",
-    subtitle: "ГОСТ 34233.2-2017",
+    title: "Расчёт на прочность трубы",
+    subtitle: "п. 4.2.2",
     icon: Cylinder,
+    available: true,
+  },
+  {
+    id: "elbow",
+    to: "/calculators/elbow",
+    title: "Расчёт колена на внутреннее давление",
+    subtitle: "п. 4.2.2.3–4.2.2.9",
+    icon: CornerDownRight,
     available: true,
   },
   {
@@ -59,26 +67,18 @@ const CALCULATORS = [
     available: true,
   },
   {
-    id: "pipe-collector",
-    to: "/calculators/pipe-collector",
-    title: "Коллектор, штуцер, труба",
-    subtitle: "ИН № 7",
-    icon: Cylinder,
+    id: "flat-bottom",
+    to: "/calculators/flat-bottom",
+    title: "Плоское круглое днище",
+    subtitle: "§7.2",
+    icon: Disc,
     available: true,
   },
   {
-    id: "elbow",
-    to: "/calculators/elbow",
-    title: "Колено, гиб, змеевик — внутреннее давление",
-    subtitle: "ИН № 8",
-    icon: CornerDownRight,
-    available: true,
-  },
-  {
-    id: "flat-circular-head",
-    to: "/calculators/flat-circular-head",
-    title: "Круглые плоские днища и крышки",
-    subtitle: "ИН № 9",
+    id: "flat-cover",
+    to: "/calculators/flat-cover",
+    title: "Плоская круглая крышка с краевым моментом",
+    subtitle: "§7.3",
     icon: Disc,
     available: true,
   },
