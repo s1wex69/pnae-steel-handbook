@@ -22,12 +22,6 @@ export function lookupKm(tauBoltAllow: number, tauNutAllow: number): number {
   return tauBoltAllow / tauNutAllow < 1.3 ? 0.6 : 0.7;
 }
 
-export interface BoltAllowances {
-  c1: number;
-  c2: number;
-  c3: number;
-}
-
 export interface BoltsStudsNutsInputs {
   D: number;
   P: number;
@@ -42,7 +36,6 @@ export interface BoltsStudsNutsInputs {
   rmNut: number;
   lubricated: boolean;
   zeroTighteningTorque: boolean;
-  allowances: BoltAllowances;
   flange1: number;
   flange2: number;
   gasket: number;

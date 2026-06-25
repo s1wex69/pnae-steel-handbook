@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { SteelHandbook } from "@/types/steel";
+import { boltThresholdT, calcPnaeBoltAllowable } from "@/lib/boltsStudsNuts";
 import {
   computePnaeAllowable,
   displayMark,
@@ -14,6 +15,10 @@ import {
 } from "@/lib/steelHandbook";
 import { MarkCombobox } from "@/components/handbooks/MarkCombobox";
 import { StyledSelect } from "@/components/handbooks/SelectStep";
+import {
+  CALC_VALUE_GRID_NO_SYMBOL,
+  calcInputClass,
+} from "@/components/calculators/calculatorUi";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -38,7 +43,14 @@ interface Props {
   temperature?: string;
   onTemperatureChange?: (t: string) => void;
   onSteelCategoryChange?: (categoryId: string | null) => void;
+  /** Болты/шпильки — [σ] по п. 3.5 ПНАЭ (n = 1,5) */
+  elementType?: "shell" | "bolt";
+  rmt?: string;
+  onRmtChange?: (v: string) => void;
+  onRmChange?: (rm: number) => void;
+  defaultMark?: string;
 }
+
 function StandardToggle({
   standard,
   onChange,
@@ -109,10 +121,15 @@ export function AllowableStressFromHandbook({
   temperature: temperatureProp,
   onTemperatureChange,
   onSteelCategoryChange,
+  elementType = "shell",
+  rmt = "",
+  onRmtChange,
+  onRmChange,
+  defaultMark = "",
 }: Props) {
   const [standard, setStandard] = useState<SigmaStandard>("pnae");
   const [steelExpanded, setSteelExpanded] = useState(!collapsibleSteelPickers);
-  const [mark, setMark] = useState("");
+  const [mark, setMark] = useState(defaultMark);
   const [sortament, setSortament] = useState("");
   const [group, setGroup] = useState("");
   const [temperatureInternal, setTemperatureInternal] = useState("20");
@@ -133,24 +150,60 @@ export function AllowableStressFromHandbook({
   const showSteelPickers = !collapsibleSteelPickers || steelExpanded;
   const hasSteelSelection = Boolean(activeMark && sortament && group);
 
-  const handbookSigma = useMemo(() => {
-    if (standard !== "pnae" || !hasSteelSelection) return null;
-    const grade = findGrade(handbook, group, activeMark, sortament);
-    if (!grade) return null;
+  const selectedGrade = useMemo(() => {
+    if (!hasSteelSelection) return null;
+    return findGrade(handbook, group, activeMark, sortament);
+  }, [handbook, hasSteelSelection, group, activeMark, sortament]);
 
-    const catId = findCategoryIdForMark(handbook, displayMark(grade)) ?? "";
-    const t = Number(temperature.replace(",", "."));
+  const temperatureNum = Number(temperature.replace(",", "."));
+
+  const thresholdT = useMemo(() => {
+    if (!selectedGrade) return 350;
+    const catId = findCategoryIdForMark(handbook, displayMark(selectedGrade)) ?? "";
+    return elementType === "bolt"
+      ? boltThresholdT(catId, selectedGrade.group)
+      : 350;
+  }, [handbook, selectedGrade, elementType]);
+
+  const handbookSigma = useMemo(() => {
+    if (standard !== "pnae" || !selectedGrade) return null;
+
+    const catId = findCategoryIdForMark(handbook, displayMark(selectedGrade)) ?? "";
+    const t = temperatureNum;
     if (!Number.isFinite(t)) return null;
-    const rm = interpolatedValue(grade, "rm", t);
-    const rp02 = interpolatedValue(grade, "rp02", t);
-    if (rm == null || rp02 == null || rm <= 0 || rp02 <= 0 || rp02 > rm) return null;
+    const rm = interpolatedValue(selectedGrade, "rm", t);
+    const rp02 = interpolatedValue(selectedGrade, "rp02", t);
+    if (rm == null || rp02 == null || rm <= 0 || rp02 <= 0) return null;
+
+    if (elementType === "bolt") {
+      if (!(rp02 > 0)) return null;
+      const rmtVal = t > thresholdT && rmt.trim() !== "" ? Number(rmt.replace(",", ".")) : null;
+      const allow = calcPnaeBoltAllowable(
+        rp02,
+        rmtVal != null && Number.isFinite(rmtVal) && rmtVal > 0 ? rmtVal : null,
+        t,
+        thresholdT
+      );
+      return allow?.sigma ?? null;
+    }
+
+    if (rp02 > rm) return null;
     const allow = computePnaeAllowable(rm, rp02, {
       temperature: t,
-      materialGroup: grade.group,
+      materialGroup: selectedGrade.group,
       categoryId: catId,
     });
     return allow?.sigma ?? null;
-  }, [handbook, standard, hasSteelSelection, group, activeMark, sortament, temperature]);
+  }, [handbook, standard, selectedGrade, temperatureNum, elementType, rmt, thresholdT]);
+
+  useEffect(() => {
+    if (!selectedGrade || !Number.isFinite(temperatureNum)) {
+      onRmChange?.(0);
+      return;
+    }
+    const rm = interpolatedValue(selectedGrade, "rm", temperatureNum);
+    onRmChange?.(rm != null && rm > 0 ? rm : 0);
+  }, [selectedGrade, temperatureNum, onRmChange]);
 
   useEffect(() => {
     onSteelCategoryChange?.(categoryId || null);
@@ -233,6 +286,23 @@ export function AllowableStressFromHandbook({
     </div>
   ) : null;
 
+  const rmtField =
+    elementType === "bolt" && Number.isFinite(temperatureNum) && temperatureNum > thresholdT ? (
+      <div className="space-y-1.5">
+        <Label className={fieldLabelClass}>Длительная прочность</Label>
+        <div className={cn(CALC_VALUE_GRID_NO_SYMBOL, "max-w-none")}>
+          <Input
+            type="text"
+            inputMode="decimal"
+            className={cn(calcInputClass, "text-left", embedded && "h-10")}
+            value={rmt}
+            onChange={(e) => onRmtChange?.(e.target.value.replace(",", "."))}
+          />
+          <span className="text-base text-[var(--color-muted-foreground)]">МПа</span>
+        </div>
+      </div>
+    ) : null;
+
   const pnaePickers = (
     <div className="grid gap-2">
       {collapsibleSteelPickers && (
@@ -241,7 +311,9 @@ export function AllowableStressFromHandbook({
       {showSteelPickers ? (
         <>
           {markField}
-          {externalTemperature ? sortamentField : (
+          {externalTemperature ? (
+            sortamentField
+          ) : (
             <div className="grid grid-cols-[1fr_auto] gap-2">
               {sortamentField}
               {temperatureField}
@@ -251,6 +323,7 @@ export function AllowableStressFromHandbook({
       ) : (
         !externalTemperature && <div className="flex justify-end">{temperatureField}</div>
       )}
+      {externalTemperature ? rmtField : null}
     </div>
   );
 
