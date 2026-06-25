@@ -26,6 +26,7 @@ const NETLIFY_URLS = {
   "09-kalkulyator-koleno": "https://intech-calc8.netlify.app/",
   "10-kalkulyator-ploskoe-dnishche": "https://intech-calc9.netlify.app/",
   "11-kalkulyator-ploskaya-kryshka": "https://intech-calc10.netlify.app/",
+  "12-kalkulyator-bolty-shpilki-gayki": "https://intech-calc11.netlify.app/",
 };
 
 const useNetlify = process.argv.includes("--netlify") || process.env.TILDA_IFRAME_HOST === "netlify";
@@ -48,6 +49,7 @@ const GITLAB_URLS = {
   "09-kalkulyator-koleno": "https://USERNAME.gitlab.io/PROJECT/calc8/",
   "10-kalkulyator-ploskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc9/",
   "11-kalkulyator-ploskaya-kryshka": "https://USERNAME.gitlab.io/PROJECT/calc10/",
+  "12-kalkulyator-bolty-shpilki-gayki": "https://USERNAME.gitlab.io/PROJECT/calc11/",
 };
 
 const GITHUB_URLS = {
@@ -62,6 +64,7 @@ const GITHUB_URLS = {
   "09-kalkulyator-koleno": "https://s1wex69.github.io/pnae-steel-handbook/calc8/",
   "10-kalkulyator-ploskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc9/",
   "11-kalkulyator-ploskaya-kryshka": "https://s1wex69.github.io/pnae-steel-handbook/calc10/",
+  "12-kalkulyator-bolty-shpilki-gayki": "https://s1wex69.github.io/pnae-steel-handbook/calc11/",
 };
 
 function loadUrlsFromFile(filePath, defaults, placeholders) {
@@ -209,6 +212,14 @@ const projects = [
     title: "Калькулятор — плоская круглая крышка",
     iframeTitle: "Плоская круглая крышка с краевым моментом",
     embedSiteUrl: "https://intech-atom.ru/calc10",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
+  {
+    id: "12-kalkulyator-bolty-shpilki-gayki",
+    input: "tilda-calc-bolts-studs-nuts.html",
+    title: "Калькулятор — болты, шпильки и гайки",
+    iframeTitle: "Расчёт болтов, шпилек и гаек",
+    embedSiteUrl: "https://intech-atom.ru/calc11",
     embedSiteName: "ИНТЕХ-АТОМ",
   },
 ].map((p) => ({ ...p, iframeSrc: iframeUrls[p.id] }));

@@ -14,6 +14,7 @@ import { ConicalShellInternalPage } from "@/pages/ConicalShellInternalPage";
 import { FlatBottomPage } from "@/pages/FlatBottomPage";
 import { FlatCoverPage } from "@/pages/FlatCoverPage";
 import { ElbowInternalPage } from "@/pages/ElbowInternalPage";
+import { BoltsStudsNutsPage } from "@/pages/BoltsStudsNutsPage";
 
 function LegacyPnaeRedirect() {
   const { search } = useLocation();
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="calculators/flat-bottom" element={<FlatBottomPage />} />
               <Route path="calculators/flat-cover" element={<FlatCoverPage />} />
               <Route path="calculators/elbow" element={<ElbowInternalPage />} />
+              <Route path="calculators/bolts-studs-nuts" element={<BoltsStudsNutsPage />} />
               <Route path="handbooks/pnae-steel" element={<LegacyPnaeRedirect />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>

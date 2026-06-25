@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Circle, Cylinder, Disc, ChevronRight, Cone, CornerDownRight } from "lucide-react";
+import { Circle, Cylinder, Disc, ChevronRight, Cone, CornerDownRight, Bolt } from "lucide-react";
 
 const CALCULATORS = [
   {
@@ -56,6 +56,14 @@ const CALCULATORS = [
     title: "Расчёт колена на внутреннее давление",
     subtitle: "п. 4.2.2.3–4.2.2.9",
     icon: CornerDownRight,
+    available: true,
+  },
+  {
+    id: "bolts-studs-nuts",
+    to: "/calculators/bolts-studs-nuts",
+    title: "Расчёт болтов, шпилек и гаек",
+    subtitle: "разд. 3.9 ПНАЭ",
+    icon: Bolt,
     available: true,
   },
   {

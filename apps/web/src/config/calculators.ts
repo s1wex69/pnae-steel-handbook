@@ -76,6 +76,7 @@ export const CALCULATOR_LABELS: Record<string, string> = {
   "torispherical-head": "Торосферическое днище — внутреннее давление",
   "pipe-internal": "Расчёт на прочность трубы",
   elbow: "Расчёт колена на внутреннее давление",
+  "bolts-studs-nuts": "Расчёт болтов, шпилек и гаек",
   "conical-shell-internal": "Коническая обечайка — внутреннее давление (ГОСТ 34233.2)",
   "flat-bottom": "Плоское круглое днище",
   "flat-cover": "Плоская круглая крышка",

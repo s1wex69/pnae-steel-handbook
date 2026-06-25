@@ -18,6 +18,7 @@
     "build:tilda-calc-elbow": "node ../../scripts/build-tilda-export.mjs 09-kalkulyator-koleno",
     "build:tilda-calc-flat-bottom": "node ../../scripts/build-tilda-export.mjs 10-kalkulyator-ploskoe-dnishche",
     "build:tilda-calc-flat-cover": "node ../../scripts/build-tilda-export.mjs 11-kalkulyator-ploskaya-kryshka",
+    "build:tilda-calc-bolts-studs-nuts": "node ../../scripts/build-tilda-export.mjs 12-kalkulyator-bolty-shpilki-gayki",
     "build:tilda-t123": "node ../../scripts/build-tilda-t123.mjs",
     "preview": "vite preview"
   },

@@ -29,6 +29,7 @@ const PROJECT_IDS = [
   "09-kalkulyator-koleno",
   "10-kalkulyator-ploskoe-dnishche",
   "11-kalkulyator-ploskaya-kryshka",
+  "12-kalkulyator-bolty-shpilki-gayki",
 ];
 
 const DEFAULT_PATHS = {
@@ -43,6 +44,7 @@ const DEFAULT_PATHS = {
   "09-kalkulyator-koleno": "calc8",
   "10-kalkulyator-ploskoe-dnishche": "calc9",
   "11-kalkulyator-ploskaya-kryshka": "calc10",
+  "12-kalkulyator-bolty-shpilki-gayki": "calc11",
 };
 
 const SKIP_FILES = new Set(["TILDA-ВСТАВКА.html", "README.txt"]);
@@ -122,6 +124,7 @@ const indexHtml = `<!DOCTYPE html>
       <li><a href="./${paths["09-kalkulyator-koleno"]}/">Калькулятор — колено</a></li>
       <li><a href="./${paths["10-kalkulyator-ploskoe-dnishche"]}/">Калькулятор — плоское круглое днище</a></li>
       <li><a href="./${paths["11-kalkulyator-ploskaya-kryshka"]}/">Калькулятор — плоская круглая крышка</a></li>
+      <li><a href="./${paths["12-kalkulyator-bolty-shpilki-gayki"]}/">Калькулятор — болты, шпильки и гайки</a></li>
     </ul>
   </body>
 </html>
