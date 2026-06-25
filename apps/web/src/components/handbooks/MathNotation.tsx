@@ -72,6 +72,27 @@ function StackedSubSup({ sub, sup }: { sub: ReactNode; sup: ReactNode }) {
   );
 }
 
+const ALLOWANCE_C_LABEL: Record<"11" | "12" | "21", string> = {
+  "11": "c₁₁",
+  "12": "c₁₂",
+  "21": "c₂₁",
+};
+
+/** c₁₁, c₁₂, c₂₁ — прибавки по stresscalc / ПНАЭ */
+export function AllowanceC({
+  index,
+  className,
+}: {
+  index: "11" | "12" | "21";
+  className?: string;
+}) {
+  return (
+    <MathSpan className={cn("min-w-[2.75rem] text-xl font-semibold italic text-[var(--color-heading)]", className)}>
+      {ALLOWANCE_C_LABEL[index]}
+    </MathSpan>
+  );
+}
+
 /** R_m, R_p0,2, n_mt и т.д. */
 export function Var({
   letter,

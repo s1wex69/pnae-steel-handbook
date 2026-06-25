@@ -1,0 +1,75 @@
+/** Формулы и прибавки как на stresscalc.ru (boiler/boiler.php, boiler/elbow.php) */
+
+import type { ElbowSteelClass } from "@/lib/elbow";
+
+const ELBOW_TEMP_LIMITS: Record<ElbowSteelClass, { low: number; high: number }> = {
+  carbon: { low: 350, high: 400 },
+  crmov: { low: 400, high: 450 },
+  austenitic: { low: 450, high: 525 },
+};
+
+export function round2(v: number) {
+  return +v.toFixed(2);
+}
+
+export function round1(v: number) {
+  return +v.toFixed(1);
+}
+
+/** Минусовой допуск: 10 % s при Da ≤ 114, иначе 5 % (ТУ 14-3Р-55) */
+export function stresscalcMinusTolerance(Da: number, s: number) {
+  if (!(Da > 0) || !(s > 0)) return 0;
+  const frac = Da <= 114 ? 0.1 : 0.05;
+  return round2(frac * s);
+}
+
+/** Коррозионная прибавка: 1 мм; для колена при Da > 133 — 3 мм */
+export function stresscalcCorrosionAllowance(Da: number, elbow: boolean) {
+  if (elbow && Da > 133) return 3;
+  return 1;
+}
+
+/** Технологическая прибавка c₁₂ для внешней зоны колена */
+export function stresscalcElbowTechAllowance(s: number, Rs: number, Da: number) {
+  if (!(s > 0) || !(Da > 0) || !(Rs > 0)) return 0;
+  return round2(s / (1 + (2 * Rs) / Da));
+}
+
+export function stresscalcInterpY(lowY: number, highY: number, T: number, steelClass: ElbowSteelClass) {
+  const limits = ELBOW_TEMP_LIMITS[steelClass];
+  if (T <= limits.low) return lowY;
+  if (T >= limits.high) return highY;
+  const t = (T - limits.low) / (limits.high - limits.low);
+  if (lowY < highY) return lowY + (highY - lowY) * t;
+  return highY + (lowY - highY) * t;
+}
+
+export interface StresscalcElbowAllowances {
+  c11: number;
+  c12: number;
+  c21: number;
+}
+
+export function resolveStresscalcElbowAllowances(a: StresscalcElbowAllowances) {
+  const cc1 = round2(a.c11 + a.c12 + a.c21);
+  const cc23 = round2(a.c11 + a.c21);
+  return { cc1, cc23 };
+}
+
+/** [p] по зоне — как Pdop_i в elbow.js stresscalc */
+export function calcStresscalcZoneAllowablePressure(
+  s: number,
+  cc: number,
+  Ki: number,
+  Yi: number,
+  Da: number,
+  sigma: number,
+  phi: number
+): number | null {
+  const num = s - cc;
+  if (!(num > 0) || !(Ki > 0) || !(Yi > 0) || !(Da > 0) || !(sigma > 0) || !(phi > 0)) return null;
+  const t = num / (Ki * Yi);
+  const denom = Da - t;
+  if (!(denom > 0)) return null;
+  return round1((2 * phi * sigma * t) / denom);
+}

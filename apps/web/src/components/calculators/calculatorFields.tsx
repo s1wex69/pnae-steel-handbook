@@ -15,7 +15,7 @@ import {
   calcInputClass,
   calcResultBoxClass,
 } from "@/components/calculators/calculatorUi";
-import { CalcSymbol, Var } from "@/components/handbooks/MathNotation";
+import { CalcSymbol, Var, AllowanceC } from "@/components/handbooks/MathNotation";
 
 type RowVariant = "default" | "check" | "result";
 type RowLayout = "inline" | "stacked";
@@ -268,6 +268,185 @@ export function AllowancesCalcSection({
         unit="мм"
         borderless
       />
+    </CalcSection>
+  );
+}
+
+export function PipeAllowancesCalcSection({
+  cMinus,
+  cCorrosion,
+  cc,
+  onCMinus,
+  onCCorrosion,
+  onCc,
+  collapsible = true,
+  defaultExpanded = true,
+}: {
+  cMinus: string;
+  cCorrosion: string;
+  cc: string;
+  onCMinus: (v: string) => void;
+  onCCorrosion: (v: string) => void;
+  onCc: (v: string) => void;
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const toggleButton = collapsible ? (
+    <button
+      type="button"
+      onClick={() => setExpanded((v) => !v)}
+      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+    >
+      {expanded ? (
+        <>
+          <ChevronUp className="h-5 w-5" />
+          Скрыть
+        </>
+      ) : (
+        <>
+          <ChevronDown className="h-5 w-5" />
+          Раскрыть
+        </>
+      )}
+    </button>
+  ) : null;
+
+  const detailRows = (
+    <>
+      <CalcRow
+        label="Минусовой допуск к толщине"
+        symbol={<Var letter="c" sub="1" />}
+        value={cMinus}
+        onChange={onCMinus}
+        unit="мм"
+      />
+      <CalcRow
+        label="Прибавка на коррозию"
+        symbol={<Var letter="c" sub="2" />}
+        value={cCorrosion}
+        onChange={onCCorrosion}
+        unit="мм"
+      />
+    </>
+  );
+
+  const sumRow = (
+    <CalcRow
+      label="Суммарная прибавка"
+      symbol={<CalcSymbol>c</CalcSymbol>}
+      value={cc}
+      onChange={onCc}
+      unit="мм"
+      borderless
+    />
+  );
+
+  if (collapsible) {
+    return (
+      <section className={CALC_SECTION_CARD}>
+        <CalcSectionHeading title="Прибавки к расчётной толщине" action={toggleButton} accent={false} />
+        <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
+          <div className="contents">
+            {expanded ? detailRows : null}
+            {sumRow}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
+      {detailRows}
+      {sumRow}
+    </CalcSection>
+  );
+}
+
+export function ElbowAllowancesCalcSection({
+  c11,
+  c12,
+  c21,
+  onC11,
+  onC12,
+  onC21,
+  collapsible = true,
+  defaultExpanded = true,
+}: {
+  c11: string;
+  c12: string;
+  c21: string;
+  onC11: (v: string) => void;
+  onC12: (v: string) => void;
+  onC21: (v: string) => void;
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const toggleButton = collapsible ? (
+    <button
+      type="button"
+      onClick={() => setExpanded((v) => !v)}
+      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+    >
+      {expanded ? (
+        <>
+          <ChevronUp className="h-5 w-5" />
+          Скрыть
+        </>
+      ) : (
+        <>
+          <ChevronDown className="h-5 w-5" />
+          Раскрыть
+        </>
+      )}
+    </button>
+  ) : null;
+
+  const rows = (
+    <>
+      <CalcRow
+        label="Минусовой допуск к толщине"
+        symbol={<AllowanceC index="11" />}
+        value={c11}
+        onChange={onC11}
+        unit="мм"
+      />
+      <CalcRow
+        label="Технологическая прибавка (внешняя сторона)"
+        symbol={<AllowanceC index="12" />}
+        value={c12}
+        onChange={onC12}
+        unit="мм"
+      />
+      <CalcRow
+        label="Прибавка на коррозию"
+        symbol={<AllowanceC index="21" />}
+        value={c21}
+        onChange={onC21}
+        unit="мм"
+        borderless
+      />
+    </>
+  );
+
+  if (collapsible) {
+    return (
+      <section className={CALC_SECTION_CARD}>
+        <CalcSectionHeading title="Прибавки к расчётной толщине" action={toggleButton} accent={false} />
+        <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
+          <div className="contents">{expanded ? rows : null}</div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
+      {rows}
     </CalcSection>
   );
 }

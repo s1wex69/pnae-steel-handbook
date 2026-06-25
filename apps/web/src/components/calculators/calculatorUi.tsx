@@ -47,7 +47,7 @@ export function CalculatorPageHeader({
   description,
 }: {
   eyebrow?: string;
-  title: string;
+  title: ReactNode;
   standard?: string;
   description?: string;
 }) {

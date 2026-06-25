@@ -1,35 +1,34 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { calculatePipeStrength } from "@/lib/pipeStrength";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
-import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
+import { CalcRow, PipeAllowancesCalcSection } from "@/components/calculators/calculatorFields";
 import {
-  CalcCheckRow,
   CalcSection,
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
-import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
-import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmt, fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
+import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
+import { usePipeAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
+import { stresscalcCorrosionAllowance } from "@/lib/stresscalcShell";
+import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
 export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
-  const allowances = useAllowanceFields({ c1: "0.5", c2: "0.3", c3: "0" });
-  const [Da, setDa] = useState("57");
+  const allowances = usePipeAllowanceFields({ cMinus: "0.4", cCorrosion: "1" });
+  const [Da, setDa] = useState("80");
   const [sigmaStr, setSigmaStr] = useState("140");
-  const [sigmaTemp, setSigmaTemp] = useState("200");
+  const [sigmaTemp, setSigmaTemp] = useState("20");
   const sigma = num(sigmaStr, 140);
-  const [phiP, setPhiP] = useState("1");
-  const [p, setP] = useState("1.6");
-  const [s, setS] = useState("2");
+  const [phiP, setPhiP] = useState("0.8");
+  const [p, setP] = useState("2");
 
-  const ccNum = num(allowances.cc);
   const daNum = num(Da);
   const phiPNum = num(phiP, 1);
   const pNum = num(p);
-  const sNum = num(s);
+  const cMinusNum = num(allowances.cMinus);
+  const cCorrosionNum = num(allowances.cCorrosion);
 
   const result = useMemo(
     () =>
@@ -38,38 +37,35 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
         sigma,
         phi: phiPNum,
         p: pNum,
-        s: sNum,
-        allowances: {
-          c1: num(allowances.c1),
-          c2: num(allowances.c2),
-          c31: 0,
-          c32: 0,
-          c33: 0,
-          c3: num(allowances.c3),
-          cc: ccNum,
-        },
+        s: 0,
+        cMinus: cMinusNum,
+        cCorrosion: cCorrosionNum,
       }),
-    [allowances, daNum, sigma, phiPNum, pNum, sNum, ccNum]
+    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum]
   );
+
+  useEffect(() => {
+    if (daNum > 0) {
+      allowances.setCCorrosion(String(stresscalcCorrosionAllowance(daNum, false)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- c₂₁ по Dₐ
+  }, [daNum]);
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
-  const sUsed = sNum > 0 ? sNum : result.sMin;
 
   return (
     <CalculatorPageShell>
-      <CalculatorPageHeader title="Расчёт на прочность трубы" />
+      <CalculatorPageHeader title="Расчёт на прочность трубы, штуцера, коллектора" />
 
       <section className="space-y-8">
-        <AllowancesCalcSection
+        <PipeAllowancesCalcSection
           collapsible
-          c1={allowances.c1}
-          c2={allowances.c2}
-          c3={allowances.c3}
+          cMinus={allowances.cMinus}
+          cCorrosion={allowances.cCorrosion}
           cc={allowances.cc}
-          onC1={allowances.setC1}
-          onC2={allowances.setC2}
-          onC3={allowances.setC3}
+          onCMinus={allowances.setCMinus}
+          onCCorrosion={allowances.setCCorrosion}
           onCc={allowances.setCc}
         />
 
@@ -85,7 +81,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
             />
             <CalcRow
               inColumn
-              label="Расчётное внутреннее избыточное давление"
+              label="Расчётное внутреннее давление"
               symbol="p"
               value={p}
               onChange={setP}
@@ -101,26 +97,10 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
             />
             <CalcRow
               inColumn
-              label="Коэффициент прочности сварного шва"
+              label="Коэффициент снижения сварного шва"
               symbol={<Var letter="φ" />}
               value={phiP}
               onChange={setPhiP}
-            />
-            <CalcRow
-              inColumn
-              label="Коэффициент K (для трубы K = 1)"
-              symbol={<Var letter="K" />}
-              value="1"
-              disabled
-              borderless
-            />
-            <CalcRow
-              inColumn
-              label="Принятая номинальная толщина стенки"
-              symbol={<CalcSymbol>s</CalcSymbol>}
-              value={s}
-              onChange={setS}
-              unit="мм"
               borderless
             />
           </div>
@@ -166,54 +146,12 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
           <CalcRow
             variant="result"
             disabled
-            label="Минимальная номинальная толщина s ≥ sᵣ + c"
+            label="Расчётная толщина с учётом прибавок"
             symbol={<CalcSymbol>s</CalcSymbol>}
             value={hasResult ? fmtHundredths(result.sMin) : ""}
             unit="мм"
-          />
-          <CalcRow
-            variant="result"
-            disabled
-            label="Допускаемое давление после изготовления"
-            symbol="[p]"
-            value={hasResult && sNum > 0 ? fmt(result.pAllowMfg, 2) : ""}
-            unit="МПа"
-          />
-          <CalcRow
-            variant="result"
-            disabled
-            label="Допускаемое давление при проектировании"
-            symbol="[p]"
-            value={hasResult && sNum > 0 ? fmt(result.pAllowDesign, 2) : ""}
-            unit="МПа"
             borderless
           />
-        </CalcSection>
-
-        <CalcSection title="Проверки" titleAccent={false}>
-          {hasResult && sNum > 0 ? (
-            <CalcCheckRow ok={result.applicabilityOk}>
-              <Frac num={<>s − c</>} den={<Var letter="D" sub="a" />} />
-              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>{result.applicabilityOk ? "≤" : ">"} 0,25</span>
-            </CalcCheckRow>
-          ) : (
-            <CalcCheckRow placeholder="Укажите толщину s для проверки" />
-          )}
-          {hasResult && sNum > 0 ? (
-            <CalcCheckRow ok={result.thicknessOk}>
-              <span>
-                s ≥ sᵣ + c → {s} мм {result.thicknessOk ? "≥" : "<"} {fmtHundredths(result.sMin)} мм
-              </span>
-            </CalcCheckRow>
-          ) : null}
-          {hasResult && sNum > 0 && !isBlank(p) ? (
-            <CalcCheckRow ok={result.strengthOk}>
-              <span>
-                p ≤ [p] → {p} МПа {result.strengthOk ? "≤" : ">"} {fmt(result.pAllowMfg, 2)} МПа
-              </span>
-            </CalcCheckRow>
-          ) : null}
         </CalcSection>
       </section>
 
@@ -224,7 +162,11 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
       ) : null}
 
       <CalculatorDiagramCard>
-        <VesselDiagram diameter={daNum || 57} thickness={sUsed > 0 ? sUsed : num(fmtHundredths(result.sr), 0.32) + ccNum} />
+        <VesselDiagram
+          diameter={daNum || 80}
+          thickness={hasResult ? result.sMin : 2}
+          outerDiameter
+        />
       </CalculatorDiagramCard>
     </CalculatorPageShell>
   );

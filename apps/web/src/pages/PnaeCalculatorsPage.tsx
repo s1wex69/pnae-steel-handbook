@@ -45,7 +45,7 @@ const CALCULATORS = [
   {
     id: "pipe-internal",
     to: "/calculators/pipe-internal",
-    title: "Расчёт на прочность трубы",
+    title: "Расчёт на прочность трубы, штуцера, коллектора",
     subtitle: "п. 4.2.2",
     icon: Cylinder,
     available: true,
