@@ -58,11 +58,10 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
   const hasResult = inputsReady && result.error == null;
   const displaySp = hasResult ? fmtHundredths(result.sp) : "";
   const displaySs = hasResult ? fmtHundredths(result.ss) : "";
-  const displayPp = hasResult && result.pp > 0 ? fmtHundredths(result.pp) : "";
 
   return (
     <CalculatorPageShell>
-      <CalculatorPageHeader title="Расчёт на прочность конической обечайки" />
+      <CalculatorPageHeader title="Расчёт на прочность конической обечайки, нагруженной внутренним избыточным давлением" />
 
       <section className="space-y-8">
         <AllowancesCalcSection
@@ -166,14 +165,6 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
             symbol={<CalcSymbol className="!text-2xl">s</CalcSymbol>}
             value={displaySs}
             unit="мм"
-          />
-          <CalcRow
-            variant="result"
-            disabled
-            label="Допускаемое внутреннее давление"
-            symbol="[p]"
-            value={displayPp}
-            unit="МПа"
             borderless
           />
         </CalcSection>

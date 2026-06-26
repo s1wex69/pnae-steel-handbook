@@ -69,7 +69,7 @@ const CALCULATORS = [
   {
     id: "conical-shell-internal",
     to: "/calculators/conical-shell-internal",
-    title: "Коническая обечайка — внутреннее давление",
+    title: "Расчёт на прочность конической обечайки, нагруженной внутренним избыточным давлением",
     subtitle: "ГОСТ 34233.2-2017",
     icon: Cone,
     available: true,
