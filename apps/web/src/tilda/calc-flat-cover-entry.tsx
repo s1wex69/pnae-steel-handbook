@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { useEffect, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
-import { FlatCoverCalculator } from "@/components/calculators/FlatCoverCalculator";
+import { FlatHeadCalculator } from "@/components/calculators/FlatHeadCalculator";
 import { loadHandbookData } from "@/lib/handbookDataLoader";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { TildaShell } from "@/tilda/TildaShell";
@@ -24,7 +24,7 @@ function CalcFlatCoverApp() {
   if (!data) {
     return <p className="text-base text-[var(--color-destructive)]">Не удалось загрузить справочник ПНАЭ</p>;
   }
-  return <FlatCoverCalculator handbook={data} />;
+  return <FlatHeadCalculator handbook={data} initialMode="cover" />;
 }
 
 createRoot(document.getElementById("root")!).render(

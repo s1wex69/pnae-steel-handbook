@@ -18,7 +18,13 @@ import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { fmt, fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
-export function FlatCoverCalculator({ handbook }: { handbook: SteelHandbook }) {
+export function FlatCoverCalculator({
+  handbook,
+  embedded = false,
+}: {
+  handbook: SteelHandbook;
+  embedded?: boolean;
+}) {
   const allowances = useAllowanceFields({ c1: "1.0", c2: "0.8", c3: "0" });
   const [attachmentType, setAttachmentType] = useState<FlatHeadAttachmentType>(11);
   const [D, setD] = useState("600");
@@ -73,11 +79,8 @@ export function FlatCoverCalculator({ handbook }: { handbook: SteelHandbook }) {
   const hasResult = inputsReady && result.error == null;
   const needsR = attachmentType === 9;
 
-  return (
-    <CalculatorPageShell>
-      <CalculatorPageHeader title="Расчёт плоской круглой крышки с краевым моментом" />
-
-      <section className="space-y-8">
+  const content = (
+    <section className="space-y-8">
         <AllowancesCalcSection
           collapsible
           c1={allowances.c1}
@@ -225,13 +228,21 @@ export function FlatCoverCalculator({ handbook }: { handbook: SteelHandbook }) {
             </CalcCheckRow>
           ) : null}
         </CalcSection>
-      </section>
 
       {result.error ? (
         <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}
+    </section>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <CalculatorPageShell>
+      <CalculatorPageHeader title="Расчёт плоской круглой крышки с краевым моментом" />
+      {content}
     </CalculatorPageShell>
   );
 }

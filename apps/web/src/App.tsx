@@ -11,6 +11,7 @@ import { EllipticalHeadPage } from "@/pages/EllipticalHeadPage";
 import { TorisphericalHeadPage } from "@/pages/TorisphericalHeadPage";
 import { PipeInternalPage } from "@/pages/PipeInternalPage";
 import { ConicalShellInternalPage } from "@/pages/ConicalShellInternalPage";
+import { FlatHeadPage } from "@/pages/FlatHeadPage";
 import { FlatBottomPage } from "@/pages/FlatBottomPage";
 import { FlatCoverPage } from "@/pages/FlatCoverPage";
 import { ElbowInternalPage } from "@/pages/ElbowInternalPage";
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="calculators/torispherical-head" element={<TorisphericalHeadPage />} />
               <Route path="calculators/pipe-internal" element={<PipeInternalPage />} />
               <Route path="calculators/conical-shell-internal" element={<ConicalShellInternalPage />} />
+              <Route path="calculators/flat-head" element={<FlatHeadPage />} />
               <Route path="calculators/flat-bottom" element={<FlatBottomPage />} />
               <Route path="calculators/flat-cover" element={<FlatCoverPage />} />
               <Route path="calculators/elbow" element={<ElbowInternalPage />} />

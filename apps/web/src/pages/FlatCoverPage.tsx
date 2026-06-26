@@ -1,10 +1,5 @@
-import { FlatCoverCalculator } from "@/components/calculators/FlatCoverCalculator";
-import { CalculatorHandbookPage } from "@/pages/CalculatorHandbookPage";
+import { Navigate } from "react-router-dom";
 
 export function FlatCoverPage() {
-  return (
-    <CalculatorHandbookPage>
-      {(handbook) => <FlatCoverCalculator handbook={handbook} />}
-    </CalculatorHandbookPage>
-  );
+  return <Navigate to="/calculators/flat-head?mode=cover" replace />;
 }

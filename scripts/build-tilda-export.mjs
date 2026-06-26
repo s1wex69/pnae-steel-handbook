@@ -201,7 +201,7 @@ const projects = [
   {
     id: "10-kalkulyator-ploskoe-dnishche",
     input: "tilda-calc-flat-bottom.html",
-    title: "Калькулятор — плоское круглое днище",
+    title: "Калькулятор — плоские днища и крышки",
     iframeTitle: "Плоское круглое днище",
     embedSiteUrl: "https://intech-atom.ru/calc9",
     embedSiteName: "ИНТЕХ-АТОМ",
@@ -209,7 +209,7 @@ const projects = [
   {
     id: "11-kalkulyator-ploskaya-kryshka",
     input: "tilda-calc-flat-cover.html",
-    title: "Калькулятор — плоская круглая крышка",
+    title: "Калькулятор — плоские днища и крышки",
     iframeTitle: "Плоская круглая крышка с краевым моментом",
     embedSiteUrl: "https://intech-atom.ru/calc10",
     embedSiteName: "ИНТЕХ-АТОМ",

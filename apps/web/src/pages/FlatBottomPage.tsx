@@ -1,10 +1,5 @@
-import { FlatBottomCalculator } from "@/components/calculators/FlatBottomCalculator";
-import { CalculatorHandbookPage } from "@/pages/CalculatorHandbookPage";
+import { Navigate } from "react-router-dom";
 
 export function FlatBottomPage() {
-  return (
-    <CalculatorHandbookPage>
-      {(handbook) => <FlatBottomCalculator handbook={handbook} />}
-    </CalculatorHandbookPage>
-  );
+  return <Navigate to="/calculators/flat-head?mode=bottom" replace />;
 }
