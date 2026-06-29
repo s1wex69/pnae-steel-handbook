@@ -19,7 +19,7 @@ import {
   calcInputClass,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
-import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Var, CALC_NOTATION_CLASS } from "@/components/handbooks/MathNotation";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
@@ -50,8 +50,9 @@ function CalcRow({
 }) {
   const isResult = variant === "result";
   const symbolClass = cn(
-    "justify-self-end text-right text-lg font-semibold",
-    isResult ? "text-[var(--color-primary)]" : "text-[var(--color-heading)]"
+    "justify-self-end text-right font-serif",
+    CALC_NOTATION_CLASS,
+    isResult && "text-[var(--color-primary)]"
   );
   const unitClass = cn(
     "text-sm",

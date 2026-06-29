@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Var } from "@/components/handbooks/MathNotation";
+import { Frac, Var, CALC_NOTATION_CLASS } from "@/components/handbooks/MathNotation";
 import { cn } from "@/lib/utils";
+import { fmtHundredthsRu } from "@/lib/calcInputUtils";
 
 export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_minmax(10.5rem,14rem)]";
 export const CALC_ROW_GRID_IN_COLUMN =
@@ -17,13 +18,13 @@ export const CALC_VALUE_GRID_NO_SYMBOL =
   "grid w-full min-w-0 max-w-[min(100%,22rem)] grid-cols-[minmax(0,1fr)_minmax(2rem,auto)] items-center justify-self-end gap-x-1.5 sm:col-start-2";
 
 export const CALC_SYMBOL_CLASS =
-  "min-w-0 shrink-0 justify-self-end text-right text-lg font-semibold text-[var(--color-heading)]";
+  `min-w-0 shrink-0 justify-self-end text-right font-serif ${CALC_NOTATION_CLASS}`;
 
 export const calcInputClass =
-  "calc-input box-border h-8 w-full min-w-0 text-right text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
+  "calc-input box-border h-9 w-full min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2.5 text-right text-base font-semibold tabular-nums text-[var(--color-heading)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
 
 export const calcResultBoxClass =
-  "flex h-8 w-full min-w-0 items-center justify-end overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-sm tabular-nums whitespace-nowrap text-[var(--color-foreground)]";
+  "flex h-8 w-full min-w-0 items-center justify-end overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-muted)]/35 px-2 text-sm font-normal tabular-nums whitespace-nowrap text-[var(--color-muted-foreground)]";
 
 export const CALC_SECTION_CARD =
   "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] sm:p-5";
@@ -45,8 +46,47 @@ export function calcCheckCmp(ok: boolean, passOp: "≤" | "≥"): "≤" | "≥" 
   return ok ? "≥" : "<";
 }
 
+/** Верхняя граница: = значение ≤ предел (или > при невыполнении). */
+export function calcCheckMaxOp(ok: boolean): "≤" | ">" {
+  return ok ? "≤" : ">";
+}
+
+/** Двойное условие: min ≤ (num/den) = value ≤ max с операторами по факту проверки. */
+export function CalcApplicabilityRangeRow({
+  ratio,
+  min,
+  max,
+  minLabel,
+  maxLabel,
+  num,
+  den,
+}: {
+  ratio: number;
+  min: number;
+  max: number;
+  minLabel: ReactNode;
+  maxLabel: ReactNode;
+  num: ReactNode;
+  den: ReactNode;
+}) {
+  const okMin = ratio >= min;
+  const okMax = ratio <= max;
+  const ok = okMin && okMax;
+
+  return (
+    <CalcCheckRow ok={ok}>
+      <span>{minLabel}</span>
+      <span>{okMin ? "≤" : ">"}</span>
+      <Frac num={num} den={den} />
+      <span>= {fmtHundredthsRu(ratio)}</span>
+      <span>{calcCheckMaxOp(okMax)}</span>
+      <span>{maxLabel}</span>
+    </CalcCheckRow>
+  );
+}
+
 /** s_p — расчётная толщина в результатах */
-export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-xl" />;
+export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" />;
 
 export function CalculatorPageShell({ children }: { children: ReactNode }) {
   return <div className="flex min-w-0 max-w-full flex-col gap-5">{children}</div>;

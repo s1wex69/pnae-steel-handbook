@@ -15,10 +15,12 @@ import {
   CalculatorPageShell,
   CALC_APPLICABILITY_TITLE,
   calcCheckCmp,
+  calcInputClass,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { fmt, fmtHundredths, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
+import { cn } from "@/lib/utils";
 
 const HOLE_COUNTS = [0, 1, 2, 3] as const;
 
@@ -251,7 +253,7 @@ export function FlatBottomCalculator({
       <CalcSection title="Отверстия в днище" titleAccent={false}>
         <CalcRow inColumn label="Количество отверстий" symbol="" value={String(holeCount)} onChange={() => {}} unit="" borderless>
           <select
-            className="h-8 w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm"
+            className={cn(calcInputClass, "max-w-xs text-left")}
             value={holeCount}
             onChange={(e) => setHoleCount(Number(e.target.value) as (typeof HOLE_COUNTS)[number])}
           >

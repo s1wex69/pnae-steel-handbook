@@ -65,6 +65,11 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   min-height: 100dvh;
+  overflow-y: auto;
+}
+
+html {
+  overflow-y: auto;
 }
 
 :root.light body {

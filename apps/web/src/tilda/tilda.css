@@ -3,6 +3,13 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html:has(#root.pnae-tilda-embed),
+html:has(#root.pnae-tilda-embed) body {
+  min-height: 100%;
+  height: auto;
+  overflow-y: auto;
+}
+
 @theme {
   --color-background: #0c1817;
   --color-foreground: #f2f7f6;
@@ -78,6 +85,7 @@
   max-width: 1400px;
   margin-inline: auto;
   overflow-x: clip;
+  overflow-y: visible;
   isolation: isolate;
   background: #ffffff;
   font-family: var(--font-sans);
@@ -220,8 +228,10 @@
 }
 
 #root.pnae-tilda-embed .calc-input {
-  height: 2rem;
-  font-size: 0.875rem;
+  height: 2.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-heading);
   padding-inline: 0.5rem;
 }
 

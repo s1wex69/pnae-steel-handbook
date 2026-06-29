@@ -17,7 +17,7 @@ import {
   calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
-import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
@@ -166,7 +166,7 @@ export function CylindricalShellInternalCalculator({
             variant="result"
             disabled
             label="Исполнительная толщина стенки цилиндрической обечайки"
-            symbol={<CalcSymbol className="!text-xl">s</CalcSymbol>}
+            symbol={<Var letter="s" />}
             value={displaySs}
             unit="мм"
             borderless

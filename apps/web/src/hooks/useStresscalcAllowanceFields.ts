@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { sumFmt } from "@/lib/calcInputUtils";
+import { num, sumFmt } from "@/lib/calcInputUtils";
 import { resolvePipeThickness } from "@/lib/pipeStrength";
 import {
   stresscalcCorrosionAllowance,
@@ -14,6 +14,7 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
   const [cc, setCcState] = useState("1.2");
   const [ccManual, setCcManual] = useState(false);
   const [cMinusManual, setCMinusManual] = useState(false);
+  const [cCorrosionManual, setCCorrosionManual] = useState(false);
 
   useEffect(() => {
     if (ccManual) return;
@@ -27,6 +28,7 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
   }, []);
 
   const setCCorrosion = useCallback((v: string) => {
+    setCCorrosionManual(true);
     setCcManual(false);
     setCCorrosionState(v);
   }, []);
@@ -37,16 +39,22 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
   }, []);
 
   const syncAutoAllowances = useCallback(
-    (Da: number, sr: number, c21: number) => {
+    (Da: number, sr: number, autoC21: number) => {
       if (!(Da > 0) || !(sr >= 0)) return;
-      setCCorrosionState(String(c21));
+
+      const c21 = cCorrosionManual ? num(cCorrosion) : autoC21;
+      if (!cCorrosionManual) {
+        setCCorrosionState(String(autoC21));
+      }
+
       if (!cMinusManual) {
         const { c11 } = resolvePipeThickness(sr, Da, c21);
         setCMinusState(String(c11));
       }
+
       setCcManual(false);
     },
-    [cMinusManual]
+    [cMinusManual, cCorrosionManual, cCorrosion]
   );
 
   return {
@@ -54,6 +62,7 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
     cCorrosion,
     cc,
     cMinusManual,
+    cCorrosionManual,
     setCMinus,
     setCCorrosion,
     setCc,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { calculateElbow, type ElbowSteelClass } from "@/lib/elbow";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
@@ -11,11 +11,13 @@ import {
   CalculatorPageShell,
   CALC_APPLICABILITY_TITLE,
   calcCheckCmp,
+  calcInputClass,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { useElbowAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
 import { fmt, fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { cn } from "@/lib/utils";
 
 const STEEL_OPTIONS: { value: ElbowSteelClass; label: string }[] = [
   { value: "carbon", label: "Углеродистая / кремнемарганцовистая" },
@@ -139,7 +141,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
             <CalcRow
               inColumn
               label="Принятая номинальная толщина стенки"
-              symbol={<CalcSymbol>s</CalcSymbol>}
+              symbol={<Var letter="s" />}
               value={s}
               onChange={setS}
               unit="мм"
@@ -174,7 +176,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
             />
             <CalcRow inColumn label="Класс стали (для коэффициентов формы)" wide borderless>
               <select
-                className="h-8 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm"
+                className={cn(calcInputClass, "text-left")}
                 value={steelClass}
                 onChange={(e) => setSteelClass(e.target.value as ElbowSteelClass)}
               >
@@ -225,7 +227,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
             variant="result"
             disabled
             label="Макс. толщина с прибавками max(sᵣᵢ + c)"
-            symbol={<CalcSymbol>s</CalcSymbol>}
+            symbol={<Var letter="s" />}
             value={hasResult ? fmtHundredths(result.srcMax) : ""}
             unit="мм"
           />
@@ -307,8 +309,4 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
       </CalculatorDiagramCard>
     </CalculatorPageShell>
   );
-}
-
-function CalcSymbol({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={className ?? "!text-xl font-semibold"}>{children}</span>;
 }

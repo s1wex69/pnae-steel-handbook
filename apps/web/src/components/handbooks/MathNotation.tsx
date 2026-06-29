@@ -3,6 +3,9 @@ import { cn } from "@/lib/utils";
 
 const math = "font-serif";
 
+/** Единый стиль обозначений в калькуляторах */
+export const CALC_NOTATION_CLASS = "text-lg font-semibold text-[var(--color-heading)]";
+
 export function MathSpan({
   children,
   className,
@@ -22,7 +25,7 @@ export function CalcSymbol({
   className?: string;
 }) {
   return (
-    <MathSpan className={cn("text-xl font-semibold text-[var(--color-heading)]", className)}>
+    <MathSpan className={cn(CALC_NOTATION_CLASS, className)}>
       {children}
     </MathSpan>
   );
@@ -37,9 +40,9 @@ export function Sup({ children }: { children: ReactNode }) {
 }
 
 /** [σ] — номинальное допускаемое напряжение */
-export function AllowSigma({ sub }: { sub?: ReactNode }) {
+export function AllowSigma({ sub, className }: { sub?: ReactNode; className?: string }) {
   return (
-    <MathSpan>
+    <MathSpan className={cn(CALC_NOTATION_CLASS, className)}>
       [σ]{sub != null && <Sub>{sub}</Sub>}
     </MathSpan>
   );
@@ -87,7 +90,7 @@ export function AllowanceC({
   className?: string;
 }) {
   return (
-    <MathSpan className={cn("min-w-[2.75rem] text-xl font-semibold italic text-[var(--color-heading)]", className)}>
+    <MathSpan className={cn(CALC_NOTATION_CLASS, "min-w-[2.75rem]", className)}>
       {ALLOWANCE_C_LABEL[index]}
     </MathSpan>
   );
@@ -108,7 +111,7 @@ export function Var({
   const stacked = sub != null && sup != null;
 
   return (
-    <MathSpan className={cn(stacked && "inline-flex items-baseline", className)}>
+    <MathSpan className={cn(CALC_NOTATION_CLASS, stacked && "inline-flex items-baseline", className)}>
       <span>{letter}</span>
       {stacked ? (
         <StackedSubSup sub={sub} sup={sup} />

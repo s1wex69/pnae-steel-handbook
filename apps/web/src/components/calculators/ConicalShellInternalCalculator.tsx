@@ -12,7 +12,7 @@ import {
   CALC_RESULT_SP_SYMBOL,
   calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
-import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
 import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
 
@@ -164,7 +164,7 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
             variant="result"
             disabled
             label="Исполнительная толщина стенки конической обечайки"
-            symbol={<CalcSymbol className="!text-xl">s</CalcSymbol>}
+            symbol={<Var letter="s" />}
             value={displaySs}
             unit="мм"
             borderless

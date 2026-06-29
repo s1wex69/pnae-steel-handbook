@@ -4,17 +4,16 @@ import { calculateConvexHeadInternal, type ConvexHeadKind } from "@/lib/convexHe
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
-  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
   CALC_APPLICABILITY_TITLE,
   CALC_RESULT_SP_SYMBOL,
-  calcCheckCmp,
+  CalcApplicabilityRangeRow,
 } from "@/components/calculators/calculatorUi";
-import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 function methodologyTitle(kind: ConvexHeadKind): string {
   return kind === "hemispherical"
@@ -207,7 +206,7 @@ export function ConvexHeadInternalCalculator({
             variant="result"
             disabled
             label="Исполнительная толщина стенки днища"
-            symbol={<CalcSymbol className="!text-xl">s</CalcSymbol>}
+            symbol={<Var letter="s" />}
             value={displaySs}
             unit="мм"
             borderless
@@ -218,47 +217,38 @@ export function ConvexHeadInternalCalculator({
           {kind === "elliptical" ? (
             <>
               {hasResult ? (
-                <>
-                  <CalcCheckRow ok={result.thinnessRatio >= 0.002}>
-                    <Frac num={<>s − c</>} den="D" />
-                    <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                    <span>{calcCheckCmp(result.thinnessRatio >= 0.002, "≥")} {fmtRu(0.002, 3)}</span>
-                  </CalcCheckRow>
-                  <CalcCheckRow ok={result.thinnessRatio <= 0.1}>
-                    <Frac num={<>s − c</>} den="D" />
-                    <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                    <span>{calcCheckCmp(result.thinnessRatio <= 0.1, "≤")} 0,1</span>
-                  </CalcCheckRow>
-                </>
+                <CalcApplicabilityRangeRow
+                  ratio={result.thinnessRatio}
+                  min={0.002}
+                  max={0.1}
+                  minLabel={fmtRu(0.002, 3)}
+                  maxLabel="0,1"
+                  num={<>s − c</>}
+                  den="D"
+                />
               ) : null}
               {geometryReady ? (
-                <>
-                  <CalcCheckRow ok={heightRatio >= 0.2}>
-                    <Frac num="H" den="D" />
-                    <span>= {fmtHundredthsRu(heightRatio)}</span>
-                    <span>{calcCheckCmp(heightRatio >= 0.2, "≥")} 0,2</span>
-                  </CalcCheckRow>
-                  <CalcCheckRow ok={heightRatio <= 0.5}>
-                    <Frac num="H" den="D" />
-                    <span>= {fmtHundredthsRu(heightRatio)}</span>
-                    <span>{calcCheckCmp(heightRatio <= 0.5, "≤")} 0,5</span>
-                  </CalcCheckRow>
-                </>
+                <CalcApplicabilityRangeRow
+                  ratio={heightRatio}
+                  min={0.2}
+                  max={0.5}
+                  minLabel="0,2"
+                  maxLabel="0,5"
+                  num="H"
+                  den="D"
+                />
               ) : null}
             </>
           ) : hasResult ? (
-            <>
-              <CalcCheckRow ok={result.thinnessRatio >= 0.0025}>
-                <Frac num={<>s − c</>} den="D" />
-                <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                <span>{calcCheckCmp(result.thinnessRatio >= 0.0025, "≥")} {fmtRu(0.0025, 4)}</span>
-              </CalcCheckRow>
-              <CalcCheckRow ok={result.thinnessRatio <= 0.1}>
-                <Frac num={<>s − c</>} den="D" />
-                <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-                <span>{calcCheckCmp(result.thinnessRatio <= 0.1, "≤")} 0,1</span>
-              </CalcCheckRow>
-            </>
+            <CalcApplicabilityRangeRow
+              ratio={result.thinnessRatio}
+              min={0.0025}
+              max={0.1}
+              minLabel={fmtRu(0.0025, 4)}
+              maxLabel="0,1"
+              num={<>s − c</>}
+              den="D"
+            />
           ) : null}
         </CalcSection>
       </section>

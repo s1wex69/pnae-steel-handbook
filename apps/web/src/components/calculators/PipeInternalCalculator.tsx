@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { calculatePipeStrength } from "@/lib/pipeStrength";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
@@ -12,9 +12,7 @@ import {
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { usePipeAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
-import {
-  stresscalcCorrosionAllowance,
-} from "@/lib/stresscalcShell";
+import { stresscalcCorrosionAllowance } from "@/lib/stresscalcShell";
 import { calcPipeSr } from "@/lib/pipeStrength";
 import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
@@ -50,12 +48,11 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
 
   useEffect(() => {
     if (!(daNum > 0) || !(pNum >= 0) || !(sigma > 0)) return;
-    const c21 = stresscalcCorrosionAllowance(daNum, false);
+    const autoC21 = stresscalcCorrosionAllowance(daNum, false);
     const sr = calcPipeSr(pNum, daNum, sigma, phiPNum);
     if (sr == null) return;
-    allowances.syncAutoAllowances(daNum, sr, c21);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- автоприбавки по Dₐ, p, [σ]
-  }, [daNum, pNum, sigma, phiPNum]);
+    allowances.syncAutoAllowances(daNum, sr, autoC21);
+  }, [daNum, pNum, sigma, phiPNum, allowances.syncAutoAllowances]);
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
@@ -153,7 +150,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
             variant="result"
             disabled
             label="Расчётная толщина с учётом прибавок"
-            symbol={<CalcSymbol>s</CalcSymbol>}
+            symbol={<Var letter="s" />}
             value={hasResult ? fmtHundredths(result.sMin) : ""}
             unit="мм"
             borderless
@@ -176,8 +173,4 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
       </CalculatorDiagramCard>
     </CalculatorPageShell>
   );
-}
-
-function CalcSymbol({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={className ?? "!text-xl font-semibold"}>{children}</span>;
 }

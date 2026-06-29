@@ -10,16 +10,15 @@ import type { ShellSolveTarget } from "@/lib/shellCalcShared";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
-  CalcCheckRow,
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
   CALC_APPLICABILITY_TITLE,
-  calcCheckCmp,
+  CalcApplicabilityRangeRow,
 } from "@/components/calculators/calculatorUi";
-import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmt, fmtIfSource, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 type ResultDrive = "ss" | "pp";
 
@@ -180,16 +179,15 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
         </CalcSection>
 
         <CalcSection title={CALC_APPLICABILITY_TITLE}>
-          <CalcCheckRow ok={applicability.ratio >= applicability.min}>
-            <Frac num={<>s − c</>} den="D" />
-            <span>= {fmtHundredthsRu(applicability.ratio)}</span>
-            <span>{calcCheckCmp(applicability.ratio >= applicability.min, "≥")} {fmtRu(applicability.min, 4)}</span>
-          </CalcCheckRow>
-          <CalcCheckRow ok={applicability.ratio <= applicability.max}>
-            <Frac num={<>s − c</>} den="D" />
-            <span>= {fmtHundredthsRu(applicability.ratio)}</span>
-            <span>{calcCheckCmp(applicability.ratio <= applicability.max, "≤")} {fmtRu(applicability.max, 2)}</span>
-          </CalcCheckRow>
+          <CalcApplicabilityRangeRow
+            ratio={applicability.ratio}
+            min={applicability.min}
+            max={applicability.max}
+            minLabel={fmtRu(applicability.min, 4)}
+            maxLabel={fmtRu(applicability.max, 2)}
+            num={<>s − c</>}
+            den="D"
+          />
         </CalcSection>
       </section>
 

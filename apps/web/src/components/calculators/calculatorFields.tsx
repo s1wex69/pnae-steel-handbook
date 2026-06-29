@@ -20,6 +20,17 @@ import { CalcSymbol, Var, AllowanceC } from "@/components/handbooks/MathNotation
 type RowVariant = "default" | "check" | "result";
 type RowLayout = "inline" | "stacked";
 
+function normalizeRowSymbol(symbol: ReactNode): ReactNode {
+  if (symbol == null || symbol === "") return symbol;
+  if (typeof symbol === "string") {
+    const s = symbol.trim();
+    if (s.startsWith("[") && s.endsWith("]")) return <CalcSymbol>{s}</CalcSymbol>;
+    if (s.length === 1) return <Var letter={s} />;
+    return <CalcSymbol>{s}</CalcSymbol>;
+  }
+  return symbol;
+}
+
 function ResultValue({ value, unit }: { value: string; unit?: string }) {
   return (
     <>
@@ -75,6 +86,7 @@ export function CalcRow({
   const isCheck = variant === "check";
   const isResult = variant === "result";
   const hasSymbol = symbol != null && symbol !== "";
+  const displaySymbol = hasSymbol ? normalizeRowSymbol(symbol) : null;
   const forceStacked = layout === "stacked" || (Boolean(labelExtra) && !inlineLabelExtra);
   const isStacked = (forceStacked && !isCheck) || (inColumn && Boolean(labelExtra) && !inlineLabelExtra);
 
@@ -95,7 +107,7 @@ export function CalcRow({
     <div className={cn(isCheck ? "mt-2 justify-self-start" : "min-w-0 justify-self-end")}>{children}</div>
   ) : (
     <div className={valueGridClass}>
-      {hasSymbol ? <span className={symbolClass}>{symbol}</span> : null}
+      {hasSymbol ? <span className={symbolClass}>{displaySymbol}</span> : null}
       {isResult && disabled ? (
         <ResultValue value={value ?? "—"} unit={unit} />
       ) : (
@@ -347,6 +359,11 @@ export function PipeAllowancesCalcSection({
     return (
       <section className={CALC_SECTION_CARD}>
         <CalcSectionHeading title="Прибавки к расчётной толщине" action={toggleButton} accent={false} />
+        {expanded ? (
+          <p className="pb-1 text-sm leading-snug text-[var(--color-muted-foreground)]">
+            c₁₁ и c₂₁ пересчитываются при изменении Dₐ, p и [σ]; вручную введённое значение сохраняется.
+          </p>
+        ) : null}
         <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
           <div className="contents">
             {expanded ? detailRows : null}
@@ -359,6 +376,9 @@ export function PipeAllowancesCalcSection({
 
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
+      <p className="pb-1 text-sm leading-snug text-[var(--color-muted-foreground)]">
+        c₁₁ и c₂₁ пересчитываются при изменении Dₐ, p и [σ]; вручную введённое значение сохраняется.
+      </p>
       {detailRows}
       {sumRow}
     </CalcSection>
