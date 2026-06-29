@@ -12,21 +12,26 @@ import {
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { usePipeAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
-import { stresscalcCorrosionAllowance } from "@/lib/stresscalcShell";
+import {
+  stresscalcCorrosionAllowance,
+} from "@/lib/stresscalcShell";
+import { calcPipeSr } from "@/lib/pipeStrength";
 import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
 export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
-  const allowances = usePipeAllowanceFields({ cMinus: "0.4", cCorrosion: "1" });
-  const [Da, setDa] = useState("80");
+  const allowances = usePipeAllowanceFields({ cMinus: "0.2", cCorrosion: "0" });
+  const [Da, setDa] = useState("25");
   const [sigmaStr, setSigmaStr] = useState("140");
   const [sigmaTemp, setSigmaTemp] = useState("20");
   const sigma = num(sigmaStr, 140);
   const [phiP, setPhiP] = useState("0.8");
   const [p, setP] = useState("2");
+  const [sNominal, setSNominal] = useState("2.5");
 
   const daNum = num(Da);
   const phiPNum = num(phiP, 1);
   const pNum = num(p);
+  const sNominalNum = num(sNominal);
   const cMinusNum = num(allowances.cMinus);
   const cCorrosionNum = num(allowances.cCorrosion);
 
@@ -40,16 +45,25 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
         s: 0,
         cMinus: cMinusNum,
         cCorrosion: cCorrosionNum,
+        cMinusManual: allowances.cMinusManual,
+        nominalS: sNominalNum > 0 ? sNominalNum : undefined,
       }),
-    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum]
+    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum, allowances.cMinusManual, sNominalNum]
   );
 
   useEffect(() => {
-    if (daNum > 0) {
-      allowances.setCCorrosion(String(stresscalcCorrosionAllowance(daNum, false)));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- c₂₁ по Dₐ
-  }, [daNum]);
+    if (!(daNum > 0) || !(pNum >= 0) || !(sigma > 0)) return;
+    const c21 = stresscalcCorrosionAllowance(daNum, false);
+    const sr = calcPipeSr(pNum, daNum, sigma);
+    if (sr == null) return;
+    allowances.syncAutoAllowances(
+      daNum,
+      sr,
+      c21,
+      sNominalNum > 0 ? sNominalNum : undefined
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- автоприбавки по Dₐ, p, [σ]
+  }, [daNum, pNum, sigma, sNominalNum]);
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
@@ -94,6 +108,14 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
               value={sigmaTemp}
               onChange={setSigmaTemp}
               unit="°C"
+            />
+            <CalcRow
+              inColumn
+              label="Толщина трубы по сортаменту"
+              symbol={<CalcSymbol>s</CalcSymbol>}
+              value={sNominal}
+              onChange={setSNominal}
+              unit="мм"
             />
             <CalcRow
               inColumn

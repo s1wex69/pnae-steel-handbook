@@ -1,8 +1,11 @@
-# Запустите от имени администратора: ПКМ → «Запуск от имени администратора»
+# Run as Administrator: right-click PowerShell -> Run as administrator
+#   cd C:\Users\user\Desktop\stresscalc
+#   .\scripts\allow-dev-firewall.ps1
+
 $ruleName = "Vite Dev Server 5173"
 $existing = Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue
 if ($existing) {
-  Write-Host "Правило уже есть: $ruleName"
+  Write-Host "Rule already exists: $ruleName"
 } else {
   New-NetFirewallRule -DisplayName $ruleName `
     -Direction Inbound `
@@ -10,7 +13,7 @@ if ($existing) {
     -Protocol TCP `
     -LocalPort 5173 `
     -Profile Private, Public | Out-Null
-  Write-Host "Разрешён входящий TCP порт 5173"
+  Write-Host "Allowed inbound TCP port 5173"
 }
 
 $ruleApi = "Intech Atom API 3001"
@@ -21,10 +24,24 @@ if (-not (Get-NetFirewallRule -DisplayName $ruleApi -ErrorAction SilentlyContinu
     -Protocol TCP `
     -LocalPort 3001 `
     -Profile Private, Public | Out-Null
-  Write-Host "Разрешён входящий TCP порт 3001"
+  Write-Host "Allowed inbound TCP port 3001"
+}
+
+$ip = (Get-NetIPAddress -AddressFamily IPv4 |
+  Where-Object { $_.IPAddress -like "192.168.*" -and $_.PrefixOrigin -eq "Dhcp" } |
+  Select-Object -First 1 -ExpandProperty IPAddress)
+
+if (-not $ip) {
+  $ip = (Get-NetIPAddress -AddressFamily IPv4 |
+    Where-Object { $_.IPAddress -like "192.168.*" } |
+    Select-Object -First 1 -ExpandProperty IPAddress)
 }
 
 Write-Host ""
-Write-Host "С другого устройства откройте:"
-Write-Host "  http://192.168.1.117:5173/"
-Write-Host "(если IP изменился — смотрите ipconfig, адаптер с 192.168.1.x)"
+Write-Host "Open from phone or another PC on the same Wi-Fi:"
+if ($ip) {
+  Write-Host "  http://${ip}:5173/"
+} else {
+  Write-Host "  http://<your-ip>:5173/"
+  Write-Host "  Find IP: ipconfig (look for 192.168.x.x)"
+}

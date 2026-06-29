@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { sumFmt } from "@/lib/calcInputUtils";
+import { resolvePipeThickness } from "@/lib/pipeStrength";
 import {
   stresscalcCorrosionAllowance,
   stresscalcElbowTechAllowance,
   stresscalcMinusTolerance,
 } from "@/lib/stresscalcShell";
 
-/** Прибавки трубы: c₂ — минусовой допуск, c₁ — коррозия (как c₁₁ и c₂₁ на stresscalc) */
+/** Прибавки трубы: c₁ — минусовой допуск (c₁₁), c₂ — коррозия (c₂₁) */
 export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?: string }) {
   const [cMinus, setCMinusState] = useState(initial?.cMinus ?? "0.2");
   const [cCorrosion, setCCorrosionState] = useState(initial?.cCorrosion ?? "1");
   const [cc, setCcState] = useState("1.2");
   const [ccManual, setCcManual] = useState(false);
+  const [cMinusManual, setCMinusManual] = useState(false);
 
   useEffect(() => {
     if (ccManual) return;
@@ -19,6 +21,7 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
   }, [cMinus, cCorrosion, ccManual]);
 
   const setCMinus = useCallback((v: string) => {
+    setCMinusManual(true);
     setCcManual(false);
     setCMinusState(v);
   }, []);
@@ -33,21 +36,28 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
     setCcState(v);
   }, []);
 
-  const applyStresscalcDefaults = useCallback((Da: number, s: number) => {
-    if (!(Da > 0) || !(s > 0)) return;
-    setCcManual(false);
-    setCMinusState(String(stresscalcMinusTolerance(Da, s)));
-    setCCorrosionState(String(stresscalcCorrosionAllowance(Da, false)));
-  }, []);
+  const syncAutoAllowances = useCallback(
+    (Da: number, sr: number, c21: number, nominalS?: number) => {
+      if (!(Da > 0) || !(sr >= 0)) return;
+      setCCorrosionState(String(c21));
+      if (!cMinusManual) {
+        const { c11 } = resolvePipeThickness(sr, Da, c21, { nominalS });
+        setCMinusState(String(c11));
+      }
+      setCcManual(false);
+    },
+    [cMinusManual]
+  );
 
   return {
     cMinus,
     cCorrosion,
     cc,
+    cMinusManual,
     setCMinus,
     setCCorrosion,
     setCc,
-    applyStresscalcDefaults,
+    syncAutoAllowances,
   };
 }
 

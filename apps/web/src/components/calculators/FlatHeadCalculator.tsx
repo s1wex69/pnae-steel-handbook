@@ -11,13 +11,13 @@ export type FlatHeadMode = "bottom" | "cover";
 const MODES = [
   {
     id: "bottom" as const,
-    title: "Плоское круглое днище",
-    subtitle: "§7.2",
-    pageTitle: "Расчёт плоского круглого днища",
+    title: "Плоское днище и крышка",
+    subtitle: "§7.2 — ГОСТ 34233.2",
+    pageTitle: "Расчёт плоских круглых днищ и крышек",
   },
   {
     id: "cover" as const,
-    title: "Плоская круглая крышка с краевым моментом",
+    title: "Крышка с краевым моментом",
     subtitle: "§7.3",
     pageTitle: "Расчёт плоской круглой крышки с краевым моментом",
   },

@@ -1,10 +1,15 @@
-/** Расчёт колена на внутреннее давление (п. 4.2.2.3–4.2.2.9) */
+/** Расчёт колена на внутреннее давление — логика stresscalc.ru/boiler/elbow.php (ПНАЭ п. 4.2.2.3–4.2.2.9) */
 
-import { type ShellAllowances, resolveShellAllowances } from "@/lib/shellCalcShared";
+import {
+  calcStresscalcZoneAllowablePressure,
+  resolveStresscalcElbowAllowances,
+  round2,
+  stresscalcInterpY,
+  type StresscalcElbowAllowances,
+} from "@/lib/stresscalcShell";
 
 export type ElbowSteelClass = "carbon" | "crmov" | "austenitic";
 
-export const ELBOW_APPLICABILITY_THINNESS_LIMIT = 0.25;
 export const ELBOW_B_MIN = 0.03;
 
 const TEMP_LIMITS: Record<ElbowSteelClass, { low: number; high: number }> = {
@@ -19,30 +24,33 @@ export interface ElbowInputs {
   sigma: number;
   phi: number;
   p: number;
-  /** Принятая номинальная толщина s */
   s: number;
   temperatureC: number;
   steelClass: ElbowSteelClass;
   /** Овальность поперечного сечения, % */
   ovalityA: number;
-  allowances: ShellAllowances;
+  allowances: StresscalcElbowAllowances;
 }
 
 export interface ElbowResults {
-  c3: number;
-  cc: number;
-  c2: number;
+  c11: number;
+  c12: number;
+  c21: number;
+  cc1: number;
+  cc23: number;
+  sr: number;
   sr1: number;
   sr2: number;
   sr3: number;
-  srMax: number;
-  sMin: number;
-  pAllowDesign: number;
-  pAllowMfg: number;
-  rsRatio: number;
-  rsApplicabilityOk: boolean;
-  thinnessRatio: number;
-  thinnessOk: boolean;
+  src1: number;
+  src2: number;
+  src3: number;
+  srcMax: number;
+  sMinWall: number;
+  pAllow1: number;
+  pAllow2: number;
+  pAllow3: number;
+  pAllow: number;
   thicknessOk: boolean;
   strengthOk: boolean;
   error: string | null;
@@ -52,10 +60,6 @@ function clampMin1(v: number) {
   return v < 1 ? 1 : v;
 }
 
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
-
 export function calcToroidalCoefficients(Rs: number, Da: number) {
   const K1 = (4 * Rs + Da) / (4 * Rs + 2 * Da);
   const K2 = (4 * Rs - Da) / (4 * Rs - 2 * Da);
@@ -63,13 +67,11 @@ export function calcToroidalCoefficients(Rs: number, Da: number) {
   return { K1, K2, K3 };
 }
 
-/** b = p / (2[σ] + p); при b < 0,03 принимают 0,03 */
 export function calcElbowB(p: number, sigma: number): number {
   const raw = p / (2 * sigma + p);
   return raw < ELBOW_B_MIN ? ELBOW_B_MIN : raw;
 }
 
-/** q = 2·b·(Rₛ/Dₐ) + 0,5; при q > 1 принимают 1 */
 export function calcElbowQ(b: number, Rs: number, Da: number): number {
   const raw = 2 * b * (Rs / Da) + 0.5;
   return raw > 1 ? 1 : raw;
@@ -103,90 +105,53 @@ export function calcShapeCoefficients(
 
   const low = calcShapeAtLowTemp(a, b, q);
   const high = calcShapeAtHighTemp(a, b, q);
-  const limits = TEMP_LIMITS[steelClass];
 
-  if (temperatureC <= limits.low) {
-    return { ...low, b, q };
-  }
-  if (temperatureC >= limits.high) {
-    return { ...high, b, q };
-  }
+  const Y1 = stresscalcInterpY(low.Y1, high.Y1, temperatureC, steelClass);
+  const Y3 = stresscalcInterpY(low.Y3, high.Y3, temperatureC, steelClass);
+  const Y2 = Y1;
 
-  const t = (temperatureC - limits.low) / (limits.high - limits.low);
   return {
-    Y1: lerp(low.Y1, high.Y1, t),
-    Y2: lerp(low.Y2, high.Y2, t),
-    Y3: lerp(low.Y3, high.Y3, t),
+    Y1: clampMin1(Y1),
+    Y2: clampMin1(Y2),
+    Y3: clampMin1(Y3),
     b,
     q,
   };
 }
 
-export function calcElbowSr(
-  p: number,
-  Da: number,
-  sigma: number,
-  phi: number,
-  Y: number,
-  K: number
-): number | null {
+export function calcElbowBaseSr(p: number, Da: number, sigma: number, phi: number) {
   const denom = 2 * phi * sigma + p;
   if (!(denom > 0) || !(Da > 0)) return null;
-  return (p * Da * Y * K) / denom;
-}
-
-export function calcElbowCombinedK(
-  K1: number,
-  K2: number,
-  K3: number,
-  Y1: number,
-  Y2: number,
-  Y3: number
-) {
-  return Math.max(K1 * Y1, K2 * Y2, K3 * Y3);
-}
-
-export function calcElbowAllowablePressure(
-  sEff: number,
-  Da: number,
-  sigma: number,
-  phi: number,
-  K: number
-): number | null {
-  const denom = K * Da - sEff;
-  if (!(sEff > 0) || !(denom > 0)) return null;
-  return (2 * sEff * phi * sigma) / denom;
+  return round2((p * Da) / denom);
 }
 
 export function calculateElbow(input: ElbowInputs): ElbowResults {
-  const { c3, cc } = resolveShellAllowances(input.allowances);
-  const c2 = input.allowances.c2;
-  const rsRatio = input.Da > 0 ? input.Rs / input.Da : 0;
-  const rsApplicabilityOk = rsRatio >= 1;
+  const { c11, c12, c21 } = input.allowances;
+  const { cc1, cc23 } = resolveStresscalcElbowAllowances(input.allowances);
 
   const base: ElbowResults = {
-    c3,
-    cc,
-    c2,
+    c11,
+    c12,
+    c21,
+    cc1,
+    cc23,
+    sr: 0,
     sr1: 0,
     sr2: 0,
     sr3: 0,
-    srMax: 0,
-    sMin: 0,
-    pAllowDesign: 0,
-    pAllowMfg: 0,
-    rsRatio,
-    rsApplicabilityOk,
-    thinnessRatio: 0,
-    thinnessOk: false,
+    src1: 0,
+    src2: 0,
+    src3: 0,
+    srcMax: 0,
+    sMinWall: 0,
+    pAllow1: 0,
+    pAllow2: 0,
+    pAllow3: 0,
+    pAllow: 0,
     thicknessOk: false,
     strengthOk: false,
     error: null,
   };
-
-  if (!rsApplicabilityOk) {
-    return { ...base, error: "Не выполнено условие Rₛ / Dₐ ≥ 1" };
-  }
 
   const toroidal = calcToroidalCoefficients(input.Rs, input.Da);
   const shape = calcShapeCoefficients(
@@ -198,70 +163,104 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     input.steelClass,
     input.ovalityA
   );
-  const K = calcElbowCombinedK(
-    toroidal.K1,
-    toroidal.K2,
-    toroidal.K3,
-    shape.Y1,
-    shape.Y2,
-    shape.Y3
-  );
 
-  const sr1 = calcElbowSr(input.p, input.Da, input.sigma, input.phi, shape.Y1, toroidal.K1);
-  const sr2 = calcElbowSr(input.p, input.Da, input.sigma, input.phi, shape.Y2, toroidal.K2);
-  const sr3 = calcElbowSr(input.p, input.Da, input.sigma, input.phi, shape.Y3, toroidal.K3);
-
-  if (sr1 == null || sr2 == null || sr3 == null) {
-    return { ...base, error: "Невозможно рассчитать расчётные толщины: проверьте исходные данные" };
+  const sr = calcElbowBaseSr(input.p, input.Da, input.sigma, input.phi);
+  if (sr == null) {
+    return { ...base, error: "Невозможно рассчитать sᵣ: проверьте исходные данные" };
   }
 
-  const srMax = Math.max(sr1, sr2, sr3);
-  const sMin = srMax + cc;
-  const sUsed = input.s > 0 ? input.s : sMin;
-  const sEffDesign = sUsed - cc;
-  const thinnessRatio = input.Da > 0 ? sEffDesign / input.Da : 0;
-  const thinnessOk = thinnessRatio <= ELBOW_APPLICABILITY_THINNESS_LIMIT;
+  const sr1 = round2(sr * toroidal.K1 * shape.Y1);
+  const sr2 = round2(sr * toroidal.K2 * shape.Y2);
+  const sr3 = round2(sr * toroidal.K3 * shape.Y3);
 
-  const pAllowDesign =
+  const src1 = round2(sr1 + cc1);
+  const src2 = round2(sr2 + cc23);
+  const src3 = round2(sr3 + cc23);
+  const srcMax = Math.max(src1, src2, src3);
+
+  const sMinWall = input.s > 0 ? round2(input.s - c11 - c12) : 0;
+
+  const pAllow1 =
     input.s > 0
-      ? calcElbowAllowablePressure(sEffDesign, input.Da, input.sigma, input.phi, K)
+      ? calcStresscalcZoneAllowablePressure(
+          input.s,
+          cc1,
+          toroidal.K1,
+          shape.Y1,
+          input.Da,
+          input.sigma,
+          input.phi
+        )
       : null;
-  const pAllowMfg =
+  const pAllow2 =
     input.s > 0
-      ? calcElbowAllowablePressure(sUsed - c2, input.Da, input.sigma, input.phi, K)
+      ? calcStresscalcZoneAllowablePressure(
+          input.s,
+          cc23,
+          toroidal.K2,
+          shape.Y2,
+          input.Da,
+          input.sigma,
+          input.phi
+        )
+      : null;
+  const pAllow3 =
+    input.s > 0
+      ? calcStresscalcZoneAllowablePressure(
+          input.s,
+          cc23,
+          toroidal.K3,
+          shape.Y3,
+          input.Da,
+          input.sigma,
+          input.phi
+        )
       : null;
 
-  if (input.s > 0 && (pAllowDesign == null || pAllowMfg == null)) {
+  if (input.s > 0 && (pAllow1 == null || pAllow2 == null || pAllow3 == null)) {
     return {
       ...base,
+      sr,
       sr1,
       sr2,
       sr3,
-      srMax,
-      sMin,
-      thinnessRatio,
-      thinnessOk,
+      src1,
+      src2,
+      src3,
+      srcMax,
+      sMinWall,
       error: "Не удалось рассчитать допускаемое давление",
     };
   }
 
+  const pAllow =
+    input.s > 0 && pAllow1 != null && pAllow2 != null && pAllow3 != null
+      ? Math.min(pAllow1, pAllow2, pAllow3)
+      : 0;
+
   return {
-    c3,
-    cc,
-    c2,
+    c11,
+    c12,
+    c21,
+    cc1,
+    cc23,
+    sr,
     sr1,
     sr2,
     sr3,
-    srMax,
-    sMin,
-    pAllowDesign: pAllowDesign ?? 0,
-    pAllowMfg: pAllowMfg ?? 0,
-    rsRatio,
-    rsApplicabilityOk,
-    thinnessRatio,
-    thinnessOk,
-    thicknessOk: input.s <= 0 || input.s >= sMin,
-    strengthOk: input.s > 0 && pAllowDesign != null ? input.p <= pAllowDesign : false,
+    src1,
+    src2,
+    src3,
+    srcMax,
+    sMinWall,
+    pAllow1: pAllow1 ?? 0,
+    pAllow2: pAllow2 ?? 0,
+    pAllow3: pAllow3 ?? 0,
+    pAllow,
+    thicknessOk: input.s <= 0 || input.s >= srcMax,
+    strengthOk: input.s > 0 && pAllow > 0 ? input.p <= pAllow : false,
     error: null,
   };
 }
+
+export { TEMP_LIMITS as elbowTempLimits };

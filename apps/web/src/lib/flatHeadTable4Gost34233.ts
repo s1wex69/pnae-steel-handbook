@@ -24,6 +24,8 @@ export interface FlatHeadGeometry {
   D3?: number;
   /** Dс.п — средний диаметр прокладки (тип 12) */
   Dcp?: number;
+  /** D₂ — наименьший наружный диаметр утонённой части (типы 11, 12) */
+  D2?: number;
   /** Dₚ для типа 1 при Dₚ > D */
   DpOverride?: number;
 }
@@ -81,15 +83,12 @@ export function calcFlatHeadK(type: FlatHeadAttachmentType, geom: FlatHeadGeomet
       return { K, Dp: geom.D, note: "(s−c)/(s₁−c) < 0,5 → 0,41; ≥ 0,5 → 0,38" };
     }
     case 9: {
+      const K = kFromRatio(ratio, RATIO_K_05, 0.5);
       const r = geom.r ?? 0;
-      const K =
-        ratio == null
-          ? 0.41
-          : Math.max(0.41 * (1 - 0.23 * ratio), 0.35);
       return {
         K,
         Dp: geom.D - 2 * r,
-        note: "max{s; 0,25s₁} ≤ r ≤ min{s₁; 0,1D}; Dₚ = D − 2r",
+        note: "h₁ ≥ r; max{s; 0,25s₁} ≤ r ≤ min{s₁; 0,1D}; Dₚ = D − 2r",
       };
     }
     case 10: {
@@ -161,3 +160,5 @@ export const FLAT_HEAD_TYPE_LABELS: Record<FlatHeadAttachmentType, string> = {
 
 export const FLAT_HEAD_TYPES_BOTTOM: FlatHeadAttachmentType[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const FLAT_HEAD_TYPES_COVER: FlatHeadAttachmentType[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+/** Все типы по табл. 4 — единый расчёт §7.2 (как stresscalc.ru) */
+export const FLAT_HEAD_TYPES_ALL: FlatHeadAttachmentType[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];

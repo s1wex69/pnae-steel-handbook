@@ -23,8 +23,10 @@ export function stresscalcMinusTolerance(Da: number, s: number) {
   return round2(frac * s);
 }
 
-/** Коррозионная прибавка: 1 мм; для колена при Da > 133 — 3 мм */
+/** Коррозионная прибавка: 1 мм; для колена при Da > 133 — 3 мм;
+ *  для труб Da ≤ 32 мм — 0 (РД 10-249-98, п. 1.5.7) */
 export function stresscalcCorrosionAllowance(Da: number, elbow: boolean) {
+  if (!elbow && Da <= 32) return 0;
   if (elbow && Da > 133) return 3;
   return 1;
 }

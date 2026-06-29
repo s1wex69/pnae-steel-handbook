@@ -1,8 +1,8 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { calculateElbow, type ElbowSteelClass } from "@/lib/elbow";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
-import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
+import { CalcRow, ElbowAllowancesCalcSection } from "@/components/calculators/calculatorFields";
 import {
   CalcCheckRow,
   CalcSection,
@@ -11,9 +11,9 @@ import {
   CalculatorPageShell,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
-import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
-import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmt, fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
+import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
+import { useElbowAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
+import { fmt, fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 
 const STEEL_OPTIONS: { value: ElbowSteelClass; label: string }[] = [
   { value: "carbon", label: "Углеродистая / кремнемарганцовистая" },
@@ -22,7 +22,7 @@ const STEEL_OPTIONS: { value: ElbowSteelClass; label: string }[] = [
 ];
 
 export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
-  const allowances = useAllowanceFields({ c1: "1.0", c2: "0.8", c3: "0" });
+  const allowances = useElbowAllowanceFields();
   const [Da, setDa] = useState("219");
   const [Rs, setRs] = useState("350");
   const [sigmaStr, setSigmaStr] = useState("130");
@@ -34,12 +34,16 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
   const [p, setP] = useState("1.6");
   const [s, setS] = useState("4");
 
-  const ccNum = num(allowances.cc);
   const daNum = num(Da);
   const rsNum = num(Rs);
   const phiPNum = num(phiP, 1);
   const pNum = num(p);
   const sNum = num(s);
+
+  useEffect(() => {
+    allowances.applyStresscalcDefaults(daNum, sNum, rsNum);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- пересчёт прибавок при смене геометрии
+  }, [daNum, sNum, rsNum]);
 
   const result = useMemo(
     () =>
@@ -54,37 +58,31 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
         steelClass,
         ovalityA: num(ovalityA),
         allowances: {
-          c1: num(allowances.c1),
-          c2: num(allowances.c2),
-          c31: 0,
-          c32: 0,
-          c33: 0,
-          c3: num(allowances.c3),
-          cc: ccNum,
+          c11: num(allowances.c11),
+          c12: num(allowances.c12),
+          c21: num(allowances.c21),
         },
       }),
-    [allowances, daNum, rsNum, sigma, phiPNum, pNum, sNum, sigmaTemp, steelClass, ovalityA, ccNum]
+    [allowances.c11, allowances.c12, allowances.c21, daNum, rsNum, sigma, phiPNum, pNum, sNum, sigmaTemp, steelClass, ovalityA]
   );
 
   const inputsReady = !isBlank(p) && daNum > 0 && rsNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
-  const sUsed = sNum > 0 ? sNum : result.sMin;
+  const sUsed = sNum > 0 ? sNum : result.srcMax;
 
   return (
     <CalculatorPageShell>
       <CalculatorPageHeader title="Расчёт колена на внутреннее давление" />
 
       <section className="space-y-8">
-        <AllowancesCalcSection
+        <ElbowAllowancesCalcSection
           collapsible
-          c1={allowances.c1}
-          c2={allowances.c2}
-          c3={allowances.c3}
-          cc={allowances.cc}
-          onC1={allowances.setC1}
-          onC2={allowances.setC2}
-          onC3={allowances.setC3}
-          onCc={allowances.setCc}
+          c11={allowances.c11}
+          c12={allowances.c12}
+          c21={allowances.c21}
+          onC11={allowances.setC11}
+          onC12={allowances.setC12}
+          onC21={allowances.setC21}
         />
 
         <CalcSection title="Исходные данные" titleAccent={false} twoColumns>
@@ -192,6 +190,14 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           <CalcRow
             variant="result"
             disabled
+            label="Базовая толщина цилиндра sᵣ"
+            symbol={<Var letter="s" sub="r" />}
+            value={hasResult ? fmtHundredths(result.sr) : ""}
+            unit="мм"
+          />
+          <CalcRow
+            variant="result"
+            disabled
             label="Внешняя сторона"
             symbol={<Var letter="s" sub="r1" />}
             value={hasResult ? fmtHundredths(result.sr1) : ""}
@@ -216,9 +222,17 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           <CalcRow
             variant="result"
             disabled
-            label="Минимальная номинальная толщина s ≥ max(sᵣ) + c"
+            label="Макс. толщина с прибавками max(sᵣᵢ + c)"
             symbol={<CalcSymbol>s</CalcSymbol>}
-            value={hasResult ? fmtHundredths(result.sMin) : ""}
+            value={hasResult ? fmtHundredths(result.srcMax) : ""}
+            unit="мм"
+          />
+          <CalcRow
+            variant="result"
+            disabled
+            label="Минимальная толщина стенки s − c₁₁ − c₁₂"
+            symbol={<Var letter="s" sub="min" />}
+            value={hasResult && sNum > 0 ? fmtHundredths(result.sMinWall) : ""}
             unit="мм"
             borderless
           />
@@ -228,50 +242,52 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           <CalcRow
             variant="result"
             disabled
-            label="При проектировании"
+            label="Внешняя сторона [p]₁"
             symbol="[p]"
-            value={hasResult && sNum > 0 ? fmt(result.pAllowDesign, 3) : ""}
+            value={hasResult && sNum > 0 ? fmt(result.pAllow1, 1) : ""}
             unit="МПа"
           />
           <CalcRow
             variant="result"
             disabled
-            label="После изготовления"
+            label="Внутренняя сторона [p]₂"
             symbol="[p]"
-            value={hasResult && sNum > 0 ? fmt(result.pAllowMfg, 3) : ""}
+            value={hasResult && sNum > 0 ? fmt(result.pAllow2, 1) : ""}
+            unit="МПа"
+          />
+          <CalcRow
+            variant="result"
+            disabled
+            label="Средняя часть [p]₃"
+            symbol="[p]"
+            value={hasResult && sNum > 0 ? fmt(result.pAllow3, 1) : ""}
+            unit="МПа"
+          />
+          <CalcRow
+            variant="result"
+            disabled
+            label="Допускаемое рабочее давление min([p]ᵢ)"
+            symbol="[p]"
+            value={hasResult && sNum > 0 && result.pAllow > 0 ? fmt(result.pAllow, 1) : ""}
             unit="МПа"
             borderless
           />
         </CalcSection>
 
         <CalcSection title="Проверки" titleAccent={false}>
-          {hasResult ? (
-            <CalcCheckRow ok={result.rsApplicabilityOk}>
-              <Frac num={<Var letter="R" sub="s" />} den={<Var letter="D" sub="a" />} />
-              <span>= {fmtHundredthsRu(result.rsRatio)}</span>
-              <span>{result.rsApplicabilityOk ? "≥" : "<"} 1</span>
+          {hasResult && sNum > 0 ? (
+            <CalcCheckRow ok={result.thicknessOk}>
+              <span>
+                s ≥ max(sᵣᵢ + c) → {s} мм {result.thicknessOk ? "≥" : "<"} {fmtHundredths(result.srcMax)} мм
+              </span>
             </CalcCheckRow>
           ) : (
             <CalcCheckRow placeholder="Заполните исходные данные" />
           )}
-          {hasResult && sNum > 0 ? (
-            <CalcCheckRow ok={result.thinnessOk}>
-              <Frac num={<>s − c</>} den={<Var letter="D" sub="a" />} />
-              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>{result.thinnessOk ? "≤" : ">"} 0,25</span>
-            </CalcCheckRow>
-          ) : null}
-          {hasResult && sNum > 0 ? (
-            <CalcCheckRow ok={result.thicknessOk}>
-              <span>
-                s ≥ max(sᵣ) + c → {s} мм {result.thicknessOk ? "≥" : "<"} {fmtHundredths(result.sMin)} мм
-              </span>
-            </CalcCheckRow>
-          ) : null}
-          {hasResult && sNum > 0 && !isBlank(p) ? (
+          {hasResult && sNum > 0 && !isBlank(p) && result.pAllow > 0 ? (
             <CalcCheckRow ok={result.strengthOk}>
               <span>
-                p ≤ [p] → {p} МПа {result.strengthOk ? "≤" : ">"} {fmt(result.pAllowDesign, 3)} МПа
+                p ≤ [p] → {p} МПа {result.strengthOk ? "≤" : ">"} {fmt(result.pAllow, 1)} МПа
               </span>
             </CalcCheckRow>
           ) : null}
@@ -285,7 +301,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
       ) : null}
 
       <CalculatorDiagramCard>
-        <VesselDiagram diameter={daNum || 219} thickness={sUsed > 0 ? sUsed : result.sMin} />
+        <VesselDiagram diameter={daNum || 219} thickness={sUsed > 0 ? sUsed : result.srcMax} outerDiameter />
       </CalculatorDiagramCard>
     </CalculatorPageShell>
   );
