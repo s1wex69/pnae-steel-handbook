@@ -9,6 +9,8 @@ import {
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
@@ -274,21 +276,21 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           />
         </CalcSection>
 
-        <CalcSection title="Проверки" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult && sNum > 0 ? (
             <CalcCheckRow ok={result.thicknessOk}>
-              <span>
-                s ≥ max(sᵣᵢ + c) → {s} мм {result.thicknessOk ? "≥" : "<"} {fmtHundredths(result.srcMax)} мм
-              </span>
+              <Var letter="s" />
+              <span>= {s} мм</span>
+              <span>{calcCheckCmp(result.thicknessOk, "≥")} {fmtHundredths(result.srcMax)} мм</span>
             </CalcCheckRow>
           ) : (
             <CalcCheckRow placeholder="Заполните исходные данные" />
           )}
           {hasResult && sNum > 0 && !isBlank(p) && result.pAllow > 0 ? (
             <CalcCheckRow ok={result.strengthOk}>
-              <span>
-                p ≤ [p] → {p} МПа {result.strengthOk ? "≤" : ">"} {fmt(result.pAllow, 1)} МПа
-              </span>
+              <Var letter="p" />
+              <span>= {p} МПа</span>
+              <span>{calcCheckCmp(result.strengthOk, "≤")} {fmt(result.pAllow, 1)} МПа</span>
             </CalcCheckRow>
           ) : null}
         </CalcSection>

@@ -36,6 +36,15 @@ export const CALC_PAGE_TITLE = "text-lg font-bold leading-snug text-[var(--color
 /** Вертикальный зазор между блоками внутри калькулятора */
 export const CALC_INNER_STACK = "space-y-5";
 
+/** Заголовок блока проверки применимости расчётных формул */
+export const CALC_APPLICABILITY_TITLE = "Условие применения расчётных формул";
+
+/** Оператор сравнения в строке проверки: при выполнении — passOp, иначе противоположный. */
+export function calcCheckCmp(ok: boolean, passOp: "≤" | "≥"): "≤" | "≥" | "<" | ">" {
+  if (passOp === "≤") return ok ? "≤" : ">";
+  return ok ? "≥" : "<";
+}
+
 /** s_p — расчётная толщина в результатах */
 export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-xl" />;
 

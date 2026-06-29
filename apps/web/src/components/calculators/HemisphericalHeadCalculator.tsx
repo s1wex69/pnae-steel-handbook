@@ -14,10 +14,12 @@ import {
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmt, fmtIfSource, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
+import { fmt, fmtIfSource, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 type ResultDrive = "ss" | "pp";
 
@@ -177,13 +179,16 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
           />
         </CalcSection>
 
-        <CalcSection title="Проверка применимости">
-          <CalcCheckRow ok={applicability.ok}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE}>
+          <CalcCheckRow ok={applicability.ratio >= applicability.min}>
             <Frac num={<>s − c</>} den="D" />
-            <span>= {fmtRu(applicability.ratio, 4)}</span>
-            <span>
-              {applicability.ok ? "в пределах" : "вне пределов"} [{fmtRu(applicability.min, 4)}; {fmtRu(applicability.max, 2)}]
-            </span>
+            <span>= {fmtHundredthsRu(applicability.ratio)}</span>
+            <span>{calcCheckCmp(applicability.ratio >= applicability.min, "≥")} {fmtRu(applicability.min, 4)}</span>
+          </CalcCheckRow>
+          <CalcCheckRow ok={applicability.ratio <= applicability.max}>
+            <Frac num={<>s − c</>} den="D" />
+            <span>= {fmtHundredthsRu(applicability.ratio)}</span>
+            <span>{calcCheckCmp(applicability.ratio <= applicability.max, "≤")} {fmtRu(applicability.max, 2)}</span>
           </CalcCheckRow>
         </CalcSection>
       </section>

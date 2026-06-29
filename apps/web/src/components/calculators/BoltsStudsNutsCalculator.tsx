@@ -17,6 +17,10 @@ import {
 
   CalculatorPageShell,
 
+  CALC_APPLICABILITY_TITLE,
+
+  calcCheckCmp,
+
 } from "@/components/calculators/calculatorUi";
 
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
@@ -404,7 +408,7 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
 
 
-        <CalcSection title="Проверки" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
 
           {hasResult ? (
 
@@ -412,37 +416,41 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
               <CalcCheckRow ok={result.checks.tension}>
 
-                <span>σw ≤ [σ] → {fmt(result.sigmaW, 1)} МПа {result.checks.tension ? "≤" : ">"} {sigmaStr} МПа</span>
+                <Var letter="σ" sub="w" />
+
+                <span>= {fmt(result.sigmaW, 1)} МПа</span>
+
+                <span>{calcCheckCmp(result.checks.tension, "≤")} {sigmaStr} МПа</span>
 
               </CalcCheckRow>
 
               <CalcCheckRow ok={result.checks.torsion}>
 
-                <span>τsw ≤ [τ] → {fmt(result.tauSw, 1)} МПа {result.checks.torsion ? "≤" : ">"} {fmt(result.tauAllow, 1)} МПа</span>
+                <Var letter="τ" sub="sw" />
+
+                <span>= {fmt(result.tauSw, 1)} МПа</span>
+
+                <span>{calcCheckCmp(result.checks.torsion, "≤")} {fmt(result.tauAllow, 1)} МПа</span>
 
               </CalcCheckRow>
 
               <CalcCheckRow ok={result.checks.threadBolt}>
 
-                <span>
+                <span>τ<sub>п</sub> болта</span>
 
-                  τₚ болта ≤ [τ] → {fmt(result.tauThreadBolt, 1)} МПа {result.checks.threadBolt ? "≤" : ">"}{" "}
+                <span>= {fmt(result.tauThreadBolt, 1)} МПа</span>
 
-                  {fmt(result.tauAllow, 1)} МПа
-
-                </span>
+                <span>{calcCheckCmp(result.checks.threadBolt, "≤")} {fmt(result.tauAllow, 1)} МПа</span>
 
               </CalcCheckRow>
 
               <CalcCheckRow ok={result.checks.threadNut}>
 
-                <span>
+                <span>τ<sub>п</sub> гайки</span>
 
-                  τₚ гайки ≤ [τ]г → {fmt(result.tauThreadNut, 1)} МПа {result.checks.threadNut ? "≤" : ">"}{" "}
+                <span>= {fmt(result.tauThreadNut, 1)} МПа</span>
 
-                  {fmt(result.tauNutAllow, 1)} МПа
-
-                </span>
+                <span>{calcCheckCmp(result.checks.threadNut, "≤")} {fmt(result.tauNutAllow, 1)} МПа</span>
 
               </CalcCheckRow>
 
@@ -452,25 +460,21 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
                   <CalcCheckRow ok={result.checks.threadQw}>
 
-                    <span>
+                    <span>Q<sub>w</sub> на резьбе</span>
 
-                      Qw на резьбе ≤ [τ] → {fmt(result.tauThreadQw, 1)} МПа {result.checks.threadQw ? "≤" : ">"}{" "}
+                    <span>= {fmt(result.tauThreadQw, 1)} МПа</span>
 
-                      {fmt(result.tauAllow, 1)} МПа
-
-                    </span>
+                    <span>{calcCheckCmp(result.checks.threadQw, "≤")} {fmt(result.tauAllow, 1)} МПа</span>
 
                   </CalcCheckRow>
 
                   <CalcCheckRow ok={result.checks.bodyShear}>
 
-                    <span>
+                    <span>Q<sub>w</sub> на теле</span>
 
-                      Qw на теле ≤ [τ] → {fmt(result.tauBody, 1)} МПа {result.checks.bodyShear ? "≤" : ">"}{" "}
+                    <span>= {fmt(result.tauBody, 1)} МПа</span>
 
-                      {fmt(result.tauAllow, 1)} МПа
-
-                    </span>
+                    <span>{calcCheckCmp(result.checks.bodyShear, "≤")} {fmt(result.tauAllow, 1)} МПа</span>
 
                   </CalcCheckRow>
 
@@ -480,11 +484,11 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
               <CalcCheckRow ok={result.checks.area}>
 
-                <span>
+                <Var letter="A" />
 
-                  A ≥ A<sub>треб</sub> → {fmt(result.Aw, 0)} мм² {result.checks.area ? "≥" : "<"} {fmt(result.AwRequired, 0)} мм²
+                <span>= {fmt(result.Aw, 0)} мм²</span>
 
-                </span>
+                <span>{calcCheckCmp(result.checks.area, "≥")} {fmt(result.AwRequired, 0)} мм²</span>
 
               </CalcCheckRow>
 

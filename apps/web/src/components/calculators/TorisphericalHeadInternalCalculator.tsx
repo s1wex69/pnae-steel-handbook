@@ -8,11 +8,13 @@ import {
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
   CALC_RESULT_SP_SYMBOL,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 const METHODOLOGY_TITLE =
   "Расчёт на прочность торосферического днища, нагруженного внутренним избыточным давлением";
@@ -63,8 +65,6 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
   const displaySs = hasResult ? fmtHundredths(result.ss) : "";
 
   const heightRatio = geometryReady ? hNum / dNum : 0;
-  const thinOk = hasResult && result.thinOk;
-  const heightOk = geometryReady && result.heightOk;
 
   return (
     <CalculatorPageShell>
@@ -176,20 +176,34 @@ export function TorisphericalHeadInternalCalculator({ handbook }: { handbook: St
           />
         </CalcSection>
 
-        <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult ? (
-            <CalcCheckRow ok={thinOk}>
-              <Frac num={<>s − c</>} den="D" />
-              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>в пределах [0,0025; 0,100]</span>
-            </CalcCheckRow>
+            <>
+              <CalcCheckRow ok={result.thinnessRatio >= 0.0025}>
+                <Frac num={<>s − c</>} den="D" />
+                <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+                <span>{calcCheckCmp(result.thinnessRatio >= 0.0025, "≥")} {fmtRu(0.0025, 4)}</span>
+              </CalcCheckRow>
+              <CalcCheckRow ok={result.thinnessRatio <= 0.1}>
+                <Frac num={<>s − c</>} den="D" />
+                <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
+                <span>{calcCheckCmp(result.thinnessRatio <= 0.1, "≤")} 0,1</span>
+              </CalcCheckRow>
+            </>
           ) : null}
           {geometryReady ? (
-            <CalcCheckRow ok={heightOk}>
-              <Frac num="H" den="D" />
-              <span>= {fmtHundredthsRu(heightRatio)}</span>
-              <span>в пределах [0,2; 0,5]</span>
-            </CalcCheckRow>
+            <>
+              <CalcCheckRow ok={heightRatio >= 0.2}>
+                <Frac num="H" den="D" />
+                <span>= {fmtHundredthsRu(heightRatio)}</span>
+                <span>{calcCheckCmp(heightRatio >= 0.2, "≥")} 0,2</span>
+              </CalcCheckRow>
+              <CalcCheckRow ok={heightRatio <= 0.5}>
+                <Frac num="H" den="D" />
+                <span>= {fmtHundredthsRu(heightRatio)}</span>
+                <span>{calcCheckCmp(heightRatio <= 0.5, "≤")} 0,5</span>
+              </CalcCheckRow>
+            </>
           ) : null}
         </CalcSection>
       </section>

@@ -13,6 +13,8 @@ import {
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
@@ -203,28 +205,28 @@ export function FlatCoverCalculator({
           />
         </CalcSection>
 
-        <CalcSection title="Проверки" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult && num(s1) > 0 ? (
             <CalcCheckRow ok={result.applicabilityOk}>
               <Frac num={<>s₁ − c</>} den={<Var letter="D" sub="p" />} />
               <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>{result.applicabilityOk ? "≤" : ">"} 0,11</span>
+              <span>{calcCheckCmp(result.applicabilityOk, "≤")} 0,11</span>
             </CalcCheckRow>
           ) : (
             <CalcCheckRow placeholder="Укажите s₁ для проверки" />
           )}
           {bolted && hasResult && num(s2) > 0 ? (
             <CalcCheckRow ok={num(s2) >= result.s2Min}>
-              <span>
-                s₂ ≥ s₂ min → s₂ = {s2} мм {num(s2) >= result.s2Min ? "≥" : "<"} {fmtHundredths(result.s2Min)} мм
-              </span>
+              <Var letter="s" sub="2" />
+              <span>= {s2} мм</span>
+              <span>{calcCheckCmp(num(s2) >= result.s2Min, "≥")} {fmtHundredths(result.s2Min)} мм</span>
             </CalcCheckRow>
           ) : null}
           {hasResult && num(s1) > 0 && !isBlank(p) ? (
             <CalcCheckRow ok={num(p) <= result.pAllow}>
-              <span>
-                p ≤ [p] → {p} МПа {num(p) <= result.pAllow ? "≤" : ">"} {fmt(result.pAllow, 2)} МПа
-              </span>
+              <Var letter="p" />
+              <span>= {p} МПа</span>
+              <span>{calcCheckCmp(num(p) <= result.pAllow, "≤")} {fmt(result.pAllow, 2)} МПа</span>
             </CalcCheckRow>
           ) : null}
         </CalcSection>

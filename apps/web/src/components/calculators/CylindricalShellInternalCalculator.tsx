@@ -12,7 +12,9 @@ import {
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
   CALC_RESULT_SP_SYMBOL,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
@@ -171,11 +173,11 @@ export function CylindricalShellInternalCalculator({
           />
         </CalcSection>
 
-        <CalcSection title="Условие применения расчётных формул" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           <CalcCheckRow ok={applicability.ok}>
             <Frac num={<>s − c</>} den="D" />
             <span>= {fmtHundredthsRu(applicability.ratio)}</span>
-            <span>{applicability.ok ? "≤" : ">"} {fmtHundredthsRu(applicability.limit)}</span>
+            <span>{calcCheckCmp(applicability.ok, "≤")} {fmtHundredthsRu(applicability.limit)}</span>
           </CalcCheckRow>
         </CalcSection>
       </section>

@@ -8,7 +8,9 @@ import {
   CalcSection,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
   CALC_RESULT_SP_SYMBOL,
+  calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
 import { AllowSigma, CalcSymbol, Frac, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
@@ -169,22 +171,24 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
           />
         </CalcSection>
 
-        <CalcSection title="Условия применимости расчетных формул" titleAccent={false}>
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult ? (
             <CalcCheckRow ok={result.thinnessOk}>
               <Frac num={<>s − c</>} den="D" />
               <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>{result.thinnessOk ? "≤" : ">"} 0,1</span>
+              <span>{calcCheckCmp(result.thinnessOk, "≤")} 0,1</span>
             </CalcCheckRow>
           ) : null}
           <CalcCheckRow ok={result.alphaOk}>
-            <span>α ≤ 70° → α = {fmtHundredthsRu(alphaNum)}°</span>
+            <Var letter="α" />
+            <span>= {fmtHundredthsRu(alphaNum)}°</span>
+            <span>{calcCheckCmp(result.alphaOk, "≤")} 70°</span>
           </CalcCheckRow>
           {hasResult ? (
             <CalcCheckRow ok={result.pressureOk}>
-              <span>
-                p ≤ [p] → {fmtHundredthsRu(pNum)} МПа ≤ {fmtHundredthsRu(result.pp)} МПа
-              </span>
+              <Var letter="p" />
+              <span>= {fmtHundredthsRu(pNum)} МПа</span>
+              <span>{calcCheckCmp(result.pressureOk, "≤")} {fmtHundredthsRu(result.pp)} МПа</span>
             </CalcCheckRow>
           ) : null}
         </CalcSection>
