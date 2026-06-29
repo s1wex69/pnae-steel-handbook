@@ -1,5 +1,10 @@
 import { useId } from "react";
 
+function formatDimMm(value: number): string {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
 export function VesselDiagram({
   diameter,
   thickness,
@@ -7,7 +12,7 @@ export function VesselDiagram({
 }: {
   diameter: number;
   thickness: number;
-  /** Dₐ — наружный диаметр (размер по наружным граням) */
+  /** Dₐ — наружный диаметр: размерная линия от оси до наружной грани стенки */
   outerDiameter?: boolean;
 }) {
   const patternId = useId();
@@ -24,8 +29,9 @@ export function VesselDiagram({
   const bodyH = bottomY - topY;
 
   const sDimY = 68;
-  const dDimY = outerDiameter ? bottomY - 14 : 128;
-  const dArrowEndX = innerRight;
+  const dDimY = 128;
+  const dArrowEndX = outerDiameter ? outerRight : innerRight;
+  const axisBottomY = bottomY + 12;
 
   const dimSymbolClass =
     "fill-[var(--color-foreground)] text-[26px] font-serif font-bold italic";
@@ -38,7 +44,7 @@ export function VesselDiagram({
     <svg
       viewBox="0 0 348 252"
       className="h-full w-full max-h-[300px] min-h-[220px] max-w-[360px] text-[var(--color-primary)]"
-      aria-label="Схема цилиндрической обечайки"
+      aria-label={outerDiameter ? "Схема трубы" : "Схема цилиндрической обечайки"}
     >
       <defs>
         <pattern id={patternId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -60,7 +66,7 @@ export function VesselDiagram({
         strokeWidth="1.5"
       />
 
-      {/* контур обечайки */}
+      {/* контур */}
       <path
         d={`M ${leftOuterX} ${topY} H ${outerRight} V ${bottomY} H ${leftOuterX} Z`}
         fill="none"
@@ -73,7 +79,7 @@ export function VesselDiagram({
         x1={centerX}
         y1={topY - 10}
         x2={centerX}
-        y2={bottomY + 12}
+        y2={axisBottomY}
         stroke="currentColor"
         strokeWidth="1"
         strokeDasharray="10 5 2 5"
@@ -99,88 +105,45 @@ export function VesselDiagram({
         strokeWidth="1.1"
         markerEnd={`url(#${patternId}-arrow)`}
       />
-      <line
-        x1={outerRight}
-        y1={sDimY}
-        x2={sLabelX - 2}
-        y2={sDimY}
-        stroke="currentColor"
-        strokeWidth="1"
-        opacity="0.55"
-      />
       <text x={sLabelX} y={sDimY + 6} textAnchor="start" className={`${dimSymbolClass} text-[30px]`}>
         s
       </text>
       <text x={sLabelX + 20} y={sDimY + 5} textAnchor="start" className={dimValueClass}>
-        {thickness.toFixed(1)} мм
+        {formatDimMm(thickness)} мм
       </text>
 
       {/* D / Dₐ */}
-      {outerDiameter ? (
-        <>
-          <line
-            x1={leftOuterX - 8}
-            y1={dDimY}
-            x2={leftOuterX}
-            y2={dDimY}
-            stroke="currentColor"
-            strokeWidth="1.1"
-            markerEnd={`url(#${patternId}-arrow)`}
-          />
-          <line
-            x1={outerRight + 8}
-            y1={dDimY}
-            x2={outerRight}
-            y2={dDimY}
-            stroke="currentColor"
-            strokeWidth="1.1"
-            markerEnd={`url(#${patternId}-arrow)`}
-          />
-          <line
-            x1={leftOuterX}
-            y1={dDimY}
-            x2={outerRight}
-            y2={dDimY}
-            stroke="currentColor"
-            strokeWidth="1"
-            opacity="0.55"
-          />
-          <text
-            x={(leftOuterX + outerRight) / 2}
-            y={dDimY - 12}
-            textAnchor="middle"
-            className={dimSymbolClass}
-          >
+      <line
+        x1={centerX}
+        y1={dDimY}
+        x2={dArrowEndX}
+        y2={dDimY}
+        stroke="currentColor"
+        strokeWidth="1.1"
+        markerEnd={`url(#${patternId}-arrow)`}
+      />
+      <text
+        x={(centerX + dArrowEndX) / 2}
+        y={dDimY - 12}
+        textAnchor="middle"
+        className={dimSymbolClass}
+      >
+        {outerDiameter ? (
+          <>
             D<tspan baselineShift="sub" fontSize="18">a</tspan>
-          </text>
-          <text
-            x={(leftOuterX + outerRight) / 2}
-            y={dDimY + 22}
-            textAnchor="middle"
-            className={dimValueClass}
-          >
-            {diameter} мм
-          </text>
-        </>
-      ) : (
-        <>
-          <line
-            x1={centerX}
-            y1={dDimY}
-            x2={dArrowEndX}
-            y2={dDimY}
-            stroke="currentColor"
-            strokeWidth="1.1"
-            markerEnd={`url(#${patternId}-arrow)`}
-          />
-          <text x={(centerX + dArrowEndX) / 2} y={dDimY - 12} textAnchor="middle" className={dimSymbolClass}>
-            D
-          </text>
-          <text x={(centerX + dArrowEndX) / 2} y={dDimY + 22} textAnchor="middle" className={dimValueClass}>
-            {diameter} мм
-          </text>
-        </>
-      )}
+          </>
+        ) : (
+          "D"
+        )}
+      </text>
+      <text
+        x={(centerX + dArrowEndX) / 2}
+        y={dDimY + 22}
+        textAnchor="middle"
+        className={dimValueClass}
+      >
+        {formatDimMm(diameter)} мм
+      </text>
     </svg>
   );
 }
