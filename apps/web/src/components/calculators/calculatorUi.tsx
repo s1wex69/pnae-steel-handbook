@@ -32,7 +32,8 @@ export const CALC_SECTION_CARD =
 export const CALC_SECTION_TITLE =
   "text-base font-bold leading-snug text-[var(--color-heading)] sm:text-lg";
 
-export const CALC_PAGE_TITLE = "text-lg font-bold leading-snug text-[var(--color-heading)] sm:text-xl";
+export const CALC_PAGE_TITLE =
+  "calc-page-title font-bold leading-tight tracking-tight text-[var(--color-heading)]";
 
 /** Вертикальный зазор между блоками внутри калькулятора */
 export const CALC_INNER_STACK = "space-y-5";
@@ -105,12 +106,7 @@ export function CalculatorPageHeader({
 }) {
   return (
     <section>
-      <div
-        className={cn(
-          CALC_SECTION_CARD,
-          "space-y-1"
-        )}
-      >
+      <div className={cn(CALC_SECTION_CARD, "space-y-1 px-3 py-3 sm:px-4 sm:py-4")}>
         {eyebrow ? (
           <p className="text-sm font-medium text-[var(--color-muted-foreground)]">{eyebrow}</p>
         ) : null}

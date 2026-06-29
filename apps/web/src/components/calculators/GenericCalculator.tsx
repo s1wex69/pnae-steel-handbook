@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { DecimalPlacesControl } from "@/components/calculators/DecimalPlacesControl";
+import { CALC_PAGE_TITLE } from "@/components/calculators/calculatorUi";
 import { loadDecimalPlaces, saveDecimalPlaces } from "@/lib/decimalPlaces";
 import { formatDecimalPlaces } from "@/lib/utils";
 
@@ -129,7 +130,7 @@ export function GenericCalculator({ config }: { config: CalculatorConfig }) {
     <div className="space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">{config.title}</h1>
+          <h1 className={CALC_PAGE_TITLE}>{config.title}</h1>
           <p className="text-[var(--color-muted-foreground)]">
             {config.subtitle} — <strong>{config.standard}</strong>
           </p>
