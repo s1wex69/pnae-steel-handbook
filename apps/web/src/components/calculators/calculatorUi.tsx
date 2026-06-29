@@ -29,11 +29,11 @@ export const calcResultBoxClass =
 export const CALC_SECTION_CARD =
   "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] sm:p-5";
 
-export const CALC_SECTION_TITLE =
-  "text-base font-bold leading-snug text-[var(--color-heading)] sm:text-lg";
-
 export const CALC_PAGE_TITLE =
   "calc-page-title font-bold leading-tight tracking-tight text-[var(--color-heading)]";
+
+/** Заголовки блоков калькулятора — тот же вид, что и главный заголовок страницы */
+export const CALC_SECTION_TITLE = CALC_PAGE_TITLE;
 
 /** Вертикальный зазор между блоками внутри калькулятора */
 export const CALC_INNER_STACK = "space-y-5";

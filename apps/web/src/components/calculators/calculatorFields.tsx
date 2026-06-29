@@ -359,11 +359,6 @@ export function PipeAllowancesCalcSection({
     return (
       <section className={CALC_SECTION_CARD}>
         <CalcSectionHeading title="Прибавки к расчётной толщине" action={toggleButton} accent={false} />
-        {expanded ? (
-          <p className="pb-1 text-sm leading-snug text-[var(--color-muted-foreground)]">
-            c₁₁ и c₂₁ пересчитываются при изменении Dₐ, p и [σ]; вручную введённое значение сохраняется.
-          </p>
-        ) : null}
         <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
           <div className="contents">
             {expanded ? detailRows : null}
@@ -376,9 +371,6 @@ export function PipeAllowancesCalcSection({
 
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
-      <p className="pb-1 text-sm leading-snug text-[var(--color-muted-foreground)]">
-        c₁₁ и c₂₁ пересчитываются при изменении Dₐ, p и [σ]; вручную введённое значение сохраняется.
-      </p>
       {detailRows}
       {sumRow}
     </CalcSection>

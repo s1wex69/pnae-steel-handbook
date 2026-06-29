@@ -147,7 +147,7 @@ export function GenericCalculator({ config }: { config: CalculatorConfig }) {
 
       <Card>
           <CardHeader>
-            <CardTitle>Исходные данные</CardTitle>
+            <CardTitle className={CALC_PAGE_TITLE}>Исходные данные</CardTitle>
             <CardDescription>Ctrl+Enter — пересчёт</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -207,7 +207,7 @@ export function GenericCalculator({ config }: { config: CalculatorConfig }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Формула</CardTitle>
+          <CardTitle className={CALC_PAGE_TITLE}>Формула</CardTitle>
         </CardHeader>
         <CardContent
           className="overflow-x-auto text-center"
@@ -224,7 +224,7 @@ export function GenericCalculator({ config }: { config: CalculatorConfig }) {
       {result && (
         <Card className="print-report border-[var(--color-primary)]/30">
           <CardHeader>
-            <CardTitle>Результаты</CardTitle>
+            <CardTitle className={CALC_PAGE_TITLE}>Результаты</CardTitle>
             <CardDescription>{result.standard}</CardDescription>
           </CardHeader>
           <CardContent>

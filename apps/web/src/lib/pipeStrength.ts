@@ -3,9 +3,13 @@
  * sᵣ = p·Dₐ / (2·φ·[σ] + p)
  * s = sᵣ + c₁₁ + c₂₁,   c = c₁₁ + c₂₁
  * [p] = 2·φ·[σ]·(s − c) / (Dₐ − (s − c))
+ * 0 ≤ (s − c) / Dₐ ≤ 0,25 — ПНАЭ п. 4.2.2.1
  */
 
 import { round2, stresscalcMinusTolerance } from "@/lib/stresscalcShell";
+
+export const PIPE_APPLICABILITY_MIN = 0;
+export const PIPE_APPLICABILITY_MAX = 0.25;
 
 export interface PipeStrengthInputs {
   Da: number;
@@ -63,6 +67,19 @@ export function resolvePipeThickness(
     c11 = c11Next;
   }
   return { c11: round2(c11), s: round2(sr + c11 + c21) };
+}
+
+export function checkPipeApplicability(sEff: number, Da: number) {
+  const ratio = Da > 0 ? sEff / Da : 0;
+  const min = PIPE_APPLICABILITY_MIN;
+  const max = PIPE_APPLICABILITY_MAX;
+  return {
+    ratio,
+    min,
+    max,
+    ok: ratio >= min && ratio <= max,
+    note: "0 ≤ (s − c) / Dₐ ≤ 0,25 — труба, штуцер, коллектор (ПНАЭ п. 4.2.2.1)",
+  };
 }
 
 export function calcPipeAllowablePressure(

@@ -8,13 +8,15 @@ import {
   CalculatorDiagramCard,
   CalculatorPageHeader,
   CalculatorPageShell,
+  CALC_APPLICABILITY_TITLE,
+  CalcApplicabilityRangeRow,
 } from "@/components/calculators/calculatorUi";
 import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { usePipeAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
 import { stresscalcCorrosionAllowance } from "@/lib/stresscalcShell";
-import { calcPipeSr } from "@/lib/pipeStrength";
-import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { calcPipeSr, checkPipeApplicability } from "@/lib/pipeStrength";
+import { fmtHundredths, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
   const allowances = usePipeAllowanceFields({ cMinus: "0.2", cCorrosion: "0" });
@@ -56,6 +58,11 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
+
+  const applicability = useMemo(
+    () => checkPipeApplicability(result.sMin - result.cc, daNum),
+    [result.sMin, result.cc, daNum]
+  );
 
   return (
     <CalculatorPageShell>
@@ -155,6 +162,20 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
             unit="мм"
             borderless
           />
+        </CalcSection>
+
+        <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
+          {hasResult ? (
+            <CalcApplicabilityRangeRow
+              ratio={applicability.ratio}
+              min={applicability.min}
+              max={applicability.max}
+              minLabel="0"
+              maxLabel={fmtRu(applicability.max, 2)}
+              num={<>s − c</>}
+              den={<Var letter="D" sub="a" />}
+            />
+          ) : null}
         </CalcSection>
       </section>
 
