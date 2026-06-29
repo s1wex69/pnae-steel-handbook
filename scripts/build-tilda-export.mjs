@@ -256,6 +256,17 @@ function embedSnippet(title, iframeSrc) {
     loading="lazy"
   ></iframe>
 </div>
+<script>
+(function(){
+  var T="pnae-embed-wheel";
+  window.addEventListener("message",function(e){
+    if(!e.data||e.data.type!==T)return;
+    var dy=Number(e.data.deltaY);
+    if(!isFinite(dy)||!dy)return;
+    window.scrollBy(0,dy);
+  });
+})();
+</script>
 `;
 }
 

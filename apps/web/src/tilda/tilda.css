@@ -7,7 +7,12 @@ html:has(#root.pnae-tilda-embed),
 html:has(#root.pnae-tilda-embed) body {
   min-height: 100%;
   height: auto;
+  overflow-x: clip;
   overflow-y: auto;
+}
+
+html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
+  overflow-y: visible !important;
 }
 
 @theme {
@@ -237,6 +242,12 @@ html:has(#root.pnae-tilda-embed) body {
 
 .font-heading {
   font-family: var(--font-heading);
+}
+
+#root.pnae-tilda-embed .calc-page-title {
+  font-size: 1.125rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
 }
 
 #root.pnae-tilda-embed .font-heading {

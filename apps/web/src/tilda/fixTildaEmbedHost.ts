@@ -16,6 +16,7 @@ export function fixTildaEmbedHost() {
     el.style.setProperty("margin-right", "auto", "important");
     el.style.setProperty("box-sizing", "border-box", "important");
     el.style.setProperty("overflow-x", "clip", "important");
+    el.style.setProperty("overflow-y", "visible", "important");
 
     if (el.classList.contains("t-rec") || el.classList.contains("t-container")) {
       el.style.setProperty("padding-left", "0", "important");
