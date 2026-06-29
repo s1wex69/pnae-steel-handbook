@@ -40,7 +40,7 @@ function FlatHeadModeSelector({
             type="button"
             onClick={() => onChange(option.id)}
             className={cn(
-              "flex items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-colors",
+              "flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
               selected
                 ? "border-[var(--color-primary)] bg-[var(--color-primary)]/8 ring-2 ring-[var(--color-primary)]/25"
                 : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/40"
@@ -79,7 +79,7 @@ export function FlatHeadCalculator({
     <CalculatorPageShell>
       <CalculatorPageHeader title={active.pageTitle} />
 
-      <div className="mb-8">
+      <div className="mb-4">
         <FlatHeadModeSelector mode={mode} onChange={setMode} />
       </div>
 

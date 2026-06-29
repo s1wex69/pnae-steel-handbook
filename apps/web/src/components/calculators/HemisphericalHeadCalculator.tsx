@@ -99,7 +99,7 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
         title="Полусферическое днище — толщина стенки и допускаемое давление"
       />
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <AllowancesCalcSection
           c1={allowances.c1}
           c2={allowances.c2}
@@ -189,7 +189,7 @@ export function HemisphericalHeadCalculator({ handbook }: { handbook: SteelHandb
       </section>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}

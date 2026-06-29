@@ -2,9 +2,9 @@
  *
  * α₁ — половина угла раствора при вершине (угол между осью и образующей).
  *
- * s_p = p·D / (2·[σ]·φ·cosα₁ − p)
+ * s_p = p·D / (2·[σ]·φ − p) · (1 / cosα₁)
  * s ≥ s_p + c
- * [p] = 2·[σ]·φ·(s − c) / (D / cosα₁ + s − c)
+ * [p] = 2·[σ]·φ·(s − c)·cosα₁ / (D + (s − c)·cosα₁)
  * Применимость: (s − c)/D ≤ 0,1; α₁ ≤ 70°; p ≤ [p]
  */
 
@@ -55,11 +55,11 @@ export function calcConicalSpFromPressure(
   phiP: number,
   alphaDeg: number
 ): number | null {
+  const denom = 2 * sigma * phiP - p;
+  if (!(D > 0) || !(denom > 0) || !(p >= 0) || !(sigma > 0) || !(phiP > 0)) return null;
   const cosA = cosAlphaFromDeg(alphaDeg);
   if (!(cosA > 0)) return null;
-  const denom = 2 * sigma * phiP * cosA - p;
-  if (!(denom > 0)) return null;
-  return (p * D) / denom;
+  return (p * D) / denom / cosA;
 }
 
 export function calcConicalPressureFromSp(
@@ -70,8 +70,8 @@ export function calcConicalPressureFromSp(
   alphaDeg: number
 ): number | null {
   const cosA = cosAlphaFromDeg(alphaDeg);
-  if (!(cosA > 0) || !(sp > 0)) return null;
-  const denom = D + sp;
+  if (!(cosA > 0) || !(sp > 0) || !(sigma > 0) || !(phiP > 0)) return null;
+  const denom = D + sp * cosA;
   if (!(denom > 0)) return null;
   return (2 * sigma * phiP * sp * cosA) / denom;
 }
@@ -85,12 +85,12 @@ export function calcConicalAllowablePressure(
   alphaDeg: number
 ): number | null {
   const sEff = ss - cc;
-  if (!(sEff > 0)) return null;
+  if (!(sEff > 0) || !(sigma > 0) || !(phiP > 0)) return null;
   const cosA = cosAlphaFromDeg(alphaDeg);
   if (!(cosA > 0)) return null;
-  const denom = D / cosA + sEff;
+  const denom = D + sEff * cosA;
   if (!(denom > 0)) return null;
-  return (2 * sigma * phiP * sEff) / denom;
+  return (2 * sigma * phiP * sEff * cosA) / denom;
 }
 
 export function checkConicalApplicability(
@@ -147,7 +147,7 @@ export function calculateConicalShellInternal(input: ConicalShellInputs): Conica
     if (next == null) {
       return {
         ...base,
-        error: "Невозможно рассчитать s_p: проверьте p, σ, φ и знаменатель 2·σ·φ·cosα − p > 0",
+        error: "Невозможно рассчитать s_p: проверьте p, σ, φ и знаменатель 2·[σ]·φ − p > 0",
       };
     }
     sp = next;

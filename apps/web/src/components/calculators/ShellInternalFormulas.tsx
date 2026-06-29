@@ -2,7 +2,7 @@ import { AllowSigma, Frac, MathSpan, Times, Var } from "@/components/handbooks/M
 
 function SpFromP() {
   return (
-    <MathSpan className="text-lg">
+    <MathSpan className="text-base">
       <Var letter="s" sub="p" /> ={" "}
       <Frac
         num={
@@ -25,7 +25,7 @@ function SpFromP() {
 
 function PFromSp() {
   return (
-    <MathSpan className="text-lg">
+    <MathSpan className="text-base">
       p ={" "}
       <Frac
         num={
@@ -50,7 +50,7 @@ function PFromSp() {
 
 function PpFormula() {
   return (
-    <MathSpan className="text-lg">
+    <MathSpan className="text-base">
       <Var letter="p" sub="p" /> ={" "}
       <Frac
         num={
@@ -86,7 +86,7 @@ export function ShellInternalFormulas() {
 export function ShellApplicabilityLimit({ dMm }: { dMm: number }) {
   const limit = dMm >= 200 ? "0,1" : "0,3";
   return (
-    <MathSpan className="text-lg text-[var(--color-muted-foreground)]">
+    <MathSpan className="text-base text-[var(--color-muted-foreground)]">
       <Frac num={<>s − c</>} den="D" /> ≤ {limit} —{" "}
       {dMm >= 200 ? "обечайки и трубы при D ≥ 200 мм" : "трубы при D < 200 мм"}
     </MathSpan>

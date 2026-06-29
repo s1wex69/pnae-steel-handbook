@@ -130,7 +130,7 @@ export function FlatBottomCalculator({
   const needsS2 = needsType10 || needsBolt;
 
   const content = (
-    <section className="space-y-8">
+    <section className="space-y-5">
       <AllowancesCalcSection
         collapsible
         c1={allowances.c1}
@@ -249,7 +249,7 @@ export function FlatBottomCalculator({
       <CalcSection title="Отверстия в днище" titleAccent={false}>
         <CalcRow inColumn label="Количество отверстий" symbol="" value={String(holeCount)} onChange={() => {}} unit="" borderless>
           <select
-            className="h-11 w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-lg"
+            className="h-8 w-full max-w-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm"
             value={holeCount}
             onChange={(e) => setHoleCount(Number(e.target.value) as (typeof HOLE_COUNTS)[number])}
           >
@@ -364,7 +364,7 @@ export function FlatBottomCalculator({
       </CalcSection>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}

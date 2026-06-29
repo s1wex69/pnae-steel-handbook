@@ -64,7 +64,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
     <CalculatorPageShell>
       <CalculatorPageHeader title="Расчёт на прочность трубы, штуцера, коллектора" />
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <PipeAllowancesCalcSection
           collapsible
           cMinus={allowances.cMinus}
@@ -162,7 +162,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
       </section>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}
@@ -179,5 +179,5 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
 }
 
 function CalcSymbol({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={className ?? "!text-2xl font-semibold"}>{children}</span>;
+  return <span className={className ?? "!text-xl font-semibold"}>{children}</span>;
 }

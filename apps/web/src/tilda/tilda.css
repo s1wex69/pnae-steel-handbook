@@ -216,7 +216,13 @@
 }
 
 #root.pnae-tilda-embed .pnae-section-gap > * + * {
-  margin-top: 2.5rem;
+  margin-top: 1.25rem;
+}
+
+#root.pnae-tilda-embed .calc-input {
+  height: 2rem;
+  font-size: 0.875rem;
+  padding-inline: 0.5rem;
 }
 
 .font-heading {
@@ -225,12 +231,6 @@
 
 #root.pnae-tilda-embed .font-heading {
   font-family: var(--font-heading) !important;
-}
-
-#root.pnae-tilda-embed .calc-input {
-  height: 2.25rem;
-  font-size: var(--text-base);
-  padding-inline: 0.625rem;
 }
 
 .t-rec:has(#root.pnae-tilda-embed),

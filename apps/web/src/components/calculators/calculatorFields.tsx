@@ -27,7 +27,7 @@ function ResultValue({ value, unit }: { value: string; unit?: string }) {
         {value}
       </div>
       {unit ? (
-        <span className="text-base text-[var(--color-muted-foreground)]">{unit}</span>
+        <span className="text-sm text-[var(--color-muted-foreground)]">{unit}</span>
       ) : (
         <span />
       )}
@@ -79,7 +79,7 @@ export function CalcRow({
   const isStacked = (forceStacked && !isCheck) || (inColumn && Boolean(labelExtra) && !inlineLabelExtra);
 
   const symbolClass = CALC_SYMBOL_CLASS;
-  const unitClass = "shrink-0 text-base text-[var(--color-muted-foreground)]";
+  const unitClass = "shrink-0 text-sm text-[var(--color-muted-foreground)]";
 
   const valueGridClass = cn(
     !hasSymbol
@@ -118,7 +118,7 @@ export function CalcRow({
   const labelBlock = (
     <div
       className={cn(
-        "min-w-0 text-lg leading-snug text-[var(--color-foreground)] [overflow-wrap:anywhere]",
+        "min-w-0 text-base leading-snug text-[var(--color-foreground)] [overflow-wrap:anywhere]",
         isCheck && "font-medium text-[var(--color-heading)]"
       )}
     >
@@ -130,7 +130,7 @@ export function CalcRow({
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-x-4 py-3",
+        "grid grid-cols-1 gap-x-4 py-2",
         inColumn
           ? cn(
               CALC_ROW_GRID_IN_COLUMN,
@@ -190,16 +190,16 @@ export function AllowancesCalcSection({
     <button
       type="button"
       onClick={() => setExpanded((v) => !v)}
-      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+      className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
     >
       {expanded ? (
         <>
-          <ChevronUp className="h-5 w-5" />
+          <ChevronUp className="h-4 w-4" />
           Скрыть
         </>
       ) : (
         <>
-          <ChevronDown className="h-5 w-5" />
+          <ChevronDown className="h-4 w-4" />
           Раскрыть
         </>
       )}
@@ -297,16 +297,16 @@ export function PipeAllowancesCalcSection({
     <button
       type="button"
       onClick={() => setExpanded((v) => !v)}
-      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+      className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
     >
       {expanded ? (
         <>
-          <ChevronUp className="h-5 w-5" />
+          <ChevronUp className="h-4 w-4" />
           Скрыть
         </>
       ) : (
         <>
-          <ChevronDown className="h-5 w-5" />
+          <ChevronDown className="h-4 w-4" />
           Раскрыть
         </>
       )}
@@ -390,16 +390,16 @@ export function ElbowAllowancesCalcSection({
     <button
       type="button"
       onClick={() => setExpanded((v) => !v)}
-      className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+      className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
     >
       {expanded ? (
         <>
-          <ChevronUp className="h-5 w-5" />
+          <ChevronUp className="h-4 w-4" />
           Скрыть
         </>
       ) : (
         <>
-          <ChevronDown className="h-5 w-5" />
+          <ChevronDown className="h-4 w-4" />
           Раскрыть
         </>
       )}

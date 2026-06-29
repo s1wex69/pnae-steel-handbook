@@ -17,27 +17,30 @@ export const CALC_VALUE_GRID_NO_SYMBOL =
   "grid w-full min-w-0 max-w-[min(100%,22rem)] grid-cols-[minmax(0,1fr)_minmax(2rem,auto)] items-center justify-self-end gap-x-1.5 sm:col-start-2";
 
 export const CALC_SYMBOL_CLASS =
-  "min-w-0 shrink-0 justify-self-end text-right text-xl font-semibold text-[var(--color-heading)]";
+  "min-w-0 shrink-0 justify-self-end text-right text-lg font-semibold text-[var(--color-heading)]";
 
 export const calcInputClass =
-  "calc-input box-border h-9 w-full min-w-0 text-right text-base tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
+  "calc-input box-border h-8 w-full min-w-0 text-right text-sm tabular-nums focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-0";
 
 export const calcResultBoxClass =
-  "flex h-9 w-full min-w-0 items-center justify-end overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-base tabular-nums whitespace-nowrap text-[var(--color-foreground)]";
+  "flex h-8 w-full min-w-0 items-center justify-end overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-2 text-sm tabular-nums whitespace-nowrap text-[var(--color-foreground)]";
 
 export const CALC_SECTION_CARD =
-  "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-5 shadow-[var(--shadow-card)] sm:p-8";
+  "rounded-2xl border border-[var(--color-border)]/80 bg-[var(--color-card)] p-4 shadow-[var(--shadow-card)] sm:p-5";
 
 export const CALC_SECTION_TITLE =
-  "text-xl font-bold leading-snug text-[var(--color-heading)] sm:text-2xl";
+  "text-base font-bold leading-snug text-[var(--color-heading)] sm:text-lg";
 
-export const CALC_PAGE_TITLE = CALC_SECTION_TITLE;
+export const CALC_PAGE_TITLE = "text-lg font-bold leading-snug text-[var(--color-heading)] sm:text-xl";
+
+/** Вертикальный зазор между блоками внутри калькулятора */
+export const CALC_INNER_STACK = "space-y-5";
 
 /** s_p — расчётная толщина в результатах */
-export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-2xl" />;
+export const CALC_RESULT_SP_SYMBOL = <Var letter="s" sub="p" className="!text-xl" />;
 
 export function CalculatorPageShell({ children }: { children: ReactNode }) {
-  return <div className="pnae-section-gap min-w-0 max-w-full">{children}</div>;
+  return <div className="flex min-w-0 max-w-full flex-col gap-5">{children}</div>;
 }
 
 export function CalculatorPageHeader({
@@ -56,18 +59,18 @@ export function CalculatorPageHeader({
       <div
         className={cn(
           CALC_SECTION_CARD,
-          "space-y-2"
+          "space-y-1"
         )}
       >
         {eyebrow ? (
-          <p className="text-base font-medium text-[var(--color-muted-foreground)]">{eyebrow}</p>
+          <p className="text-sm font-medium text-[var(--color-muted-foreground)]">{eyebrow}</p>
         ) : null}
         <h1 className={CALC_PAGE_TITLE}>
           {title}
           {standard ? <> {standard}</> : null}
         </h1>
         {description ? (
-          <p className="text-base leading-snug text-[var(--color-muted-foreground)]">{description}</p>
+          <p className="text-sm leading-snug text-[var(--color-muted-foreground)]">{description}</p>
         ) : null}
       </div>
     </section>
@@ -86,7 +89,7 @@ export function CalcSectionHeading({
   return (
     <div
       className={cn(
-        "mb-5 flex flex-wrap items-center justify-between gap-3",
+        "mb-3 flex flex-wrap items-center justify-between gap-2",
         accent && "border-l-4 border-[var(--color-primary)] pl-4"
       )}
     >
@@ -122,16 +125,16 @@ export function CalcSection({
       <button
         type="button"
         onClick={onToggle}
-        className="inline-flex items-center gap-2 text-base font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-primary)] transition-colors hover:text-[var(--color-heading)]"
       >
         {expanded ? (
           <>
-            <ChevronUp className="h-5 w-5" />
+            <ChevronUp className="h-4 w-4" />
             Скрыть
           </>
         ) : (
           <>
-            <ChevronDown className="h-5 w-5" />
+            <ChevronDown className="h-4 w-4" />
             Раскрыть
           </>
         )}
@@ -165,8 +168,8 @@ export function ApplicabilityStatus({ ok, inline = false }: { ok: boolean; inlin
   const badge = (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center rounded-lg px-3 py-1.5 font-semibold",
-        inline ? "text-sm sm:text-base" : "text-base sm:text-lg",
+        "inline-flex shrink-0 items-center rounded-md px-2.5 py-1 font-semibold",
+        inline ? "text-xs sm:text-sm" : "text-sm",
         ok
           ? "bg-[var(--color-emphasis)]/12 text-[var(--color-emphasis)]"
           : "bg-[var(--color-destructive)]/10 text-[var(--color-destructive)]"
@@ -191,12 +194,12 @@ export function CalcCheckRow({
   placeholder?: string;
 }) {
   if (placeholder != null && ok === undefined) {
-    return <p className="col-span-full py-3 text-[var(--color-muted-foreground)]">{placeholder}</p>;
+    return <p className="col-span-full py-2 text-sm text-[var(--color-muted-foreground)]">{placeholder}</p>;
   }
 
   return (
-    <div className="col-span-full flex min-w-0 flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-      <span className="min-w-0 shrink text-lg font-semibold tabular-nums text-[var(--color-heading)] sm:text-xl">
+    <div className="col-span-full flex min-w-0 flex-col gap-1.5 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+      <span className="min-w-0 shrink text-base font-semibold tabular-nums text-[var(--color-heading)] sm:text-lg">
         <span className="inline-flex max-w-full items-center gap-x-2 whitespace-nowrap">{children}</span>
       </span>
       {ok !== undefined ? (
@@ -214,7 +217,7 @@ export function CalculatorDiagramCard({ children }: { children: ReactNode }) {
       <div
         className={cn(
           CALC_SECTION_CARD,
-          "flex min-h-[220px] items-center justify-center lg:min-h-[280px]"
+          "flex min-h-[160px] items-center justify-center lg:min-h-[200px]"
         )}
       >
         {children}

@@ -103,7 +103,7 @@ export function ConvexHeadInternalCalculator({
     <CalculatorPageShell>
       <CalculatorPageHeader title={methodologyTitle(kind)} />
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <AllowancesCalcSection
           collapsible
           c1={allowances.c1}
@@ -210,7 +210,7 @@ export function ConvexHeadInternalCalculator({
             variant="result"
             disabled
             label="Исполнительная толщина стенки днища"
-            symbol={<CalcSymbol className="!text-2xl">s</CalcSymbol>}
+            symbol={<CalcSymbol className="!text-xl">s</CalcSymbol>}
             value={displaySs}
             unit="мм"
             borderless
@@ -246,7 +246,7 @@ export function ConvexHeadInternalCalculator({
       </section>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}

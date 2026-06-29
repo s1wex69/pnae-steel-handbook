@@ -74,7 +74,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
     <CalculatorPageShell>
       <CalculatorPageHeader title="Расчёт колена на внутреннее давление" />
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <ElbowAllowancesCalcSection
           collapsible
           c11={allowances.c11}
@@ -172,7 +172,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
             />
             <CalcRow inColumn label="Класс стали (для коэффициентов формы)" wide borderless>
               <select
-                className="h-11 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-lg"
+                className="h-8 w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-card)] px-3 text-sm"
                 value={steelClass}
                 onChange={(e) => setSteelClass(e.target.value as ElbowSteelClass)}
               >
@@ -295,7 +295,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
       </section>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}
@@ -308,5 +308,5 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
 }
 
 function CalcSymbol({ children, className }: { children: ReactNode; className?: string }) {
-  return <span className={className ?? "!text-2xl font-semibold"}>{children}</span>;
+  return <span className={className ?? "!text-xl font-semibold"}>{children}</span>;
 }

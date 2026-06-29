@@ -173,7 +173,7 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
 
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <CalcSection title="Исходные данные" titleAccent={false} twoColumns>
 
           <div className="min-w-0">
@@ -504,7 +504,7 @@ export function BoltsStudsNutsCalculator({ handbook }: { handbook: SteelHandbook
 
       {result.error ? (
 
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
 
           {result.error}
 

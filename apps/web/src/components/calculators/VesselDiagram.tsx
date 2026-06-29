@@ -7,7 +7,7 @@ export function VesselDiagram({
 }: {
   diameter: number;
   thickness: number;
-  /** Dₐ — от оси до наружной поверхности (труба, колено) */
+  /** Dₐ — наружный диаметр (размер по наружным граням) */
   outerDiameter?: boolean;
 }) {
   const patternId = useId();
@@ -25,14 +25,14 @@ export function VesselDiagram({
 
   const sDimY = 68;
   const dDimY = outerDiameter ? bottomY - 14 : 128;
-  const sLabelX = outerRight + 16;
-  const dArrowEndX = outerDiameter ? outerRight : innerRight;
+  const dArrowEndX = innerRight;
 
   const dimSymbolClass =
     "fill-[var(--color-foreground)] text-[26px] font-serif font-bold italic";
   const dimValueClass =
     "fill-[var(--color-foreground)] text-[16px] font-semibold tabular-nums";
   const contourStroke = 2.25;
+  const sLabelX = outerRight + 16;
 
   return (
     <svg
@@ -119,9 +119,9 @@ export function VesselDiagram({
       {outerDiameter ? (
         <>
           <line
-            x1={centerX}
+            x1={leftOuterX - 8}
             y1={dDimY}
-            x2={outerRight}
+            x2={leftOuterX}
             y2={dDimY}
             stroke="currentColor"
             strokeWidth="1.1"
@@ -137,18 +137,28 @@ export function VesselDiagram({
             markerEnd={`url(#${patternId}-arrow)`}
           />
           <line
-            x1={outerRight}
+            x1={leftOuterX}
             y1={dDimY}
-            x2={sLabelX - 2}
+            x2={outerRight}
             y2={dDimY}
             stroke="currentColor"
             strokeWidth="1"
             opacity="0.55"
           />
-          <text x={sLabelX} y={dDimY + 6} textAnchor="start" className={dimSymbolClass}>
+          <text
+            x={(leftOuterX + outerRight) / 2}
+            y={dDimY - 12}
+            textAnchor="middle"
+            className={dimSymbolClass}
+          >
             D<tspan baselineShift="sub" fontSize="18">a</tspan>
           </text>
-          <text x={sLabelX + 34} y={dDimY + 5} textAnchor="start" className={dimValueClass}>
+          <text
+            x={(leftOuterX + outerRight) / 2}
+            y={dDimY + 22}
+            textAnchor="middle"
+            className={dimValueClass}
+          >
             {diameter} мм
           </text>
         </>

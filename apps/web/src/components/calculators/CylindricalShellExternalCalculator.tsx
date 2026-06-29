@@ -50,24 +50,24 @@ function CalcRow({
 }) {
   const isResult = variant === "result";
   const symbolClass = cn(
-    "justify-self-end text-right text-xl font-semibold",
+    "justify-self-end text-right text-lg font-semibold",
     isResult ? "text-[var(--color-primary)]" : "text-[var(--color-heading)]"
   );
   const unitClass = cn(
-    "text-base",
+    "text-sm",
     isResult ? "font-medium text-[var(--color-primary)]/80" : "text-[var(--color-muted-foreground)]"
   );
 
   return (
     <div
       className={cn(
-        "grid grid-cols-1 gap-x-6 py-3 sm:col-span-2 sm:grid-cols-subgrid sm:items-center",
+        "grid grid-cols-1 gap-x-6 py-2 sm:col-span-2 sm:grid-cols-subgrid sm:items-center",
         CALC_ROW_GRID,
         !borderless && !isResult && "border-b border-[var(--color-border)]/50 last:border-b-0",
         isResult && "rounded-lg bg-[var(--color-primary)]/6 py-4 ring-1 ring-[var(--color-primary)]/20"
       )}
     >
-      <div className="min-w-0 text-lg leading-snug text-[var(--color-foreground)]">
+      <div className="min-w-0 text-base leading-snug text-[var(--color-foreground)]">
         {label ? <div className={cn(isResult && "font-medium text-[var(--color-heading)]")}>{label}</div> : null}
         {labelExtra}
       </div>
@@ -214,7 +214,7 @@ export function CylindricalShellExternalCalculator({
         title="Расчёт на прочность цилиндрической обечайки, нагруженной наружным избыточным давлением"
       />
 
-      <section className="space-y-8">
+      <section className="space-y-5">
         <AllowancesCalcSection
           c1={a.c1}
           c2={a.c2}
@@ -329,7 +329,7 @@ export function CylindricalShellExternalCalculator({
       </section>
 
       {result.error ? (
-        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-6 py-4 text-lg text-[var(--color-destructive)]">
+        <p className="rounded-2xl border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/5 px-4 py-2.5 text-sm text-[var(--color-destructive)]">
           {result.error}
         </p>
       ) : null}
