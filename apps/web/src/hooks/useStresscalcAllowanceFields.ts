@@ -37,11 +37,11 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
   }, []);
 
   const syncAutoAllowances = useCallback(
-    (Da: number, sr: number, c21: number, nominalS?: number) => {
+    (Da: number, sr: number, c21: number) => {
       if (!(Da > 0) || !(sr >= 0)) return;
       setCCorrosionState(String(c21));
       if (!cMinusManual) {
-        const { c11 } = resolvePipeThickness(sr, Da, c21, { nominalS });
+        const { c11 } = resolvePipeThickness(sr, Da, c21);
         setCMinusState(String(c11));
       }
       setCcManual(false);

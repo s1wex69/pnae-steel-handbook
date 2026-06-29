@@ -1,8 +1,8 @@
-/** Расчёт на прочность трубы — логика stresscalc.ru/boiler/boiler.php (РД 10-249-98)
+/** Расчёт на прочность трубы
  *
- * sᵣ = p·Dₐ / (2·[σ] + p)                         — без φ в знаменателе
+ * sᵣ = p·Dₐ / (2·φ·[σ] + p)
  * s = sᵣ + c₁₁ + c₂₁,   c = c₁₁ + c₂₁
- * [p] = 2·[σ]·(s − c) / (Dₐ − (s − c))            — без φ
+ * [p] = 2·φ·[σ]·(s − c) / (Dₐ − (s − c))
  */
 
 import { round2, stresscalcMinusTolerance } from "@/lib/stresscalcShell";
@@ -14,8 +14,6 @@ export interface PipeStrengthInputs {
   p: number;
   /** Принятая номинальная толщина s (для проверки [p]) */
   s: number;
-  /** Толщина по сортаменту — для расчёта c₁₁ (шаг 5 stresscalc) */
-  nominalS?: number;
   /** c₂ — минусовой допуск (c₁₁ stresscalc), c₁ — коррозия (c₂₁ stresscalc) */
   cMinus: number;
   cCorrosion: number;
@@ -36,9 +34,9 @@ export interface PipeStrengthResults {
   error: string | null;
 }
 
-export function calcPipeSr(p: number, Da: number, sigma: number): number | null {
-  const denom = 2 * sigma + p;
-  if (!(Da > 0) || !(denom > 0) || !(p >= 0) || !(sigma > 0)) return null;
+export function calcPipeSr(p: number, Da: number, sigma: number, phi: number): number | null {
+  const denom = 2 * phi * sigma + p;
+  if (!(Da > 0) || !(denom > 0) || !(p >= 0) || !(sigma > 0) || !(phi > 0)) return null;
   return round2((p * Da) / denom);
 }
 
@@ -47,15 +45,10 @@ export function resolvePipeThickness(
   sr: number,
   Da: number,
   c21: number,
-  options?: { c11Override?: number; nominalS?: number }
+  options?: { c11Override?: number }
 ): { c11: number; s: number } {
   if (options?.c11Override != null && options.c11Override >= 0) {
     return { c11: round2(options.c11Override), s: round2(sr + options.c11Override + c21) };
-  }
-
-  if (options?.nominalS != null && options.nominalS > 0) {
-    const c11 = stresscalcMinusTolerance(Da, options.nominalS);
-    return { c11: round2(c11), s: round2(sr + c11 + c21) };
   }
 
   let s = sr + c21;
@@ -76,12 +69,13 @@ export function calcPipeAllowablePressure(
   s: number,
   cc: number,
   Da: number,
-  sigma: number
+  sigma: number,
+  phi: number
 ): number | null {
   const sEff = s - cc;
   const denom = Da - sEff;
-  if (!(sEff > 0) || !(denom > 0) || !(sigma > 0)) return null;
-  return round2((2 * sigma * sEff) / denom);
+  if (!(sEff > 0) || !(denom > 0) || !(sigma > 0) || !(phi > 0)) return null;
+  return round2((2 * phi * sigma * sEff) / denom);
 }
 
 export function calculatePipeStrength(input: PipeStrengthInputs): PipeStrengthResults {
@@ -98,21 +92,20 @@ export function calculatePipeStrength(input: PipeStrengthInputs): PipeStrengthRe
     error: null as string | null,
   };
 
-  const sr = calcPipeSr(input.p, input.Da, input.sigma);
+  const sr = calcPipeSr(input.p, input.Da, input.sigma, input.phi);
   if (sr == null) {
-    return { ...base, error: "Невозможно рассчитать sᵣ: проверьте p, Dₐ и [σ]" };
+    return { ...base, error: "Невозможно рассчитать sᵣ: проверьте p, Dₐ, φ и [σ]" };
   }
 
   const { c11, s: sMin } = resolvePipeThickness(sr, input.Da, input.cCorrosion, {
     c11Override: input.cMinusManual ? input.cMinus : undefined,
-    nominalS: input.nominalS,
   });
   const cc = round2(c11 + input.cCorrosion);
   const sUsed = input.s > 0 ? input.s : sMin;
   const innerD = input.s > 0 ? round2(input.Da - 2 * input.s) : 0;
 
   const pAllow =
-    input.s > 0 ? calcPipeAllowablePressure(sUsed, cc, input.Da, input.sigma) : null;
+    input.s > 0 ? calcPipeAllowablePressure(sUsed, cc, input.Da, input.sigma, input.phi) : null;
   if (input.s > 0 && pAllow == null) {
     return {
       ...base,

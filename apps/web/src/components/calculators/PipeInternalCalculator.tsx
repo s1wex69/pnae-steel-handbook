@@ -26,12 +26,10 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
   const sigma = num(sigmaStr, 140);
   const [phiP, setPhiP] = useState("0.8");
   const [p, setP] = useState("2");
-  const [sNominal, setSNominal] = useState("2.5");
 
   const daNum = num(Da);
   const phiPNum = num(phiP, 1);
   const pNum = num(p);
-  const sNominalNum = num(sNominal);
   const cMinusNum = num(allowances.cMinus);
   const cCorrosionNum = num(allowances.cCorrosion);
 
@@ -46,24 +44,18 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
         cMinus: cMinusNum,
         cCorrosion: cCorrosionNum,
         cMinusManual: allowances.cMinusManual,
-        nominalS: sNominalNum > 0 ? sNominalNum : undefined,
       }),
-    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum, allowances.cMinusManual, sNominalNum]
+    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum, allowances.cMinusManual]
   );
 
   useEffect(() => {
     if (!(daNum > 0) || !(pNum >= 0) || !(sigma > 0)) return;
     const c21 = stresscalcCorrosionAllowance(daNum, false);
-    const sr = calcPipeSr(pNum, daNum, sigma);
+    const sr = calcPipeSr(pNum, daNum, sigma, phiPNum);
     if (sr == null) return;
-    allowances.syncAutoAllowances(
-      daNum,
-      sr,
-      c21,
-      sNominalNum > 0 ? sNominalNum : undefined
-    );
+    allowances.syncAutoAllowances(daNum, sr, c21);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- автоприбавки по Dₐ, p, [σ]
-  }, [daNum, pNum, sigma, sNominalNum]);
+  }, [daNum, pNum, sigma, phiPNum]);
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
@@ -111,15 +103,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
             />
             <CalcRow
               inColumn
-              label="Толщина трубы по сортаменту"
-              symbol={<CalcSymbol>s</CalcSymbol>}
-              value={sNominal}
-              onChange={setSNominal}
-              unit="мм"
-            />
-            <CalcRow
-              inColumn
-              label="Коэффициент снижения сварного шва"
+              label="Коэффициент снижения прочности сварного шва"
               symbol={<Var letter="φ" />}
               value={phiP}
               onChange={setPhiP}
