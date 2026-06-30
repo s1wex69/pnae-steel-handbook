@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
-import { calculateConicalShellInternal } from "@/lib/conicalShellInternal";
+import {
+  calculateConicalShellInternal,
+  CONICAL_ALPHA_MAX,
+  CONICAL_THINNESS_MAX,
+  CONICAL_THINNESS_MIN,
+} from "@/lib/conicalShellInternal";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
 import { AllowancesCalcSection, CalcRow } from "@/components/calculators/calculatorFields";
 import {
@@ -10,15 +15,17 @@ import {
   CalculatorPageShell,
   CALC_APPLICABILITY_TITLE,
   CALC_RESULT_SP_SYMBOL,
+  CalcApplicabilityRangeRow,
   calcCheckCmp,
 } from "@/components/calculators/calculatorUi";
-import { AllowSigma, Frac, Var } from "@/components/handbooks/MathNotation";
+import { AllowSigma, Frac, Times, Var } from "@/components/handbooks/MathNotation";
 import { useAllowanceFields } from "@/hooks/useAllowanceFields";
-import { fmtHundredths, fmtHundredthsRu, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, fmtHundredthsRu, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
   const allowances = useAllowanceFields({ c1: "0.5", c2: "0.3", c3: "0" });
   const [D, setD] = useState("600");
+  const [D0, setD0] = useState("300");
   const [alpha, setAlpha] = useState("30");
   const [sigmaStr, setSigmaStr] = useState("140");
   const [sigmaTemp, setSigmaTemp] = useState("20");
@@ -28,6 +35,7 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
 
   const ccNum = num(allowances.cc);
   const dNum = num(D);
+  const d0Num = num(D0);
   const alphaNum = num(alpha);
   const phiPNum = num(phiP, 1);
   const pNum = num(p);
@@ -36,6 +44,7 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
     () =>
       calculateConicalShellInternal({
         D: dNum,
+        D0: d0Num,
         alphaDeg: alphaNum,
         sigma,
         phiP: phiPNum,
@@ -52,11 +61,11 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
           cc: ccNum,
         },
       }),
-    [allowances, dNum, alphaNum, sigma, phiPNum, pNum, ccNum]
+    [allowances, dNum, d0Num, alphaNum, sigma, phiPNum, pNum, ccNum]
   );
 
   const inputsReady =
-    !isBlank(p) && dNum > 0 && alphaNum > 0 && sigma > 0 && phiPNum > 0;
+    !isBlank(p) && dNum > 0 && d0Num > 0 && alphaNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
   const displaySp = hasResult ? fmtHundredths(result.sp) : "";
   const displaySs = hasResult ? fmtHundredths(result.ss) : "";
@@ -86,6 +95,14 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
               symbol="D"
               value={D}
               onChange={setD}
+              unit="мм"
+            />
+            <CalcRow
+              inColumn
+              label="Внутренний диаметр меньшего основания конуса"
+              symbol={<Var letter="D" sub="0" />}
+              value={D0}
+              onChange={setD0}
               unit="мм"
             />
             <CalcRow
@@ -173,22 +190,35 @@ export function ConicalShellInternalCalculator({ handbook }: { handbook: SteelHa
 
         <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult ? (
-            <CalcCheckRow ok={result.thinnessOk}>
-              <Frac num={<>s − c</>} den="D" />
-              <span>= {fmtHundredthsRu(result.thinnessRatio)}</span>
-              <span>{calcCheckCmp(result.thinnessOk, "≤")} 0,1</span>
-            </CalcCheckRow>
+            <CalcApplicabilityRangeRow
+              ratio={result.thinnessRatio}
+              min={CONICAL_THINNESS_MIN}
+              max={CONICAL_THINNESS_MAX}
+              minLabel={fmtRu(CONICAL_THINNESS_MIN, 4)}
+              maxLabel={fmtRu(CONICAL_THINNESS_MAX, 2)}
+              num={<>s − c</>}
+              den="D"
+            />
           ) : null}
           <CalcCheckRow ok={result.alphaOk}>
             <Var letter="α" />
             <span>= {fmtHundredthsRu(alphaNum)}°</span>
-            <span>{calcCheckCmp(result.alphaOk, "≤")} 70°</span>
+            <span>{calcCheckCmp(result.alphaOk, "≤")} {CONICAL_ALPHA_MAX}°</span>
           </CalcCheckRow>
           {hasResult ? (
-            <CalcCheckRow ok={result.pressureOk}>
-              <Var letter="p" />
-              <span>= {fmtHundredthsRu(pNum)} МПа</span>
-              <span>{calcCheckCmp(result.pressureOk, "≤")} {fmtHundredthsRu(result.pp)} МПа</span>
+            <CalcCheckRow ok={result.d0Ok}>
+              <Frac num={<Var letter="D" sub="0" />} den="D" />
+              <span>{calcCheckCmp(result.d0Ok, "≤")}</span>
+              <span>
+                1 − 2√((1 + <Frac num={<>s − c</>} den="D" />) · <Frac num={<>s − c</>} den="D" />)
+                <Times />
+                sin <Var letter="α" />
+                / √cos <Var letter="α" />
+              </span>
+              <span>
+                = {fmtHundredthsRu(result.d0Ratio)} {calcCheckCmp(result.d0Ok, "≤")}{" "}
+                {fmtHundredthsRu(result.d0Limit)}
+              </span>
             </CalcCheckRow>
           ) : null}
         </CalcSection>
