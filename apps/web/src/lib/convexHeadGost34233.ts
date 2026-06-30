@@ -3,12 +3,9 @@
  * Эллиптическое (ГОСТ 34233.2-2017, п. 6.3.1):
  *   s_p = p·R / (2·φ·[σ] − 0,5·p),  R = D² / (4H)
  *
- * Полусферическое (ИН № 6 / ПНАЭ, m₁=4, m₂=m₃=1):
- *   s_R = p·D / (4·φ·[σ] − p),  R = D / 2,  H = D / 2
+ * Полусферическое (ИН № 6 при H = D/2; иначе R = D²/(4H) как у эллиптического):
+ *   s_p = p·R / (2·φ·[σ] − 0,5·p),  при H = D/2: s_R = p·D / (4·φ·[σ] − p)
  */
-import {
-  calcSpFromPressure as calcHemisphericalSp,
-} from "@/lib/hemisphericalHead";
 import {
   type ShellAllowances,
   resolveShellAllowances,
@@ -42,12 +39,6 @@ export interface ConvexHeadResults {
 export function resolveCrownRadius(D: number, H: number): number | null {
   if (!(D > 0) || !(H > 0)) return null;
   return (D * D) / (4 * H);
-}
-
-/** Внутренний радиус кривизны полусферического днища в вершине */
-export function resolveHemisphericalCrownRadius(D: number): number | null {
-  if (!(D > 0)) return null;
-  return D / 2;
 }
 
 export function calcSpFromInternalPressure(
@@ -94,24 +85,17 @@ export function calculateConvexHeadInternal(input: ConvexHeadInputs): ConvexHead
     error: null as string | null,
   };
 
-  const isHemispherical = input.kind === "hemispherical";
-  const R = isHemispherical
-    ? resolveHemisphericalCrownRadius(input.D)
-    : resolveCrownRadius(input.D, input.H);
+  const R = resolveCrownRadius(input.D, input.H);
   if (R == null) {
-    return { ...base, error: isHemispherical ? "Задайте D" : "Задайте D и H" };
+    return { ...base, error: "Задайте D и H" };
   }
 
-  const sp = isHemispherical
-    ? calcHemisphericalSp(input.p, input.D, input.sigma, input.phiP)
-    : calcSpFromInternalPressure(input.p, R, input.sigma, input.phiP);
+  const sp = calcSpFromInternalPressure(input.p, R, input.sigma, input.phiP);
   if (sp == null) {
     return {
       ...base,
       R,
-      error: isHemispherical
-        ? "Невозможно рассчитать s: проверьте p, σ, φ и знаменатель 4·φ·[σ] − p > 0"
-        : "Невозможно рассчитать s: проверьте p, σ, φ и знаменатель 2·φ·[σ] − 0,5·p > 0",
+      error: "Невозможно рассчитать s: проверьте p, σ, φ и знаменатель 2·φ·[σ] − 0,5·p > 0",
     };
   }
   const ss = sp + cc;

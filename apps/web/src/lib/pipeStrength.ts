@@ -88,9 +88,9 @@ export function checkPipeApplicability(sEff: number, Da: number) {
   };
 }
 
-/** 0,0025 ≤ (s − c) / D ≤ 0,1 — тонкостенность (табл. 4.2 ПНАЭ, D — внутренний диаметр). */
-export function checkPipeThinnessApplicability(sEff: number, innerD: number) {
-  const ratio = innerD > 0 ? sEff / innerD : 0;
+/** 0,0025 ≤ (s − c) / Dₐ ≤ 0,1 — тонкостенность (табл. 4.2 ПНАЭ). */
+export function checkPipeThinnessApplicability(sEff: number, Da: number) {
+  const ratio = Da > 0 ? sEff / Da : 0;
   const min = PIPE_THINNESS_MIN;
   const max = PIPE_THINNESS_MAX;
   return {
@@ -98,7 +98,7 @@ export function checkPipeThinnessApplicability(sEff: number, innerD: number) {
     min,
     max,
     ok: ratio >= min && ratio <= max,
-    note: "0,0025 ≤ (s − c) / D ≤ 0,1",
+    note: "0,0025 ≤ (s − c) / Dₐ ≤ 0,1",
   };
 }
 

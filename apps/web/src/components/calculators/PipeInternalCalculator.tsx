@@ -74,11 +74,10 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
   const hasResult = inputsReady && result.error == null;
 
   const sEff = result.sMin - result.cc;
-  const innerD = daNum > 0 ? daNum - 2 * result.sMin : 0;
 
   const thinnessApplicability = useMemo(
-    () => checkPipeThinnessApplicability(sEff, innerD),
-    [sEff, innerD]
+    () => checkPipeThinnessApplicability(sEff, daNum),
+    [sEff, daNum]
   );
 
   const applicability = useMemo(
@@ -196,7 +195,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
                 minLabel={fmtRu(thinnessApplicability.min, 4)}
                 maxLabel={fmtRu(thinnessApplicability.max, 2)}
                 num={<>s − c</>}
-                den="D"
+                den={<Var letter="D" sub="a" />}
               />
               <CalcApplicabilityRangeRow
                 ratio={applicability.ratio}
