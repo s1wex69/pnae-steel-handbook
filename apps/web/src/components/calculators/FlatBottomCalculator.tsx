@@ -281,12 +281,6 @@ export function FlatBottomCalculator({
             borderless
           />
         ) : null}
-        {hasResult ? (
-          <p className="text-sm text-[var(--color-muted-foreground)]">
-            K₀ = {fmtRu(result.k0, 3)}
-            {result.k0Note ? ` — ${result.k0Note}` : null}
-          </p>
-        ) : null}
       </CalcSection>
 
       <CalcSection title="Результаты расчёта" titleAccent={false} twoColumns>

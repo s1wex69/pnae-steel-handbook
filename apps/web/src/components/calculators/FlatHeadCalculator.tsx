@@ -12,13 +12,11 @@ const MODES = [
   {
     id: "bottom" as const,
     title: "Плоское днище и крышка",
-    subtitle: "§7.2 — ГОСТ 34233.2",
     pageTitle: "Расчёт плоских круглых днищ и крышек",
   },
   {
     id: "cover" as const,
     title: "Крышка с краевым моментом",
-    subtitle: "§7.3",
     pageTitle: "Расчёт плоской круглой крышки с краевым моментом",
   },
 ] as const;
@@ -47,10 +45,7 @@ function FlatHeadModeSelector({
             )}
           >
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-[var(--color-muted-foreground)]">{option.subtitle}</p>
-              <p className="mt-0.5 text-base font-semibold leading-snug text-[var(--color-heading)]">
-                {option.title}
-              </p>
+              <p className="text-base font-semibold leading-snug text-[var(--color-heading)]">{option.title}</p>
             </div>
             <ChevronRight
               className={cn(
