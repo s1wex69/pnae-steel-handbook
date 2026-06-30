@@ -84,13 +84,14 @@ export function ConvexHeadInternalCalculator({
 
   const handleDChange = (value: string) => {
     setD(value);
-    if (!hManual) {
-      const d = num(value);
-      if (d > 0) setH(defaultHeadHeight(kind, d));
+    const d = num(value);
+    if (d > 0 && (kind === "hemispherical" || !hManual)) {
+      setH(defaultHeadHeight(kind, d));
     }
   };
 
   const handleHChange = (value: string) => {
+    if (kind === "hemispherical") return;
     setHManual(true);
     setH(value);
   };
@@ -129,6 +130,7 @@ export function ConvexHeadInternalCalculator({
               value={H}
               onChange={handleHChange}
               unit="мм"
+              disabled={kind === "hemispherical"}
             />
             <CalcRow
               inColumn
