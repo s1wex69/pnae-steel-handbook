@@ -130,7 +130,7 @@ export function CalcRow({
   const labelBlock = (
     <div
       className={cn(
-        "min-w-0 text-base leading-snug text-[var(--color-foreground)] [overflow-wrap:anywhere]",
+        "min-w-0 text-base leading-snug text-[var(--color-foreground)] [overflow-wrap:break-word]",
         isCheck && "font-medium text-[var(--color-heading)]"
       )}
     >
@@ -146,6 +146,7 @@ export function CalcRow({
         inColumn
           ? cn(
               CALC_ROW_GRID_IN_COLUMN,
+              "min-w-0 sm:col-span-2",
               !isStacked && (inlineLabelExtra ? "xl:items-start" : "xl:items-center")
             )
           : wide || isCheck
