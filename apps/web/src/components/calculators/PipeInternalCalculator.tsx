@@ -32,6 +32,7 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
   const pNum = num(p);
   const cMinusNum = num(allowances.cMinus);
   const cCorrosionNum = num(allowances.cCorrosion);
+  const ccNum = num(allowances.cc);
 
   const result = useMemo(
     () =>
@@ -43,18 +44,31 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
         s: 0,
         cMinus: cMinusNum,
         cCorrosion: cCorrosionNum,
+        cc: ccNum,
+        ccManual: allowances.ccManual,
         cMinusManual: allowances.cMinusManual,
       }),
-    [daNum, sigma, phiPNum, pNum, cMinusNum, cCorrosionNum, allowances.cMinusManual]
+    [
+      daNum,
+      sigma,
+      phiPNum,
+      pNum,
+      cMinusNum,
+      cCorrosionNum,
+      ccNum,
+      allowances.ccManual,
+      allowances.cMinusManual,
+    ]
   );
 
   useEffect(() => {
+    if (allowances.ccManual) return;
     if (!(daNum > 0) || !(pNum >= 0) || !(sigma > 0)) return;
     const autoC21 = stresscalcCorrosionAllowance(daNum, false);
     const sr = calcPipeSr(pNum, daNum, sigma, phiPNum);
     if (sr == null) return;
     allowances.syncAutoAllowances(daNum, sr, autoC21);
-  }, [daNum, pNum, sigma, phiPNum, allowances.syncAutoAllowances]);
+  }, [daNum, pNum, sigma, phiPNum, allowances.ccManual, allowances.syncAutoAllowances]);
 
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;

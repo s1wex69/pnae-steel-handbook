@@ -23,6 +23,10 @@ export interface PipeStrengthInputs {
   /** c₂ — минусовой допуск (c₁₁ stresscalc), c₁ — коррозия (c₂₁ stresscalc) */
   cMinus: number;
   cCorrosion: number;
+  /** Суммарная прибавка c (если задана вручную в поле c) */
+  cc?: number;
+  /** Если true — s = sᵣ + c, без пересчёта c₁₁/c₂₁ */
+  ccManual?: boolean;
   /** Если false — c₁₁ пересчитывается по ТУ 14-3Р-55 от толщины s */
   cMinusManual?: boolean;
 }
@@ -130,10 +134,22 @@ export function calculatePipeStrength(input: PipeStrengthInputs): PipeStrengthRe
     return { ...base, error: "Невозможно рассчитать sᵣ: проверьте p, Dₐ, φ и [σ]" };
   }
 
-  const { c11, s: sMin } = resolvePipeThickness(sr, input.Da, input.cCorrosion, {
-    c11Override: input.cMinusManual ? input.cMinus : undefined,
-  });
-  const cc = round2(c11 + input.cCorrosion);
+  let c11: number;
+  let sMin: number;
+  let cc: number;
+
+  if (input.ccManual && input.cc != null && input.cc >= 0) {
+    cc = round2(input.cc);
+    c11 = round2(input.cMinus);
+    sMin = round2(sr + cc);
+  } else {
+    const resolved = resolvePipeThickness(sr, input.Da, input.cCorrosion, {
+      c11Override: input.cMinusManual ? input.cMinus : undefined,
+    });
+    c11 = resolved.c11;
+    sMin = resolved.s;
+    cc = round2(c11 + input.cCorrosion);
+  }
   const sUsed = input.s > 0 ? input.s : sMin;
   const innerD = input.s > 0 ? round2(input.Da - 2 * input.s) : 0;
 

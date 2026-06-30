@@ -51,8 +51,6 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
         const { c11 } = resolvePipeThickness(sr, Da, c21);
         setCMinusState(String(c11));
       }
-
-      setCcManual(false);
     },
     [cMinusManual, cCorrosionManual, cCorrosion]
   );
@@ -61,6 +59,7 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
     cMinus,
     cCorrosion,
     cc,
+    ccManual,
     cMinusManual,
     cCorrosionManual,
     setCMinus,
