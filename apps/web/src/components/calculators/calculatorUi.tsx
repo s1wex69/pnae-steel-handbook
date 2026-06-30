@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Frac, Var, CALC_NOTATION_CLASS } from "@/components/handbooks/MathNotation";
 import { cn } from "@/lib/utils";
-import { fmtHundredthsRu } from "@/lib/calcInputUtils";
+import { fmtHundredthsRu, fmtRu } from "@/lib/calcInputUtils";
 
 export const CALC_ROW_GRID = "sm:grid-cols-[minmax(0,1fr)_minmax(10.5rem,14rem)]";
 export const CALC_ROW_GRID_IN_COLUMN =
@@ -47,6 +47,11 @@ export function calcCheckCmp(ok: boolean, passOp: "≤" | "≥"): "≤" | "≥" 
   return ok ? "≥" : "<";
 }
 
+/** Нижняя граница: min ≤ выражение (или > при невыполнении). */
+export function calcCheckMinOp(ok: boolean): "≤" | ">" {
+  return ok ? "≤" : ">";
+}
+
 /** Верхняя граница: = значение ≤ предел (или > при невыполнении). */
 export function calcCheckMaxOp(ok: boolean): "≤" | ">" {
   return ok ? "≤" : ">";
@@ -77,9 +82,9 @@ export function CalcApplicabilityRangeRow({
   return (
     <CalcCheckRow ok={ok}>
       <span>{minLabel}</span>
-      <span>{okMin ? "≤" : ">"}</span>
+      <span>{calcCheckMinOp(okMin)}</span>
       <Frac num={num} den={den} />
-      <span>= {fmtHundredthsRu(ratio)}</span>
+      <span>= {min < 0.01 ? fmtRu(ratio, 4) : fmtHundredthsRu(ratio)}</span>
       <span>{calcCheckMaxOp(okMax)}</span>
       <span>{maxLabel}</span>
     </CalcCheckRow>

@@ -15,7 +15,7 @@ import { VesselDiagram } from "@/components/calculators/VesselDiagram";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { usePipeAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
 import { stresscalcCorrosionAllowance } from "@/lib/stresscalcShell";
-import { calcPipeSr, checkPipeApplicability } from "@/lib/pipeStrength";
+import { calcPipeSr, checkPipeApplicability, checkPipeThinnessApplicability } from "@/lib/pipeStrength";
 import { fmtHundredths, fmtRu, isBlank, num } from "@/lib/calcInputUtils";
 
 export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
@@ -59,9 +59,17 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
   const inputsReady = !isBlank(p) && daNum > 0 && sigma > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
 
+  const sEff = result.sMin - result.cc;
+  const innerD = daNum > 0 ? daNum - 2 * result.sMin : 0;
+
+  const thinnessApplicability = useMemo(
+    () => checkPipeThinnessApplicability(sEff, innerD),
+    [sEff, innerD]
+  );
+
   const applicability = useMemo(
-    () => checkPipeApplicability(result.sMin - result.cc, daNum),
-    [result.sMin, result.cc, daNum]
+    () => checkPipeApplicability(sEff, daNum),
+    [sEff, daNum]
   );
 
   return (
@@ -166,15 +174,26 @@ export function PipeInternalCalculator({ handbook }: { handbook: SteelHandbook }
 
         <CalcSection title={CALC_APPLICABILITY_TITLE} titleAccent={false}>
           {hasResult ? (
-            <CalcApplicabilityRangeRow
-              ratio={applicability.ratio}
-              min={applicability.min}
-              max={applicability.max}
-              minLabel="0"
-              maxLabel={fmtRu(applicability.max, 2)}
-              num={<>s − c</>}
-              den={<Var letter="D" sub="a" />}
-            />
+            <>
+              <CalcApplicabilityRangeRow
+                ratio={thinnessApplicability.ratio}
+                min={thinnessApplicability.min}
+                max={thinnessApplicability.max}
+                minLabel={fmtRu(thinnessApplicability.min, 4)}
+                maxLabel={fmtRu(thinnessApplicability.max, 2)}
+                num={<>s − c</>}
+                den="D"
+              />
+              <CalcApplicabilityRangeRow
+                ratio={applicability.ratio}
+                min={applicability.min}
+                max={applicability.max}
+                minLabel="0"
+                maxLabel={fmtRu(applicability.max, 2)}
+                num={<>s − c</>}
+                den={<Var letter="D" sub="a" />}
+              />
+            </>
           ) : null}
         </CalcSection>
       </section>

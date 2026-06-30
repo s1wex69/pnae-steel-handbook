@@ -82,14 +82,14 @@ html {
 }
 
 .calc-page-title {
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.25;
   letter-spacing: -0.01em;
 }
 
 @media (min-width: 640px) {
   .calc-page-title {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
   }
 }
 

@@ -10,6 +10,8 @@ import { round2, stresscalcMinusTolerance } from "@/lib/stresscalcShell";
 
 export const PIPE_APPLICABILITY_MIN = 0;
 export const PIPE_APPLICABILITY_MAX = 0.25;
+export const PIPE_THINNESS_MIN = 0.0025;
+export const PIPE_THINNESS_MAX = 0.1;
 
 export interface PipeStrengthInputs {
   Da: number;
@@ -79,6 +81,20 @@ export function checkPipeApplicability(sEff: number, Da: number) {
     max,
     ok: ratio >= min && ratio <= max,
     note: "0 ≤ (s − c) / Dₐ ≤ 0,25 — труба, штуцер, коллектор (ПНАЭ п. 4.2.2.1)",
+  };
+}
+
+/** 0,0025 ≤ (s − c) / D ≤ 0,1 — тонкостенность (табл. 4.2 ПНАЭ, D — внутренний диаметр). */
+export function checkPipeThinnessApplicability(sEff: number, innerD: number) {
+  const ratio = innerD > 0 ? sEff / innerD : 0;
+  const min = PIPE_THINNESS_MIN;
+  const max = PIPE_THINNESS_MAX;
+  return {
+    ratio,
+    min,
+    max,
+    ok: ratio >= min && ratio <= max,
+    note: "0,0025 ≤ (s − c) / D ≤ 0,1",
   };
 }
 

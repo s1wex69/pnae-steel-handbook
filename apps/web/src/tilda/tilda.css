@@ -250,6 +250,12 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
   letter-spacing: -0.01em;
 }
 
+@media (min-width: 640px) {
+  #root.pnae-tilda-embed .calc-page-title {
+    font-size: 1.25rem;
+  }
+}
+
 #root.pnae-tilda-embed .font-heading {
   font-family: var(--font-heading) !important;
 }
