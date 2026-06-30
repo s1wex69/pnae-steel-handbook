@@ -57,7 +57,7 @@ export function calcCheckMaxOp(ok: boolean): "≤" | ">" {
   return ok ? "≤" : ">";
 }
 
-/** Двойное условие: min ≤ (num/den) = value ≤ max с операторами по факту проверки. */
+/** Двойное условие: min ≤ (num/den) = value ≤ max; знаки ≤ фиксированы, статус — по цвету строки. */
 export function CalcApplicabilityRangeRow({
   ratio,
   min,
@@ -79,13 +79,15 @@ export function CalcApplicabilityRangeRow({
   const okMax = ratio <= max;
   const ok = okMin && okMax;
 
+  const valueLabel = min < 0.01 ? fmtRu(ratio, 4) : fmtHundredthsRu(ratio);
+
   return (
     <CalcCheckRow ok={ok}>
       <span>{minLabel}</span>
-      <span>{calcCheckMinOp(okMin)}</span>
+      <span>≤</span>
       <Frac num={num} den={den} />
-      <span>= {min < 0.01 ? fmtRu(ratio, 4) : fmtHundredthsRu(ratio)}</span>
-      <span>{calcCheckMaxOp(okMax)}</span>
+      <span>= {valueLabel}</span>
+      <span>≤</span>
       <span>{maxLabel}</span>
     </CalcCheckRow>
   );
