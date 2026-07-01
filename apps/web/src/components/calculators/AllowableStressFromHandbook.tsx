@@ -43,6 +43,7 @@ interface Props {
   temperature?: string;
   onTemperatureChange?: (t: string) => void;
   onSteelCategoryChange?: (categoryId: string | null) => void;
+  onMarkChange?: (mark: string) => void;
   /** Болты/шпильки — [σ] по п. 3.5 ПНАЭ (n = 1,5) */
   elementType?: "shell" | "bolt";
   rmt?: string;
@@ -121,6 +122,7 @@ export function AllowableStressFromHandbook({
   temperature: temperatureProp,
   onTemperatureChange,
   onSteelCategoryChange,
+  onMarkChange,
   elementType = "shell",
   rmt = "",
   onRmtChange,
@@ -208,6 +210,10 @@ export function AllowableStressFromHandbook({
   useEffect(() => {
     onSteelCategoryChange?.(categoryId || null);
   }, [categoryId, onSteelCategoryChange]);
+
+  useEffect(() => {
+    onMarkChange?.(activeMark);
+  }, [activeMark, onMarkChange]);
 
   useEffect(() => {
     if (standard !== "pnae" || handbookSigma == null) return;

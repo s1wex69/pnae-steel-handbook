@@ -71,24 +71,45 @@ export function usePipeAllowanceFields(initial?: { cMinus?: string; cCorrosion?:
 
 /** Прибавки колена: c₁₁, c₁₂, c₂₁ (stresscalc.ru) */
 export function useElbowAllowanceFields(initial?: { c11?: string; c12?: string; c21?: string }) {
-  const [c11, setC11State] = useState(initial?.c11 ?? "0.2");
-  const [c12, setC12State] = useState(initial?.c12 ?? "0.95");
+  const [c11, setC11State] = useState(initial?.c11 ?? "0.4");
+  const [c12, setC12State] = useState(initial?.c12 ?? "1.86");
   const [c21, setC21State] = useState(initial?.c21 ?? "3");
+  const [c11Manual, setC11Manual] = useState(false);
+  const [c12Manual, setC12Manual] = useState(false);
+  const [c21Manual, setC21Manual] = useState(false);
 
-  const applyStresscalcDefaults = useCallback((Da: number, s: number, Rs: number) => {
-    if (!(Da > 0) || !(s > 0) || !(Rs > 0)) return;
-    setC11State(String(stresscalcMinusTolerance(Da, s)));
-    setC12State(String(stresscalcElbowTechAllowance(s, Rs, Da)));
-    setC21State(String(stresscalcCorrosionAllowance(Da, true)));
+  const setC11 = useCallback((v: string) => {
+    setC11Manual(true);
+    setC11State(v);
   }, []);
+
+  const setC12 = useCallback((v: string) => {
+    setC12Manual(true);
+    setC12State(v);
+  }, []);
+
+  const setC21 = useCallback((v: string) => {
+    setC21Manual(true);
+    setC21State(v);
+  }, []);
+
+  const applyStresscalcDefaults = useCallback(
+    (Da: number, s: number, Rs: number) => {
+      if (!(Da > 0) || !(s > 0) || !(Rs > 0)) return;
+      if (!c11Manual) setC11State(String(stresscalcMinusTolerance(Da, s)));
+      if (!c12Manual) setC12State(String(stresscalcElbowTechAllowance(s, Rs, Da)));
+      if (!c21Manual) setC21State(String(stresscalcCorrosionAllowance(Da, true)));
+    },
+    [c11Manual, c12Manual, c21Manual]
+  );
 
   return {
     c11,
     c12,
     c21,
-    setC11: setC11State,
-    setC12: setC12State,
-    setC21: setC21State,
+    setC11,
+    setC12,
+    setC21,
     applyStresscalcDefaults,
   };
 }

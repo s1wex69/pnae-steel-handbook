@@ -429,7 +429,7 @@ export function ElbowAllowancesCalcSection({
         unit="мм"
       />
       <CalcRow
-        label="Технологическая прибавка (внешняя сторона)"
+        label="Утонение при изготовлении"
         symbol={<AllowanceC index="12" />}
         value={c12}
         onChange={onC12}

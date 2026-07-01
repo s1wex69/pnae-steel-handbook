@@ -4,11 +4,14 @@ import {
   calcStresscalcZoneAllowablePressure,
   resolveStresscalcElbowAllowances,
   round2,
+  round3,
   stresscalcInterpY,
   type StresscalcElbowAllowances,
 } from "@/lib/stresscalcShell";
 
 export type ElbowSteelClass = "carbon" | "crmov" | "austenitic";
+
+export type ElbowTempRegime = "low" | "high" | "interp";
 
 export const ELBOW_B_MIN = 0.03;
 
@@ -32,12 +35,25 @@ export interface ElbowInputs {
   allowances: StresscalcElbowAllowances;
 }
 
+export interface ElbowCoeffs {
+  b: number;
+  q: number;
+  K1: number;
+  K2: number;
+  K3: number;
+  Y1: number;
+  Y2: number;
+  Y3: number;
+  tempRegime: ElbowTempRegime;
+}
+
 export interface ElbowResults {
   c11: number;
   c12: number;
   c21: number;
   cc1: number;
   cc23: number;
+  coeffs: ElbowCoeffs | null;
   sr: number;
   sr1: number;
   sr2: number;
@@ -60,36 +76,53 @@ function clampMin1(v: number) {
   return v < 1 ? 1 : v;
 }
 
+function elbowTempRegime(T: number, steelClass: ElbowSteelClass): ElbowTempRegime {
+  const limits = TEMP_LIMITS[steelClass];
+  if (T <= limits.low) return "low";
+  if (T >= limits.high) return "high";
+  return "interp";
+}
+
 export function calcToroidalCoefficients(Rs: number, Da: number) {
-  const K1 = (4 * Rs + Da) / (4 * Rs + 2 * Da);
-  const K2 = (4 * Rs - Da) / (4 * Rs - 2 * Da);
+  const ratio = (4 * Rs) / Da;
+  const K1 = round3((ratio + 1) / (ratio + 2));
+  const K2 = round3((ratio - 1) / (ratio - 2));
   const K3 = 1;
   return { K1, K2, K3 };
 }
 
+/** α = p/(2[σ]+p), не менее 0,03 (как в elbow.js) */
 export function calcElbowB(p: number, sigma: number): number {
   const raw = p / (2 * sigma + p);
-  return raw < ELBOW_B_MIN ? ELBOW_B_MIN : raw;
+  return round3(raw < ELBOW_B_MIN ? ELBOW_B_MIN : raw);
 }
 
+/** q = 2α·Rₛ/Dₐ + 0,5, не более 1,0 */
 export function calcElbowQ(b: number, Rs: number, Da: number): number {
   const raw = 2 * b * (Rs / Da) + 0.5;
-  return raw > 1 ? 1 : raw;
+  return round3(raw > 1 ? 1 : raw);
 }
 
-function calcShapeAtLowTemp(a: number, b: number, q: number) {
-  const ratio = a / b;
-  const Y1 = clampMin1(0.12 * (1 + Math.sqrt(1 + 0.4 * ratio * q)));
-  const Y3 = clampMin1(0.12 * (1 + Math.sqrt(1 + 0.4 * ratio)));
-  return { Y1, Y2: Y1, Y3 };
+function calcShapeY1Low(a: number, b: number, q: number) {
+  return 0.12 * (1 + Math.sqrt(1 + (0.4 * a * q) / b));
 }
 
-function calcShapeAtHighTemp(a: number, b: number, q: number) {
-  const Y1 = clampMin1(0.4 * (1 + Math.sqrt(1 + 0.015 * (a * q) / b)));
-  const Y3 = clampMin1(0.4 * (1 + Math.sqrt(1 + 0.015 * a / b)));
-  return { Y1, Y2: Y1, Y3 };
+function calcShapeY3Low(a: number, b: number) {
+  return 0.12 * (1 + Math.sqrt(1 + (0.4 * a) / b));
 }
 
+function calcShapeY1High(a: number, b: number, q: number) {
+  return 0.4 * (1 + Math.sqrt(1 + (0.015 * a * q) / b));
+}
+
+function calcShapeY3High(a: number, b: number) {
+  return 0.4 * (1 + Math.sqrt(1 + (0.015 * a) / b));
+}
+
+/**
+ * Коэффициенты формы Y₁, Y₂, Y₃ по п. 4.2.2.3–4.2.2.4 с линейной интерполяцией
+ * между T_low и T_high (для углеродистой стали: 350…400 °C).
+ */
 export function calcShapeCoefficients(
   p: number,
   sigma: number,
@@ -98,25 +131,36 @@ export function calcShapeCoefficients(
   temperatureC: number,
   steelClass: ElbowSteelClass,
   ovalityA: number
-) {
+): ElbowCoeffs {
   const b = calcElbowB(p, sigma);
   const q = calcElbowQ(b, Rs, Da);
   const a = Math.max(0, ovalityA);
+  const tempRegime = elbowTempRegime(temperatureC, steelClass);
 
-  const low = calcShapeAtLowTemp(a, b, q);
-  const high = calcShapeAtHighTemp(a, b, q);
+  const Y1low = calcShapeY1Low(a, b, q);
+  const Y3low = calcShapeY3Low(a, b);
+  const Y1high = calcShapeY1High(a, b, q);
+  const Y3high = calcShapeY3High(a, b);
 
-  const Y1 = stresscalcInterpY(low.Y1, high.Y1, temperatureC, steelClass);
-  const Y3 = stresscalcInterpY(low.Y3, high.Y3, temperatureC, steelClass);
+  let Y1: number;
+  let Y3: number;
+
+  if (tempRegime === "low") {
+    Y1 = Y1low;
+    Y3 = Y3low;
+  } else if (tempRegime === "high") {
+    Y1 = Y1high;
+    Y3 = Y3high;
+  } else {
+    Y1 = stresscalcInterpY(Y1low, Y1high, temperatureC, steelClass);
+    Y3 = stresscalcInterpY(Y3low, Y3high, temperatureC, steelClass);
+  }
+
+  Y1 = round3(clampMin1(Y1));
+  Y3 = round3(clampMin1(Y3));
   const Y2 = Y1;
 
-  return {
-    Y1: clampMin1(Y1),
-    Y2: clampMin1(Y2),
-    Y3: clampMin1(Y3),
-    b,
-    q,
-  };
+  return { b, q, K1: 0, K2: 0, K3: 1, Y1, Y2, Y3, tempRegime };
 }
 
 export function calcElbowBaseSr(p: number, Da: number, sigma: number, phi: number) {
@@ -135,6 +179,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     c21,
     cc1,
     cc23,
+    coeffs: null,
     sr: 0,
     sr1: 0,
     sr2: 0,
@@ -163,15 +208,16 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     input.steelClass,
     input.ovalityA
   );
+  const coeffs: ElbowCoeffs = { ...shape, ...toroidal };
 
   const sr = calcElbowBaseSr(input.p, input.Da, input.sigma, input.phi);
   if (sr == null) {
     return { ...base, error: "Невозможно рассчитать sᵣ: проверьте исходные данные" };
   }
 
-  const sr1 = round2(sr * toroidal.K1 * shape.Y1);
-  const sr2 = round2(sr * toroidal.K2 * shape.Y2);
-  const sr3 = round2(sr * toroidal.K3 * shape.Y3);
+  const sr1 = round2(sr * toroidal.K1 * coeffs.Y1);
+  const sr2 = round2(sr * toroidal.K2 * coeffs.Y2);
+  const sr3 = round2(sr * toroidal.K3 * coeffs.Y3);
 
   const src1 = round2(sr1 + cc1);
   const src2 = round2(sr2 + cc23);
@@ -186,7 +232,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
           input.s,
           cc1,
           toroidal.K1,
-          shape.Y1,
+          coeffs.Y1,
           input.Da,
           input.sigma,
           input.phi
@@ -198,7 +244,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
           input.s,
           cc23,
           toroidal.K2,
-          shape.Y2,
+          coeffs.Y2,
           input.Da,
           input.sigma,
           input.phi
@@ -210,7 +256,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
           input.s,
           cc23,
           toroidal.K3,
-          shape.Y3,
+          coeffs.Y3,
           input.Da,
           input.sigma,
           input.phi
@@ -220,6 +266,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
   if (input.s > 0 && (pAllow1 == null || pAllow2 == null || pAllow3 == null)) {
     return {
       ...base,
+      coeffs,
       sr,
       sr1,
       sr2,
@@ -244,6 +291,7 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     c21,
     cc1,
     cc23,
+    coeffs,
     sr,
     sr1,
     sr2,

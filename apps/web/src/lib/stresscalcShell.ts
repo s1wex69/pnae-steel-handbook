@@ -8,12 +8,64 @@ const ELBOW_TEMP_LIMITS: Record<ElbowSteelClass, { low: number; high: number }> 
   austenitic: { low: 450, high: 525 },
 };
 
+/** Класс стали для коэффициентов Y — как Type_Steel() в elbow.js stresscalc */
+const ELBOW_STEEL_CLASS_MARKS: Record<Exclude<ElbowSteelClass, "carbon">, string[]> = {
+  crmov: [
+    "14ГНМА",
+    "16ГНМ",
+    "16ГНМА",
+    "16ГС",
+    "09Г2С",
+    "10Г2С1",
+    "17ГС",
+    "17Г1С",
+    "17Г1СУ",
+    "15ГС",
+    "12ХМ",
+    "12МХ",
+    "15ХМ",
+    "12Х1МФ",
+    "12Х2МФСР",
+    "15Х1М1Ф",
+    "12Х11В2МФ",
+    "X10CrMoVNb9",
+    "10Х9МФБ-Ш",
+  ],
+  austenitic: [
+    "12Х18Н12Т",
+    "12Х18Н10Т",
+    "09Х14Н19В2БР",
+    "09Х16Н14В2БР",
+    "10Х16Н16В2МБР",
+  ],
+};
+
+function normalizeSteelMark(mark: string) {
+  return mark.trim().toUpperCase().replace(/\s+/g, "");
+}
+
+export function inferElbowSteelClassFromMark(mark: string): ElbowSteelClass {
+  const key = normalizeSteelMark(mark);
+  if (!key) return "carbon";
+  for (const m of ELBOW_STEEL_CLASS_MARKS.austenitic) {
+    if (normalizeSteelMark(m) === key) return "austenitic";
+  }
+  for (const m of ELBOW_STEEL_CLASS_MARKS.crmov) {
+    if (normalizeSteelMark(m) === key) return "crmov";
+  }
+  return "carbon";
+}
+
 export function round2(v: number) {
   return +v.toFixed(2);
 }
 
 export function round1(v: number) {
   return +v.toFixed(1);
+}
+
+export function round3(v: number) {
+  return +v.toFixed(3);
 }
 
 /** Минусовой допуск: 10 % s при Da ≤ 114, иначе 5 % (ТУ 14-3Р-55) */
