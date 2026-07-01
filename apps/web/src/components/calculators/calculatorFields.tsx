@@ -15,7 +15,7 @@ import {
   calcInputClass,
   calcResultBoxClass,
 } from "@/components/calculators/calculatorUi";
-import { CalcSymbol, Var, AllowanceC } from "@/components/handbooks/MathNotation";
+import { CalcSymbol, Var } from "@/components/handbooks/MathNotation";
 
 type RowVariant = "default" | "check" | "result";
 type RowLayout = "inline" | "stacked";
@@ -382,18 +382,22 @@ export function ElbowAllowancesCalcSection({
   c11,
   c12,
   c21,
+  cc,
   onC11,
   onC12,
   onC21,
+  onCc,
   collapsible = true,
   defaultExpanded = true,
 }: {
   c11: string;
   c12: string;
   c21: string;
+  cc: string;
   onC11: (v: string) => void;
   onC12: (v: string) => void;
   onC21: (v: string) => void;
+  onCc: (v: string) => void;
   collapsible?: boolean;
   defaultExpanded?: boolean;
 }) {
@@ -419,31 +423,41 @@ export function ElbowAllowancesCalcSection({
     </button>
   ) : null;
 
-  const rows = (
+  const detailRows = (
     <>
       <CalcRow
         label="Минусовой допуск к толщине"
-        symbol={<AllowanceC index="11" />}
+        symbol={<Var letter="c" sub="1" />}
         value={c11}
         onChange={onC11}
         unit="мм"
       />
       <CalcRow
         label="Утонение при изготовлении"
-        symbol={<AllowanceC index="12" />}
+        symbol={<Var letter="c" sub="2" />}
         value={c12}
         onChange={onC12}
         unit="мм"
       />
       <CalcRow
         label="Прибавка на коррозию"
-        symbol={<AllowanceC index="21" />}
+        symbol={<Var letter="c" sub="3" />}
         value={c21}
         onChange={onC21}
         unit="мм"
-        borderless
       />
     </>
+  );
+
+  const sumRow = (
+    <CalcRow
+      label="Суммарная прибавка"
+      symbol={<CalcSymbol>c</CalcSymbol>}
+      value={cc}
+      onChange={onCc}
+      unit="мм"
+      borderless
+    />
   );
 
   if (collapsible) {
@@ -451,7 +465,10 @@ export function ElbowAllowancesCalcSection({
       <section className={CALC_SECTION_CARD}>
         <CalcSectionHeading title="Прибавки к расчётной толщине" action={toggleButton} accent={false} />
         <div className={cn("grid grid-cols-1", CALC_ROW_GRID, "sm:gap-x-6")}>
-          <div className="contents">{expanded ? rows : null}</div>
+          <div className="contents">
+            {expanded ? detailRows : null}
+            {sumRow}
+          </div>
         </div>
       </section>
     );
@@ -459,7 +476,8 @@ export function ElbowAllowancesCalcSection({
 
   return (
     <CalcSection title="Прибавки к расчётной толщине" titleAccent={false}>
-      {rows}
+      {detailRows}
+      {sumRow}
     </CalcSection>
   );
 }

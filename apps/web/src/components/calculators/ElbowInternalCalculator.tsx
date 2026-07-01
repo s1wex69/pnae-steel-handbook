@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { calculateElbow } from "@/lib/elbow";
 import { AllowableStressFromHandbook } from "@/components/calculators/AllowableStressFromHandbook";
@@ -11,7 +11,7 @@ import {
 import { CalcRow, ElbowAllowancesCalcSection } from "@/components/calculators/calculatorFields";
 import { AllowSigma, Var } from "@/components/handbooks/MathNotation";
 import { useElbowAllowanceFields } from "@/hooks/useStresscalcAllowanceFields";
-import { fmt, fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
+import { fmtHundredths, isBlank, num } from "@/lib/calcInputUtils";
 import { inferElbowSteelClassFromMark } from "@/lib/stresscalcShell";
 
 export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook }) {
@@ -24,7 +24,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
   const [s, setS] = useState("8");
   const [Rs, setRs] = useState("450");
   const [ovalityA, setOvalityA] = useState("8");
-  const [serviceLife, setServiceLife] = useState("10000");
+  const [phiP, setPhiP] = useState("1");
 
   const sigma = num(sigmaStr);
   const steelClass = inferElbowSteelClassFromMark(steelMark);
@@ -32,12 +32,8 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
   const rsNum = num(Rs);
   const pNum = num(p);
   const sNum = num(s);
+  const phiPNum = num(phiP, 1);
   const temperatureNum = num(sigmaTemp);
-
-  useEffect(() => {
-    allowances.applyStresscalcDefaults(daNum, sNum, rsNum);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- пересчёт прибавок при смене геометрии
-  }, [daNum, sNum, rsNum]);
 
   const result = useMemo(
     () =>
@@ -45,7 +41,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
         Da: daNum,
         Rs: rsNum,
         sigma,
-        phi: 1,
+        phi: phiPNum,
         p: pNum,
         s: sNum,
         temperatureC: temperatureNum,
@@ -57,10 +53,10 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           c21: num(allowances.c21),
         },
       }),
-    [allowances.c11, allowances.c12, allowances.c21, daNum, rsNum, sigma, pNum, sNum, temperatureNum, steelClass, ovalityA]
+    [allowances.c11, allowances.c12, allowances.c21, daNum, rsNum, sigma, phiPNum, pNum, sNum, temperatureNum, steelClass, ovalityA]
   );
 
-  const inputsReady = !isBlank(p) && daNum > 0 && rsNum > 0 && sigma > 0 && sNum > 0;
+  const inputsReady = !isBlank(p) && daNum > 0 && rsNum > 0 && sigma > 0 && sNum > 0 && phiPNum > 0;
   const hasResult = inputsReady && result.error == null;
 
   return (
@@ -73,9 +69,11 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
           c11={allowances.c11}
           c12={allowances.c12}
           c21={allowances.c21}
+          cc={allowances.cc}
           onC11={allowances.setC11}
           onC12={allowances.setC12}
           onC21={allowances.setC21}
+          onCc={allowances.setCc}
         />
 
       <section className={CALC_SECTION_CARD}>
@@ -129,17 +127,17 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               value={ovalityA}
               onChange={setOvalityA}
               unit="%"
+            />
+            <CalcRow
+              inColumn
+              label="Коэффициент прочности сварного шва"
+              symbol={<Var letter="φ" />}
+              value={phiP}
+              onChange={setPhiP}
               borderless
             />
           </div>
           <div className="min-w-0">
-            <CalcRow
-              inColumn
-              label="Расчётный ресурс"
-              value={serviceLife}
-              onChange={setServiceLife}
-              unit="ч"
-            />
             <CalcRow
               inColumn
               inlineLabelExtra
@@ -180,24 +178,6 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Суммарная прибавка к внешней стороне колена"
-              symbol={<Var letter="c" sub="sr1" />}
-              value={hasResult ? fmtHundredths(result.cc1) : ""}
-              unit="мм"
-            />
-            <CalcRow
-              variant="result"
-              disabled
-              inColumn
-              label="Суммарная прибавка к внутренней и нейтральной стороне"
-              symbol={<Var letter="c" sub="sr2,3" />}
-              value={hasResult ? fmtHundredths(result.cc23) : ""}
-              unit="мм"
-            />
-            <CalcRow
-              variant="result"
-              disabled
-              inColumn
               label="Расчётная толщина стенки трубы"
               symbol={<Var letter="s" sub="R" />}
               value={hasResult ? fmtHundredths(result.sr) : ""}
@@ -228,37 +208,19 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Расчётная толщина стенки нейтральной стороны"
-              symbol={<Var letter="s" sub="R3" />}
-              value={hasResult ? fmtHundredths(result.sr3) : ""}
+              label="Принятая толщина без учёта прибавок"
+              symbol={<Var letter="s" sub="R" />}
+              value={hasResult ? fmtHundredths(result.srMax) : ""}
               unit="мм"
             />
             <CalcRow
               variant="result"
               disabled
               inColumn
-              label="Расчётная толщина стенки колена с учётом прибавок"
-              symbol={<Var letter="s" sub="R+c" />}
-              value={hasResult ? fmtHundredths(result.srcMax) : ""}
+              label="Принятая толщина с учётом прибавок"
+              symbol={<Var letter="s" sub="n" />}
+              value={hasResult ? fmtHundredths(result.snMax) : ""}
               unit="мм"
-            />
-            <CalcRow
-              variant="result"
-              disabled
-              inColumn
-              label="Минимальная конструктивная толщина стенки колена в растянутой зоне"
-              symbol={<Var letter="s" sub="min" />}
-              value={hasResult ? fmtHundredths(result.sMinWall) : ""}
-              unit="мм"
-            />
-            <CalcRow
-              variant="result"
-              disabled
-              inColumn
-              label="Допускаемое рабочее давление для колена"
-              symbol="[p]"
-              value={hasResult && result.pAllow > 0 ? fmt(result.pAllow, 1) : ""}
-              unit="МПа"
               borderless
             />
           </div>

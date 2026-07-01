@@ -53,15 +53,23 @@ export interface ElbowResults {
   c21: number;
   cc1: number;
   cc23: number;
+  /** Суммарная прибавка c_c = c₁₁ + c₁₂ + c₂₁ (ПНАЭ) */
+  cc: number;
   coeffs: ElbowCoeffs | null;
   sr: number;
   sr1: number;
   sr2: number;
   sr3: number;
+  /** max(s_R1, s_R2, s_R3) */
+  srMax: number;
   src1: number;
   src2: number;
   src3: number;
   srcMax: number;
+  sn1: number;
+  sn2: number;
+  sn3: number;
+  snMax: number;
   sMinWall: number;
   pAllow1: number;
   pAllow2: number;
@@ -184,10 +192,16 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     sr1: 0,
     sr2: 0,
     sr3: 0,
+    srMax: 0,
     src1: 0,
     src2: 0,
     src3: 0,
     srcMax: 0,
+    cc: 0,
+    sn1: 0,
+    sn2: 0,
+    sn3: 0,
+    snMax: 0,
     sMinWall: 0,
     pAllow1: 0,
     pAllow2: 0,
@@ -218,11 +232,18 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
   const sr1 = round2(sr * toroidal.K1 * coeffs.Y1);
   const sr2 = round2(sr * toroidal.K2 * coeffs.Y2);
   const sr3 = round2(sr * toroidal.K3 * coeffs.Y3);
+  const srMax = Math.max(sr1, sr2, sr3);
 
   const src1 = round2(sr1 + cc1);
   const src2 = round2(sr2 + cc23);
   const src3 = round2(sr3 + cc23);
   const srcMax = Math.max(src1, src2, src3);
+
+  const cc = round2(c11 + c12 + c21);
+  const sn1 = round2(sr1 + cc);
+  const sn2 = round2(sr2 + cc);
+  const sn3 = round2(sr3 + cc);
+  const snMax = Math.max(sn1, sn2, sn3);
 
   const sMinWall = input.s > 0 ? round2(input.s - c11 - c12) : 0;
 
@@ -271,10 +292,16 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
       sr1,
       sr2,
       sr3,
+      srMax,
       src1,
       src2,
       src3,
       srcMax,
+      cc,
+      sn1,
+      sn2,
+      sn3,
+      snMax,
       sMinWall,
       error: "Не удалось рассчитать допускаемое давление",
     };
@@ -296,16 +323,22 @@ export function calculateElbow(input: ElbowInputs): ElbowResults {
     sr1,
     sr2,
     sr3,
+    srMax,
     src1,
     src2,
     src3,
     srcMax,
+    cc,
+    sn1,
+    sn2,
+    sn3,
+    snMax,
     sMinWall,
     pAllow1: pAllow1 ?? 0,
     pAllow2: pAllow2 ?? 0,
     pAllow3: pAllow3 ?? 0,
     pAllow,
-    thicknessOk: input.s <= 0 || input.s >= srcMax,
+    thicknessOk: input.s <= 0 || input.s >= snMax,
     strengthOk: input.s > 0 && pAllow > 0 ? input.p <= pAllow : false,
     error: null,
   };
