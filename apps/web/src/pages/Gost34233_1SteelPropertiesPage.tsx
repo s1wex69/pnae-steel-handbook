@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { SteelHandbook } from "@/types/steel";
 import { GostSteelWorktable } from "@/components/handbooks/GostSteelWorktable";
+import { HandbookStandardSwitch } from "@/components/handbooks/HandbookStandardSwitch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
@@ -51,8 +52,9 @@ export function Gost34233_1SteelPropertiesPage() {
             Данные оформлены в том же стиле, что и ПНАЭ
           </p>
           <p className="mt-2 w-full text-base leading-snug text-[var(--color-muted-foreground)]">
-            Пока здесь отображается заготовка интерфейса — дальше добавим выбор марки, температуры и вывод σ, σ13, σRV.
+            Выбор марки, сортамента, температуры и вывод σ, σ13, σRV по ГОСТ 34233.1—2017
           </p>
+          <HandbookStandardSwitch active="gost34233-1" className="mt-5" />
         </div>
       </div>
 

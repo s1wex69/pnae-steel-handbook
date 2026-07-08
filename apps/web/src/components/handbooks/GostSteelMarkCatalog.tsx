@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { SteelHandbook } from "@/types/steel";
-import { displayMark } from "@/lib/steelHandbook";
+import {
+  GOST_METAL_CATEGORIES,
+  getAllGostGroups,
+  getMarksInGroups,
+  groupsFromGostCategoryId,
+} from "@/lib/steelHandbook";
 import { StyledSelect } from "@/components/handbooks/SelectStep";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -19,22 +24,6 @@ interface Props {
   className?: string;
 }
 
-function uniqueSorted(list: string[]): string[] {
-  return [...new Set(list)].sort((a, b) => a.localeCompare(b, "ru"));
-}
-
-function getGostGroups(handbook: SteelHandbook): string[] {
-  return uniqueSorted(handbook.grades.map((g) => g.group ?? "").filter(Boolean));
-}
-
-function getMarksInGroups(handbook: SteelHandbook, groups: string[]): string[] {
-  const marks = handbook.grades
-    .filter((g) => g.group && groups.includes(g.group))
-    .map((g) => displayMark(g))
-    .filter(Boolean);
-  return uniqueSorted(marks);
-}
-
 export function GostSteelMarkCatalog({
   handbook,
   categoryId,
@@ -44,8 +33,6 @@ export function GostSteelMarkCatalog({
   afterMarkSlot,
   className,
 }: Props) {
-  const gostGroups = useMemo(() => getGostGroups(handbook), [handbook]);
-
   const [markFilter, setMarkFilter] = useState("");
   const [marksListOpen, setMarksListOpen] = useState(() => !selectedMark);
 
@@ -57,12 +44,30 @@ export function GostSteelMarkCatalog({
     setMarkFilter(selectedMark);
   }, [selectedMark]);
 
-  const scopeGroups = categoryId ? [categoryId] : gostGroups;
+  const sections = useMemo(() => {
+    const map = new Map<string, typeof GOST_METAL_CATEGORIES>();
+    for (const cat of GOST_METAL_CATEGORIES) {
+      const list = map.get(cat.section) ?? [];
+      list.push(cat);
+      map.set(cat.section, list);
+    }
+    return [...map.entries()];
+  }, []);
 
-  const allMarks = useMemo(() => getMarksInGroups(handbook, scopeGroups), [handbook, scopeGroups]);
+  const activeCategory = categoryId
+    ? GOST_METAL_CATEGORIES.find((c) => c.id === categoryId)
+    : undefined;
+
+  const scopeGroups = categoryId ? groupsFromGostCategoryId(categoryId) : null;
+
+  const allMarks = useMemo(() => {
+    if (scopeGroups) return getMarksInGroups(handbook, scopeGroups);
+    return getMarksInGroups(handbook, getAllGostGroups());
+  }, [handbook, scopeGroups]);
 
   const isSearching =
-    markFilter.trim().length > 0 && markFilter.trim().toLowerCase() !== selectedMark.trim().toLowerCase();
+    markFilter.trim().length > 0 &&
+    markFilter.trim().toLowerCase() !== selectedMark.trim().toLowerCase();
 
   const marks = useMemo(() => {
     const q = markFilter.trim().toLowerCase();
@@ -78,34 +83,37 @@ export function GostSteelMarkCatalog({
     setMarksListOpen(false);
   };
 
-  const onCategorySelect = (nextCategoryId: string) => {
-    onCategoryChange(nextCategoryId);
-    if (nextCategoryId) setMarksListOpen(true);
-
-    // Если выбранная марка не существует в категории — очистим марку.
-    if (selectedMark) {
-      const nextGroups = nextCategoryId ? [nextCategoryId] : gostGroups;
-      const allowed = getMarksInGroups(handbook, nextGroups).includes(selectedMark);
-      if (!allowed) onSelectMark("");
+  const onCategorySelect = (id: string) => {
+    onCategoryChange(id);
+    if (id) setMarksListOpen(true);
+    if (selectedMark && id) {
+      const cat = GOST_METAL_CATEGORIES.find((c) => c.id === id);
+      if (cat && !getMarksInGroups(handbook, cat.groups).includes(selectedMark)) {
+        onSelectMark("");
+      }
     }
   };
 
   return (
     <div className={cn("min-w-0 space-y-3", className)}>
       <div className="space-y-2">
-        <Label htmlFor="gost-category">Категория</Label>
+        <Label htmlFor="gost-category">Категория стали</Label>
         <StyledSelect
           hasValue={!!categoryId}
           id="gost-category"
-          placeholder="Все категории"
+          placeholder="Все виды сталей"
           value={categoryId}
           onChange={(e) => onCategorySelect(e.target.value)}
         >
-          <option value="">Все категории</option>
-          {gostGroups.map((g) => (
-            <option key={g} value={g}>
-              {g}
-            </option>
+          <option value="">Все виды сталей</option>
+          {sections.map(([section, cats]) => (
+            <optgroup key={section} label={section}>
+              {cats.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.label}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </StyledSelect>
       </div>
@@ -115,7 +123,11 @@ export function GostSteelMarkCatalog({
           <Label htmlFor="gost-mark-filter">
             Марка
             <span className="ml-1 text-xs font-normal text-[var(--color-muted-foreground)]">
-              {categoryId ? `· ${categoryId}` : "· все марки"}
+              {categoryId
+                ? activeCategory
+                  ? `· ${activeCategory.label}`
+                  : ""
+                : "· все виды"}
             </span>
           </Label>
           <Button
@@ -172,13 +184,14 @@ export function GostSteelMarkCatalog({
 
         {!listVisible && !selectedMark ? (
           <p className="text-sm text-[var(--color-muted-foreground)]">
-            {categoryId ? `Список марок скрыт для категории.` : "Список марок скрыт."}
+            {`Список из ${allMarks.length} марок скрыт. Введите текст в поиск или нажмите «Показать список».`}
           </p>
         ) : !listVisible ? null : (
           <div
             className={cn(
               "min-h-80 min-w-0 max-h-[32rem] overflow-x-hidden overflow-y-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-muted)] p-3",
-              marks.length === 0 && "flex items-center justify-center py-16 text-base text-[var(--color-muted-foreground)]"
+              marks.length === 0 &&
+                "flex items-center justify-center py-16 text-base text-[var(--color-muted-foreground)]"
             )}
           >
             {marks.length === 0 ? (
@@ -216,4 +229,3 @@ export function GostSteelMarkCatalog({
     </div>
   );
 }
-

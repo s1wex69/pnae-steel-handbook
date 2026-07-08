@@ -7,9 +7,11 @@ import {
   type PnaeAllowableMode,
   findGrade,
   interpolatedValue,
-  extractSortament,
-  displayMark,
   MECH_PROPS,
+  findGostCategoryIdForMark,
+  groupsFromGostCategoryId,
+  getAllGostGroups,
+  getSortamentsInGroups,
 } from "@/lib/steelHandbook";
 import {
   MathSpan,
@@ -68,33 +70,14 @@ const MECH_EXTRA: { key: SteelPropertyKey; short: string }[] = [
 
 type GostAllowableSnapshot = GostAllowableByModeResult;
 
-function uniqueGostGroups(handbook: SteelHandbook): string[] {
-  return [...new Set(handbook.grades.map((g) => g.group ?? "").filter(Boolean))].sort((a, b) =>
-    a.localeCompare(b, "ru")
-  );
-}
-
-function getSortamentsInGroups(
+function getSortamentsForRow(
   handbook: SteelHandbook,
-  groups: string[],
-  mark: string
+  row: GostTableRow
 ): { sortament: string; group: string; gradeName: string }[] {
-  return handbook.grades
-    .filter((g) => g.group && groups.includes(g.group) && displayMark(g) === mark)
-    .map((g) => ({
-      sortament: extractSortament(g.name),
-      group: g.group ?? "",
-      gradeName: g.name,
-    }))
-    .sort((a, b) => a.sortament.localeCompare(b.sortament, "ru"));
-}
-
-function findGostGroupForMark(handbook: SteelHandbook, mark: string): string | undefined {
-  for (const g of handbook.grades) {
-    if (!g.group) continue;
-    if (displayMark(g) === mark) return g.group;
-  }
-  return undefined;
+  const groups = row.categoryId
+    ? groupsFromGostCategoryId(row.categoryId)
+    : getAllGostGroups();
+  return row.mark ? getSortamentsInGroups(handbook, groups, row.mark) : [];
 }
 
 type RowCalc = {
@@ -231,8 +214,7 @@ function SortamentAndTemp({
   row: GostTableRow;
   onChange: (patch: Partial<GostTableRow>) => void;
 }) {
-  const filterGroups = row.categoryId ? [row.categoryId] : uniqueGostGroups(handbook);
-  const sortOpts = row.mark ? getSortamentsInGroups(handbook, filterGroups, row.mark) : [];
+  const sortOpts = getSortamentsForRow(handbook, row);
 
   return (
     <div className="grid min-w-0 gap-4 sm:grid-cols-2">
@@ -409,6 +391,7 @@ function ResultsBlock({
 
       const result = computeGostAllowableByMode(mode, calc.grade, {
         temperature: calc.row.temperature,
+        handbook,
       });
       if (!result) return [];
       return [{ calc, mode, def, result }];
@@ -628,8 +611,8 @@ export function GostSteelWorktable({ handbook }: Props) {
         return;
       }
 
-      const nextCategoryId = findGostGroupForMark(handbook, mark) ?? activeRow.categoryId;
-      const groups = nextCategoryId ? [nextCategoryId] : uniqueGostGroups(handbook);
+      const nextCategoryId = findGostCategoryIdForMark(handbook, mark) ?? activeRow.categoryId;
+      const groups = nextCategoryId ? groupsFromGostCategoryId(nextCategoryId) : getAllGostGroups();
       const opts = getSortamentsInGroups(handbook, groups, mark);
       const exact = opts.find((o) => o.sortament === activeRow.sortament);
       const first = exact ?? opts[0];

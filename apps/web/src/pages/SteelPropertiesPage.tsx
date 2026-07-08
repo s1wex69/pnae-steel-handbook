@@ -12,7 +12,7 @@ import {
   buildEmptyRow,
   type PnaeTableRow,
 } from "@/components/handbooks/PnaeSteelWorktable";
-import { Button } from "@/components/ui/button";
+import { HandbookStandardSwitch } from "@/components/handbooks/HandbookStandardSwitch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { loadHandbookData } from "@/lib/handbookDataLoader";
@@ -156,13 +156,7 @@ export function SteelPropertiesPage() {
         <p className="mt-2 w-full text-base leading-snug text-[var(--color-muted-foreground)]">
           Можно добавить несколько строк: разные марки или одну марку при разных температурах
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Button asChild variant="outline" size="sm">
-            <a href="https://intech-atom.ru/gost34233-1" target="_top" rel="noreferrer">
-              ГОСТ 34233.1
-            </a>
-          </Button>
-        </div>
+        <HandbookStandardSwitch active="pnae" className="mt-5" />
         </div>
       </div>
 

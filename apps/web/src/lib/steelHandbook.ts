@@ -221,6 +221,38 @@ export const PNAE_CATALOG_LAYOUT: {
   },
 ];
 
+/** Категории металла для справочника ГОСТ 34233.1 (стали ПНАЭ + титан) */
+export const GOST_METAL_CATEGORIES: PnaeMetalCategory[] = [
+  ...PNAE_METAL_CATEGORIES,
+  {
+    id: "titanium",
+    section: "Цветные металлы и сплавы",
+    label: "Титан и титановые сплавы",
+    groups: ["Титан"],
+  },
+];
+
+export function groupsFromGostCategoryId(categoryId: string): string[] {
+  const cat = GOST_METAL_CATEGORIES.find((c) => c.id === categoryId);
+  return cat?.groups ?? [];
+}
+
+export function findGostCategoryIdForMark(handbook: SteelHandbook, mark: string): string | undefined {
+  if (!mark) return undefined;
+  for (const cat of GOST_METAL_CATEGORIES) {
+    if (getMarksInGroups(handbook, cat.groups).includes(mark)) return cat.id;
+  }
+  return undefined;
+}
+
+export function getAllGostGroups(): string[] {
+  const set = new Set<string>();
+  for (const cat of GOST_METAL_CATEGORIES) {
+    for (const g of cat.groups) set.add(g);
+  }
+  return [...set];
+}
+
 export function groupsFromCategoryIds(ids: string[]): string[] {
   const set = new Set<string>();
   for (const cat of PNAE_METAL_CATEGORIES) {
