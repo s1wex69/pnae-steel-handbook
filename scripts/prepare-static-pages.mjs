@@ -30,6 +30,7 @@ const PROJECT_IDS = [
   "10-kalkulyator-ploskoe-dnishche",
   "11-kalkulyator-ploskaya-kryshka",
   "12-kalkulyator-bolty-shpilki-gayki",
+  "13-gost34233-1",
 ];
 
 const DEFAULT_PATHS = {
@@ -45,6 +46,7 @@ const DEFAULT_PATHS = {
   "10-kalkulyator-ploskoe-dnishche": "calc9",
   "11-kalkulyator-ploskaya-kryshka": "calc10",
   "12-kalkulyator-bolty-shpilki-gayki": "calc11",
+  "13-gost34233-1": "gost34233-1",
 };
 
 const SKIP_FILES = new Set(["TILDA-ВСТАВКА.html", "README.txt"]);
@@ -114,6 +116,7 @@ const indexHtml = `<!DOCTYPE html>
     <p class="note">Справочник и калькуляторы работают только во встроенном окне на intech-atom.ru.</p>
     <ul>
       <li><a href="./${paths["01-spravochnik"]}/">Справочник ПНАЭ</a></li>
+      <li><a href="./${paths["13-gost34233-1"]}/">Справочник ГОСТ 34233.1</a></li>
       <li><a href="./${paths["02-kalkulyator-vnutrennee-davlenie"]}/">Калькулятор — внутреннее давление (обечайка)</a></li>
       <li><a href="./${paths["03-kalkulyator-naruzhnoe-davlenie"]}/">Калькулятор — наружное давление (обечайка)</a></li>
       <li><a href="./${paths["04-kalkulyator-polusfericheskoe-dnishche"]}/">Калькулятор — полусферическое днище</a></li>

@@ -14,6 +14,15 @@ export interface SteelGrade {
   reductionZ?: Record<string, number>;
   thermalExpansionAlpha?: Record<string, number>;
   elasticModulusE?: Record<string, number>;
+  /**
+   * Опциональные табличные допускаемые напряжения для справочника ГОСТ 34233.1.
+   * Если присутствуют, UI-движок может использовать их напрямую, не прибегая
+   * к формульной реконструкции из Rm/Rp0,2.
+   */
+  gost34233_1?: {
+    /** Допускаемое напряжение [a] (σ) для рабочих условий. */
+    allowableSigma?: Record<string, number>;
+  };
 }
 
 export interface SteelHandbook {

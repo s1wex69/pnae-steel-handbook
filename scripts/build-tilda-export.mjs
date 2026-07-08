@@ -12,6 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const webDir = path.join(root, "apps", "web");
 const hostedRoot = path.join(root, "tilda-hosted");
 const jsonSrc = path.join(webDir, "public", "data", "pnae-steel-properties.json");
+const gostJsonSrc = path.join(webDir, "public", "data", "gost34233-1-steel-properties.json");
 const amveraUrlsPath = path.join(root, "deploy", "amvera", "urls.json");
 
 const NETLIFY_URLS = {
@@ -50,6 +51,7 @@ const GITLAB_URLS = {
   "10-kalkulyator-ploskoe-dnishche": "https://USERNAME.gitlab.io/PROJECT/calc9/",
   "11-kalkulyator-ploskaya-kryshka": "https://USERNAME.gitlab.io/PROJECT/calc10/",
   "12-kalkulyator-bolty-shpilki-gayki": "https://USERNAME.gitlab.io/PROJECT/calc11/",
+  "13-gost34233-1": "https://USERNAME.gitlab.io/PROJECT/gost34233-1/",
 };
 
 const GITHUB_URLS = {
@@ -65,6 +67,7 @@ const GITHUB_URLS = {
   "10-kalkulyator-ploskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc9/",
   "11-kalkulyator-ploskaya-kryshka": "https://s1wex69.github.io/pnae-steel-handbook/calc10/",
   "12-kalkulyator-bolty-shpilki-gayki": "https://s1wex69.github.io/pnae-steel-handbook/calc11/",
+  "13-gost34233-1": "https://s1wex69.github.io/pnae-steel-handbook/gost34233-1/",
 };
 
 function loadUrlsFromFile(filePath, defaults, placeholders) {
@@ -222,6 +225,14 @@ const projects = [
     embedSiteUrl: "https://intech-atom.ru/calc11",
     embedSiteName: "ИНТЕХ-АТОМ",
   },
+  {
+    id: "13-gost34233-1",
+    input: "tilda-gost-34233-1.html",
+    title: "Справочник — ГОСТ 34233.1",
+    iframeTitle: "Справочник ГОСТ 34233.1",
+    embedSiteUrl: "https://intech-atom.ru/gost34233-1",
+    embedSiteName: "ИНТЕХ-АТОМ",
+  },
 ].map((p) => ({ ...p, iframeSrc: iframeUrls[p.id] }));
 
 const buildList = onlyArg
@@ -286,7 +297,11 @@ for (const project of buildList) {
   const projectDir = path.join(hostedRoot, project.id);
   const dataDir = path.join(projectDir, "data");
   await mkdir(dataDir, { recursive: true });
-  await cp(jsonSrc, path.join(dataDir, "pnae-steel-properties.json"));
+  if (project.id === "13-gost34233-1") {
+    await cp(gostJsonSrc, path.join(dataDir, "gost34233-1-steel-properties.json"));
+  } else {
+    await cp(jsonSrc, path.join(dataDir, "pnae-steel-properties.json"));
+  }
 
   const files = await readdir(projectDir);
   const html = files.find((f) => f.endsWith(".html") && f !== "index.html");

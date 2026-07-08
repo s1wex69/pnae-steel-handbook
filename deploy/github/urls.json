@@ -12,6 +12,7 @@
   "10-kalkulyator-ploskoe-dnishche": "https://s1wex69.github.io/pnae-steel-handbook/calc9/",
   "11-kalkulyator-ploskaya-kryshka": "https://s1wex69.github.io/pnae-steel-handbook/calc10/",
   "12-kalkulyator-bolty-shpilki-gayki": "https://s1wex69.github.io/pnae-steel-handbook/calc11/",
+  "13-gost34233-1": "https://s1wex69.github.io/pnae-steel-handbook/gost34233-1/",
   "paths": {
     "01-spravochnik": "pnae",
     "02-kalkulyator-vnutrennee-davlenie": "calc1",
@@ -24,6 +25,7 @@
     "09-kalkulyator-koleno": "calc8",
     "10-kalkulyator-ploskoe-dnishche": "calc9",
     "11-kalkulyator-ploskaya-kryshka": "calc10",
-    "12-kalkulyator-bolty-shpilki-gayki": "calc11"
+    "12-kalkulyator-bolty-shpilki-gayki": "calc11",
+    "13-gost34233-1": "gost34233-1"
   }
 }
