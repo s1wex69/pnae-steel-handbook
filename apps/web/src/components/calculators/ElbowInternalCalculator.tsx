@@ -178,7 +178,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Расчётная толщина стенки трубы"
+              label="Номинальная толщина стенки трубы"
               symbol={<Var letter="s" sub="R" />}
               value={hasResult ? fmtHundredths(result.sr) : ""}
               unit="мм"
@@ -187,7 +187,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Расчётная толщина стенки внешней стороны"
+              label="Номинальная толщина стенки внешней стороны"
               symbol={<Var letter="s" sub="R1" />}
               value={hasResult ? fmtHundredths(result.sr1) : ""}
               unit="мм"
@@ -196,7 +196,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Расчётная толщина стенки внутренней стороны"
+              label="Номинальная толщина стенки внутренней стороны"
               symbol={<Var letter="s" sub="R2" />}
               value={hasResult ? fmtHundredths(result.sr2) : ""}
               unit="мм"
@@ -208,7 +208,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Принятая толщина без учёта прибавок"
+              label="Расчётная толщина без учёта прибавок"
               symbol={<Var letter="s" sub="R" />}
               value={hasResult ? fmtHundredths(result.srMax) : ""}
               unit="мм"
@@ -217,7 +217,7 @@ export function ElbowInternalCalculator({ handbook }: { handbook: SteelHandbook 
               variant="result"
               disabled
               inColumn
-              label="Принятая толщина с учётом прибавок"
+              label="Расчётная толщина с учётом прибавок"
               symbol={<Var letter="s" sub="n" />}
               value={hasResult ? fmtHundredths(result.snMax) : ""}
               unit="мм"
