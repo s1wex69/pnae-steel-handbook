@@ -16,28 +16,28 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 }
 
 @theme {
-  --color-background: #0c1817;
-  --color-foreground: #f2f7f6;
-  --color-card: #142422;
-  --color-card-foreground: #f2f7f6;
-  --color-primary: #003837;
+  --color-background: #1a1012;
+  --color-foreground: #f7f2eb;
+  --color-card: #26181b;
+  --color-card-foreground: #f7f2eb;
+  --color-primary: #711a28;
   --color-primary-foreground: #ffffff;
-  --color-heading: #f2f7f6;
-  --color-emphasis: #8ee4dc;
-  --color-muted: #1c302f;
-  --color-muted-foreground: #b8ccc9;
-  --color-border: #2f4a48;
-  --color-accent: #1f3836;
-  --color-accent-foreground: #e8f4f3;
+  --color-heading: #f7f2eb;
+  --color-emphasis: #e8a8b0;
+  --color-muted: #2e1c20;
+  --color-muted-foreground: #c4b0b4;
+  --color-border: #4a3036;
+  --color-accent: #321f24;
+  --color-accent-foreground: #f7ece8;
   --color-destructive: #e87070;
-  --color-header: #003837;
+  --color-header: #711a28;
   --color-header-foreground: #ffffff;
-  --color-link: #8ee4dc;
-  --color-success: #003837;
-  --color-success-muted: #00383755;
+  --color-link: #e8a8b0;
+  --color-success: #c43448;
+  --color-success-muted: #711a2855;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.25);
+  --shadow-card: 0 4px 24px rgba(113, 26, 40, 0.25);
   --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-serif: "PT Serif", Georgia, "Times New Roman", serif;
   --font-heading: "PT Serif", Georgia, "Times New Roman", serif;
@@ -61,26 +61,26 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 }
 
 :root.light {
-  --color-background: #ffffff;
-  --color-foreground: #1a2e2d;
-  --color-card: #ffffff;
-  --color-card-foreground: #1a2e2d;
-  --color-primary: #003837;
+  --color-background: #ede6da;
+  --color-foreground: #2c1f22;
+  --color-card: #f7f2eb;
+  --color-card-foreground: #2c1f22;
+  --color-primary: #711a28;
   --color-primary-foreground: #ffffff;
-  --color-heading: #003837;
-  --color-emphasis: #003837;
-  --color-muted: #f2f4f5;
-  --color-muted-foreground: #4a5654;
-  --color-border: #d4dcdb;
-  --color-accent: #e8edec;
-  --color-accent-foreground: #003837;
+  --color-heading: #711a28;
+  --color-emphasis: #711a28;
+  --color-muted: #f0e8dc;
+  --color-muted-foreground: #5c4a4e;
+  --color-border: #ddd2c4;
+  --color-accent: #e8dfd3;
+  --color-accent-foreground: #711a28;
   --color-destructive: #c44b4b;
-  --color-header: #003837;
+  --color-header: #711a28;
   --color-header-foreground: #ffffff;
-  --color-link: #003837;
-  --color-success: #003837;
-  --color-success-muted: #00383714;
-  --shadow-card: 0 4px 24px rgba(0, 56, 55, 0.08);
+  --color-link: #711a28;
+  --color-success: #711a28;
+  --color-success-muted: #711a2814;
+  --shadow-card: 0 4px 24px rgba(113, 26, 40, 0.08);
 }
 
 #root.pnae-tilda-embed {
@@ -92,7 +92,7 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
   overflow-x: clip;
   overflow-y: visible;
   isolation: isolate;
-  background: #ffffff;
+  background: var(--color-card);
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--text-base--line-height);
@@ -262,7 +262,7 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 
 .t-rec:has(#root.pnae-tilda-embed),
 .t-rec:has(.pnae-t123-svc) {
-  background: #ffffff !important;
+  background: var(--color-card) !important;
   padding-top: 5.5rem !important;
   padding-bottom: 0 !important;
 }

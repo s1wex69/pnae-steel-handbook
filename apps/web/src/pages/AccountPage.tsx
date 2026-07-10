@@ -112,7 +112,7 @@ export function AccountPage() {
             </div>
             {emailError && <p className="text-sm text-[var(--color-destructive)]">{emailError}</p>}
             {emailSuccess && (
-              <p className="text-sm text-green-600 dark:text-green-400">{emailSuccess}</p>
+              <p className="text-sm text-[var(--color-success)]">{emailSuccess}</p>
             )}
             <Button type="submit" disabled={emailSaving}>
               {emailSaving ? "Сохранение…" : "Сменить логин"}
@@ -167,7 +167,7 @@ export function AccountPage() {
               <p className="text-sm text-[var(--color-destructive)]">{passwordError}</p>
             )}
             {passwordSuccess && (
-              <p className="text-sm text-green-600 dark:text-green-400">{passwordSuccess}</p>
+              <p className="text-sm text-[var(--color-success)]">{passwordSuccess}</p>
             )}
             <Button type="submit" disabled={passwordSaving}>
               {passwordSaving ? "Сохранение…" : "Сменить пароль"}

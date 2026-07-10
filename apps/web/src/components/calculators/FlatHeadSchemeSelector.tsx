@@ -35,7 +35,7 @@ export function FlatHeadSchemeSelector({
                 : "border-[var(--color-border)] bg-[var(--color-card)] hover:border-[var(--color-primary)]/40"
             )}
           >
-            <div className="box-border flex h-52 w-full shrink-0 items-center justify-center bg-white p-1 sm:h-56">
+            <div className="box-border flex h-52 w-full shrink-0 items-center justify-center bg-[var(--color-card)] p-1 sm:h-56">
               <img
                 src={flatHeadSchemeImageUrl(type)}
                 alt={FLAT_HEAD_TYPE_LABELS[type]}

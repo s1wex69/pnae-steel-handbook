@@ -137,7 +137,7 @@ export function AdminPage() {
             </Button>
             {status && (
               <p
-                className={`text-sm ${status.startsWith("Опубликовано") ? "text-emerald-500" : "text-[var(--color-destructive)]"}`}
+                className={`text-sm ${status.startsWith("Опубликовано") ? "text-[var(--color-success)]" : "text-[var(--color-destructive)]"}`}
               >
                 {status}
               </p>

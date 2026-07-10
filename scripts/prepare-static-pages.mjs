@@ -107,7 +107,7 @@ const indexHtml = `<!DOCTYPE html>
       body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; color: #1a2e2d; }
       h1 { font-size: 1.5rem; }
       ul { padding-left: 1.25rem; }
-      a { color: #003837; }
+      a { color: #711a28; }
       p.note { color: #4a5654; font-size: 0.95rem; }
     </style>
   </head>

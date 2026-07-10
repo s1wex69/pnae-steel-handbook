@@ -128,7 +128,7 @@ export function PnaeSteelBlock({
       className={cn(
         "overflow-hidden border-2 transition-shadow",
         state.determined && grade
-          ? "border-emerald-500/30 shadow-lg shadow-emerald-500/5"
+          ? "border-[var(--color-primary)]/30 shadow-lg shadow-[var(--color-primary)]/5"
           : "border-[var(--color-border)]"
       )}
     >
@@ -182,7 +182,7 @@ export function PnaeSteelBlock({
                 <div
                   className={cn(
                     "flex h-7 flex-1 items-center justify-center rounded-md text-xs font-semibold transition-colors",
-                    done && "bg-emerald-500/25 text-emerald-400",
+                    done && "bg-[var(--color-primary)]/25 text-[var(--color-emphasis)]",
                     current && !done && "bg-[var(--color-primary)] text-[var(--color-primary-foreground)]",
                     !done && !current && "bg-[var(--color-muted)] text-[var(--color-muted-foreground)]"
                   )}
@@ -409,8 +409,8 @@ export function PnaeSteelBlock({
         )}
 
         {state.determined && grade && (
-          <div className="space-y-4 rounded-xl border-2 border-emerald-500/40 bg-emerald-500/5 p-4">
-            <div className="flex items-center gap-2 text-emerald-400">
+          <div className="space-y-4 rounded-xl border-2 border-[var(--color-primary)]/40 bg-[var(--color-primary)]/5 p-4">
+            <div className="flex items-center gap-2 text-[var(--color-emphasis)]">
               <Check className="h-5 w-5" />
               <span className="font-semibold">Результаты при T = {state.temperature} °C</span>
             </div>
@@ -451,7 +451,7 @@ export function PnaeSteelBlock({
                       </span>
                       {val !== null &&
                         (copied === cellId ? (
-                          <Check className="h-4 w-4 text-emerald-500" />
+                          <Check className="h-4 w-4 text-[var(--color-primary)]" />
                         ) : (
                           <Copy className="h-3.5 w-3.5 opacity-40" />
                         ))}
@@ -461,7 +461,7 @@ export function PnaeSteelBlock({
               })}
             </div>
 
-            <div className="flex flex-wrap gap-2 border-t border-emerald-500/20 pt-3">
+            <div className="flex flex-wrap gap-2 border-t border-[var(--color-primary)]/20 pt-3">
               <Button variant="outline" size="sm" asChild>
                 <Link
                   to={`/calculators/in-1-allowable-stress?rp02=${valueAt(grade, "rp02", state.temperature) ?? ""}&rm=${valueAt(grade, "rm", state.temperature) ?? ""}&temperature=${state.temperature}`}

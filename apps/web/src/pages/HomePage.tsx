@@ -23,7 +23,7 @@ const SECTIONS = [
     title: "ПНАЭ",
     desc: "Свойства сталей, допускаемые напряжения, Rm, Rp0,2, E и α",
     icon: BookOpen,
-    color: "text-emerald-400",
+    color: "text-[var(--color-emphasis)]",
   },
   {
     to: "/gosts",
