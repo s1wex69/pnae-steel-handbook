@@ -78,8 +78,8 @@ function wrapHidden(content) {
 
 const BOOTSTRAP = `<div id="root" class="pnae-tilda-embed"></div>
 <style>
-#root.pnae-tilda-embed{display:block!important;width:100%!important;max-width:1200px!important;margin:0 auto!important;overflow-x:clip!important;overflow-y:visible!important;box-sizing:border-box!important;background:#f7f2eb!important;font-size:1.3125rem!important;line-height:1.55!important;}
-.t-rec:has(#root.pnae-tilda-embed),.t-rec:has(.pnae-t123-svc){background:#f7f2eb!important;padding-top:0!important;padding-bottom:0!important;overflow-y:visible!important;}
+#root.pnae-tilda-embed{display:block!important;width:100%!important;max-width:1200px!important;margin:0 auto!important;overflow-x:clip!important;overflow-y:visible!important;box-sizing:border-box!important;background:#fff!important;font-size:1.3125rem!important;line-height:1.55!important;}
+.t-rec:has(#root.pnae-tilda-embed),.t-rec:has(.pnae-t123-svc){background:#fff!important;padding-top:0!important;padding-bottom:0!important;overflow-y:visible!important;}
 .t-rec:has(#root.pnae-tilda-embed) .t-container,.t-rec:has(#root.pnae-tilda-embed) .t-col{width:100%!important;max-width:1200px!important;margin:0 auto!important;box-sizing:border-box!important;}
 </style>
 <script>

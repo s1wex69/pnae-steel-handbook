@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Бордовый акцент #711a28, светлый бежевый фон вместо белого */
+/* Бордовый акцент #711a28, белый фон в светлой теме */
 @theme {
   --color-background: #1a1012;
   --color-foreground: #f7f2eb;
@@ -33,18 +33,18 @@
 }
 
 :root.light {
-  --color-background: #ede6da;
+  --color-background: #ffffff;
   --color-foreground: #2c1f22;
-  --color-card: #f7f2eb;
+  --color-card: #ffffff;
   --color-card-foreground: #2c1f22;
   --color-primary: #711a28;
   --color-primary-foreground: #ffffff;
   --color-heading: #711a28;
   --color-emphasis: #711a28;
-  --color-muted: #f0e8dc;
+  --color-muted: #f2f4f5;
   --color-muted-foreground: #5c4a4e;
-  --color-border: #ddd2c4;
-  --color-accent: #e8dfd3;
+  --color-border: #d4dcdb;
+  --color-accent: #e8edec;
   --color-accent-foreground: #711a28;
   --color-destructive: #c44b4b;
   --color-header: #711a28;
