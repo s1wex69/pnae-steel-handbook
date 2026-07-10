@@ -26,6 +26,13 @@ const SECTIONS = [
     color: "text-[var(--color-emphasis)]",
   },
   {
+    to: "/handbooks/gost34233-1",
+    title: "ГОСТ 34233.1",
+    desc: "Допускаемые напряжения и механические характеристики по ГОСТ 34233.1—2017",
+    icon: BookOpen,
+    color: "text-[var(--color-emphasis)]",
+  },
+  {
     to: "/gosts",
     title: "ГОСТы",
     desc: "Нормативные таблицы с фильтрацией и копированием",

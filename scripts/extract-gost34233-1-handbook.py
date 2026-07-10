@@ -311,8 +311,399 @@ def extract_titanium_tables_word_safe(pdf_path: str, max_paragraphs: int = 25000
             pass
 
 
-def build_full_handbook(pnae_path: Path) -> dict:
-    """Полный каталог: все марки/сортаменты из ПНАЭ JSON + титан из ГОСТ."""
+def _parse_thickness_band(name: str) -> tuple[float | None, float | None]:
+    """Извлекает диапазон толщины из названия сортамента (мм)."""
+    n = name.lower().replace(",", ".")
+    m = re.search(r"толщиной\s+до\s+(\d+(?:\.\d+)?)\s*мм", n)
+    if m:
+        return (None, float(m.group(1)))
+    m = re.search(r"толщиной\s+от\s+(\d+(?:\.\d+)?)\s+до\s+(\d+(?:\.\d+)?)\s*мм", n)
+    if m:
+        return (float(m.group(1)), float(m.group(2)))
+    m = re.search(r"толщиной\s+свыше\s+(\d+(?:\.\d+)?)\s*мм", n)
+    if m:
+        return (float(m.group(1)), None)
+    return (None, None)
+
+
+def _pick_appendix_column(
+    columns: list[dict],
+    mark: str,
+    grade_name: str,
+) -> str | None:
+    """Выбирает колонку приложения А по марке и толщине сортамента."""
+    lo, hi = _parse_thickness_band(grade_name)
+    mid = None
+    if lo is not None and hi is not None:
+        mid = (lo + hi) / 2
+    elif hi is not None:
+        mid = hi / 2
+    elif lo is not None:
+        mid = lo + 1
+
+    matching = [c for c in columns if mark in c.get("marks", [])]
+    if not matching:
+        for c in columns:
+            for m in c.get("marks", []):
+                if mark.startswith(m) or m.startswith(mark):
+                    matching.append(c)
+        matching = list({id(c): c for c in matching}.values())
+    if not matching:
+        return None
+    if len(matching) == 1:
+        return matching[0]["id"]
+
+    def score(col: dict) -> float:
+        th = col.get("thicknessMm") or {}
+        tmin = th.get("min")
+        tmax = th.get("max")
+        if mid is None:
+            return 0 if tmax is not None and tmax <= 32 else 1
+        if tmin is not None and tmax is not None:
+            if tmin <= mid <= tmax:
+                return 0
+            return abs(mid - (tmin + tmax) / 2)
+        if tmax is not None:
+            return 0 if mid <= tmax else mid - tmax
+        if tmin is not None:
+            return 0 if mid > tmin else tmin - mid
+        return 1
+
+    return min(matching, key=score)["id"]
+
+
+def load_appendix_a(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def build_appendix_a_lookup(appendix: dict) -> dict[str, dict[str, dict[str, float]]]:
+    """
+    mark -> column_id -> {temp: sigma}
+  Для каждой марки может быть несколько колонок (разная толщина).
+    """
+    lookup: dict[str, dict[str, dict[str, float]]] = {}
+    for table in appendix.get("tables", {}).values():
+        columns = table.get("columns", [])
+        sigma_by_col = table.get("sigma", {})
+        for col in columns:
+            col_id = col["id"]
+            sigma_map = sigma_by_col.get(col_id)
+            if not sigma_map:
+                continue
+            for mark in col.get("marks", []):
+                lookup.setdefault(mark, {})[col_id] = {
+                    str(int(k) if float(k).is_integer() else k): float(v)
+                    for k, v in sigma_map.items()
+                }
+    return lookup
+
+
+def merge_appendix_a_into_grades(
+    grades: list[dict],
+    appendix_path: Path,
+) -> tuple[int, set[str]]:
+    appendix = load_appendix_a(appendix_path)
+    lookup = build_appendix_a_lookup(appendix)
+    tabulated_marks: set[str] = set()
+    merged = 0
+
+    for grade in grades:
+        mark = grade.get("mark")
+        if not mark:
+            continue
+        mark_tables = lookup.get(mark)
+        if not mark_tables:
+            for key in lookup:
+                if mark == key or mark.startswith(key) or key.startswith(mark):
+                    mark_tables = lookup[key]
+                    break
+        if not mark_tables:
+            continue
+
+        all_columns = []
+        for table in appendix.get("tables", {}).values():
+            all_columns.extend(table.get("columns", []))
+
+        col_id = _pick_appendix_column(all_columns, mark, grade.get("name", ""))
+        if not col_id or col_id not in mark_tables:
+            col_id = next(iter(mark_tables))
+        sigma_map = mark_tables.get(col_id)
+        if not sigma_map:
+            continue
+
+        grade["gost34233_1"] = {"allowableSigma": dict(sigma_map)}
+        tabulated_marks.add(mark)
+        merged += 1
+
+    return merged, tabulated_marks
+
+
+# Марки, отсутствующие в ПНАЭ — добавляются из ГОСТ (прил. А.4–А.6)
+GOST_ONLY_MARK_META: dict[str, tuple[str, str, str]] = {
+    # mark -> (group, classId, sortament label)
+    "08Х18Г8Н2Т": ("Сталь хромоникелевая коррозионно-стойкого аустенитного класса", "СВН", "Лист (ГОСТ 34233.1)"),
+    "07Х13АГ20": ("Сталь высокохромистая", "СВХ", "Лист (ГОСТ 34233.1)"),
+    "02Х8Н22С6": ("Сплав на железоникелевой основе", "СЖНО", "Лист (ГОСТ 34233.1)"),
+    "15Х18Н12С4ТЮ": ("Сталь хромоникелевая коррозионно-стойкого аустенитного класса", "СВН", "Лист (ГОСТ 34233.1)"),
+    "06ХН28МДТ": ("Сплав на железоникелевой основе", "СЖНО", "Лист (ГОСТ 34233.1)"),
+    "03ХН28МДТ": ("Сплав на железоникелевой основе", "СЖНО", "Лист (ГОСТ 34233.1)"),
+    "08Х22Н6Т": ("Сталь хромоникелевая коррозионно-стойкого аустенитного класса", "СВН", "Лист (ГОСТ 34233.1)"),
+    "08Х21Н6М2Т": ("Сталь хромоникелевая коррозионно-стойкого аустенитного класса", "СВН", "Лист (ГОСТ 34233.1)"),
+    "А85М": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "А8М": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АДМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АДОМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АД1М": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМцМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМцСМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМг2М": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМгЗМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМг5М": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "АМгбМ": ("Алюминий и его сплавы", "ALUMINUM", "Лист отожжённый (ГОСТ 34233.1)"),
+    "М2": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "М3": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "МЗр": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "Л63": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "ЛС59-1": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "Л062-1": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+    "ЛЖМц59-1-1": ("Медь и её сплавы", "COPPER", "Лист 3–10 мм (ГОСТ 34233.1)"),
+}
+
+
+def load_appendix_b(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_appendix_vg(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def build_appendix_b_lookup(appendix: dict) -> dict[str, dict[str, dict[str, dict[str, float]]]]:
+    """
+    mark -> column_id -> { rp02: {temp: val}, rm: {temp: val} }
+    """
+    lookup: dict[str, dict[str, dict[str, dict[str, float]]]] = {}
+    for table in appendix.get("tables", {}).values():
+        prop = table.get("property")
+        if prop not in ("rp02", "rm"):
+            continue
+        columns = table.get("columns", [])
+        values_by_col = table.get("values", {})
+        for col in columns:
+            col_id = col["id"]
+            vals = values_by_col.get(col_id)
+            if not vals:
+                continue
+            temp_map = {
+                str(int(k) if float(k).is_integer() else k): float(v)
+                for k, v in vals.items()
+            }
+            for mark in col.get("marks", []):
+                lookup.setdefault(mark, {}).setdefault(col_id, {})[prop] = temp_map
+    return lookup
+
+
+def _resolve_mark_tables(
+    lookup: dict[str, dict[str, dict[str, dict[str, float]]]],
+    mark: str,
+) -> dict[str, dict[str, dict[str, float]]] | None:
+    if mark in lookup:
+        return lookup[mark]
+    for key in lookup:
+        if mark == key or mark.startswith(key) or key.startswith(mark):
+            return lookup[key]
+    return None
+
+
+def merge_appendix_b_into_grades(
+    grades: list[dict],
+    appendix_b_path: Path,
+    appendix_a_path: Path,
+) -> tuple[int, set[str]]:
+    appendix_b = load_appendix_b(appendix_b_path)
+    lookup = build_appendix_b_lookup(appendix_b)
+    all_columns: list[dict] = []
+    for table in appendix_b.get("tables", {}).values():
+        all_columns.extend(table.get("columns", []))
+
+    merged_marks: set[str] = set()
+    merged = 0
+
+    for grade in grades:
+        mark = grade.get("mark")
+        if not mark:
+            continue
+        mark_tables = _resolve_mark_tables(lookup, mark)
+        if not mark_tables:
+            continue
+
+        col_id = _pick_appendix_column(all_columns, mark, grade.get("name", ""))
+        if not col_id or col_id not in mark_tables:
+            col_id = next(iter(mark_tables))
+        props = mark_tables[col_id]
+        applied = False
+        if props.get("rp02"):
+            grade["rp02"] = dict(props["rp02"])
+            applied = True
+        if props.get("rm"):
+            grade["rm"] = dict(props["rm"])
+            applied = True
+        if applied:
+            merged_marks.add(mark)
+            merged += 1
+
+    return merged, merged_marks
+
+
+def _e1e5_to_gpa(e_map: dict[str, float]) -> dict[str, float]:
+    return {
+        str(int(k) if float(k).is_integer() else k): round(float(v) * 100, 1)
+        for k, v in e_map.items()
+    }
+
+
+def build_e_lookup(appendix_vg: dict) -> dict[str, dict[str, float]]:
+    out: dict[str, dict[str, float]] = {}
+    em = appendix_vg.get("elasticModulus", {})
+    for cls in em.get("materialClasses", {}).values():
+        gpa = _e1e5_to_gpa(cls.get("e1e5", {}))
+        for mark in cls.get("marks", []):
+            out[mark] = gpa
+    return out
+
+
+def build_alpha_lookup(appendix_vg: dict) -> dict[str, dict[str, float]]:
+    te = appendix_vg.get("thermalExpansion", {})
+    by_mark = te.get("byMark", {})
+    return {
+        mark: {str(int(k) if float(k).is_integer() else k): float(v) for k, v in vals.items()}
+        for mark, vals in by_mark.items()
+    }
+
+
+def apply_modulus_and_alpha(
+    grades: list[dict],
+    appendix_vg_path: Path,
+) -> None:
+    vg = load_appendix_vg(appendix_vg_path)
+    e_lookup = build_e_lookup(vg)
+    alpha_lookup = build_alpha_lookup(vg)
+
+    for grade in grades:
+        mark = grade.get("mark")
+        if not mark:
+            continue
+        for key, e_map in e_lookup.items():
+            if mark == key or mark.startswith(key) or key.startswith(mark):
+                grade["elasticModulusE"] = dict(e_map)
+                break
+        alpha = alpha_lookup.get(mark)
+        if not alpha:
+            for key, a_map in alpha_lookup.items():
+                if mark == key or mark.startswith(key) or key.startswith(mark):
+                    alpha = a_map
+                    break
+        if alpha:
+            alpha_out = {"20": alpha.get("100", next(iter(alpha.values())))}
+            alpha_out.update(alpha)
+            grade["thermalExpansionAlpha"] = alpha_out
+
+
+def add_gost_only_grades(
+    grades: list[dict],
+    appendix_a_path: Path,
+    appendix_b_path: Path,
+) -> list[str]:
+    """Добавляет записи для марок из ГОСТ, отсутствующих в ПНАЭ."""
+    existing_marks = {g.get("mark") for g in grades if g.get("mark")}
+    added: list[str] = []
+
+    appendix_a = load_appendix_a(appendix_a_path)
+    appendix_b = load_appendix_b(appendix_b_path)
+    b_lookup = build_appendix_b_lookup(appendix_b)
+    a_lookup = build_appendix_a_lookup(appendix_a)
+    all_a_cols: list[dict] = []
+    for table in appendix_a.get("tables", {}).values():
+        all_a_cols.extend(table.get("columns", []))
+    all_b_cols: list[dict] = []
+    for table in appendix_b.get("tables", {}).values():
+        all_b_cols.extend(table.get("columns", []))
+
+    for mark, (group, class_id, sortament) in GOST_ONLY_MARK_META.items():
+        if mark in existing_marks:
+            continue
+
+        grade_name = f"{mark} ({sortament})"
+        entry: dict = {
+            "name": grade_name,
+            "classId": class_id,
+            "group": group,
+            "mark": mark,
+            "rm": {},
+            "rp02": {},
+        }
+
+        mark_b = _resolve_mark_tables(b_lookup, mark)
+        if mark_b:
+            col_id = _pick_appendix_column(all_b_cols, mark, grade_name) or next(iter(mark_b))
+            props = mark_b.get(col_id, {})
+            if props.get("rp02"):
+                entry["rp02"] = dict(props["rp02"])
+            if props.get("rm"):
+                entry["rm"] = dict(props["rm"])
+
+        mark_a = a_lookup.get(mark)
+        if not mark_a:
+            for key in a_lookup:
+                if mark == key or mark.startswith(key) or key.startswith(mark):
+                    mark_a = a_lookup[key]
+                    break
+        if mark_a:
+            col_id = _pick_appendix_column(all_a_cols, mark, grade_name) or next(iter(mark_a))
+            sigma = mark_a.get(col_id)
+            if sigma:
+                entry["gost34233_1"] = {"allowableSigma": dict(sigma)}
+
+        grades.append(entry)
+        existing_marks.add(mark)
+        added.append(mark)
+
+    return added
+
+
+def collect_temperatures(*sources: dict | list) -> list[int]:
+    temps: set[int] = set()
+    for src in sources:
+        if isinstance(src, list):
+            for item in src:
+                if isinstance(item, (int, float)):
+                    temps.add(int(item))
+            continue
+        if isinstance(src, dict):
+            if "temperaturesC" in src:
+                temps.update(int(t) for t in src["temperaturesC"])
+            for table in src.get("tables", {}).values():
+                for data_map in list(table.get("sigma", {}).values()) + list(table.get("values", {}).values()):
+                    for t in data_map:
+                        temps.add(int(float(t)))
+            for grade in src.get("grades", []):
+                for prop in ("rm", "rp02", "thermalExpansionAlpha", "elasticModulusE"):
+                    pmap = grade.get(prop)
+                    if pmap:
+                        temps.update(int(float(k)) for k in pmap)
+                gost = grade.get("gost34233_1", {}).get("allowableSigma")
+                if gost:
+                    temps.update(int(float(k)) for k in gost)
+    return sorted(temps)
+
+
+def build_full_handbook(
+    pnae_path: Path,
+    appendix_a_path: Path | None = None,
+    appendix_b_path: Path | None = None,
+    appendix_vg_path: Path | None = None,
+) -> dict:
+    """Полный каталог: ПНАЭ + титан + прил. А/Б/В/Г."""
     pnae = json.loads(pnae_path.read_text(encoding="utf-8"))
     titanium = build_titanium_minimal()
 
@@ -325,17 +716,46 @@ def build_full_handbook(pnae_path: Path) -> dict:
 
     grades.extend(titanium["grades"])
 
-    temps = sorted(set(pnae["temperaturesC"]) | set(titanium["temperaturesC"]))
+    appendix_a_path = appendix_a_path or Path("scripts/data/gost34233-1-appendix-a.json")
+    appendix_b_path = appendix_b_path or Path("scripts/data/gost34233-1-appendix-b.json")
+    appendix_vg_path = appendix_vg_path or Path("scripts/data/gost34233-1-appendix-vg.json")
+
+    a_merged, tabulated_marks = merge_appendix_a_into_grades(grades, appendix_a_path)
+    b_merged, b_marks = merge_appendix_b_into_grades(grades, appendix_b_path, appendix_a_path)
+    apply_modulus_and_alpha(grades, appendix_vg_path)
+    new_marks = add_gost_only_grades(grades, appendix_a_path, appendix_b_path)
+    apply_modulus_and_alpha(grades, appendix_vg_path)
+
+    # Повторно применить σ для новых марок
+    merge_appendix_a_into_grades(grades, appendix_a_path)
+
+    appendix_a = load_appendix_a(appendix_a_path)
+    appendix_b = load_appendix_b(appendix_b_path)
+    appendix_vg = load_appendix_vg(appendix_vg_path)
+    temps = collect_temperatures(pnae, titanium, appendix_a, appendix_b, {"grades": grades})
+
+    marks_list = ", ".join(sorted(tabulated_marks)[:15])
+    if len(tabulated_marks) > 15:
+        marks_list += f" и ещё {len(tabulated_marks) - 15}"
 
     return {
         "source": (
-            "ГОСТ 34233.1—2017: марки, сортамент и механические свойства по приложению Б; "
-            "табличные [σ] — приложение А (титан), для остальных марок — расчёт по Rm/Rp0,2"
+            "ГОСТ 34233.1—2017: механические свойства по приложению Б "
+            f"({b_merged} сортаментов, {len(b_marks)} марок); "
+            f"табличные [σ] — приложение А ({a_merged} сортаментов); "
+            f"E — прил. В, α — прил. Г; "
+            f"добавлено {len(new_marks)} марок (Al/Cu/fe-ni)"
         ),
         "standard": "ГОСТ 34233.1—2017",
         "temperaturesC": temps,
         "properties": pnae["properties"],
         "grades": grades,
+        "_stats": {
+            "grades": len(grades),
+            "tabulated_marks": len(tabulated_marks),
+            "b_marks": len(b_marks),
+            "new_marks": new_marks,
+        },
     }
 
 
@@ -344,7 +764,7 @@ def main() -> None:
     ap.add_argument(
         "--pdf",
         type=str,
-        default=r"C:\Users\dima\Desktop\4293739672.pdf",
+        default=r"C:\Users\user\Desktop\4293739672.pdf",
         help="Путь к PDF ГОСТ 34233.1",
     )
     ap.add_argument(
@@ -369,21 +789,53 @@ def main() -> None:
         default=str(Path("apps/web/public/data/pnae-steel-properties.json")),
         help="Источник марок/сортаментов для --full",
     )
+    ap.add_argument(
+        "--appendix-a",
+        type=str,
+        default=str(Path("scripts/data/gost34233-1-appendix-a.json")),
+        help="Структурированные таблицы приложения А",
+    )
+    ap.add_argument(
+        "--appendix-b",
+        type=str,
+        default=str(Path("scripts/data/gost34233-1-appendix-b.json")),
+        help="Структурированные таблицы приложения Б",
+    )
+    ap.add_argument(
+        "--appendix-vg",
+        type=str,
+        default=str(Path("scripts/data/gost34233-1-appendix-vg.json")),
+        help="Модуль E (прил. В) и α (прил. Г)",
+    )
     args = ap.parse_args()
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     if args.full:
-        data = build_full_handbook(Path(args.pnae))
+        data = build_full_handbook(
+            Path(args.pnae),
+            Path(args.appendix_a),
+            Path(args.appendix_b),
+            Path(args.appendix_vg),
+        )
+        stats = data.pop("_stats", {})
     else:
         data = None
+        stats = {}
         if args.safe:
             data = extract_titanium_tables_word_safe(args.pdf)
         if not data:
             data = build_titanium_minimal()
     out_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Wrote {out_path}")
+    if stats:
+        print(
+            f"Stats: grades={stats.get('grades')}, "
+            f"tabulated_marks={stats.get('tabulated_marks')}, "
+            f"b_marks={stats.get('b_marks')}, "
+            f"new_marks={len(stats.get('new_marks', []))}"
+        )
 
 
 if __name__ == "__main__":

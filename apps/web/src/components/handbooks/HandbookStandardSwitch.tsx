@@ -1,11 +1,27 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export type HandbookStandard = "pnae" | "gost34233-1";
 
-const STANDARDS: { id: HandbookStandard; label: string; href: string }[] = [
-  { id: "pnae", label: "ПНАЭ Г-7-002-86", href: "https://intech-atom.ru/pnae" },
-  { id: "gost34233-1", label: "ГОСТ 34233.1", href: "https://intech-atom.ru/gost34233-1" },
+const STANDARDS: {
+  id: HandbookStandard;
+  label: string;
+  devPath: string;
+  prodHref: string;
+}[] = [
+  {
+    id: "pnae",
+    label: "ПНАЭ Г-7-002-86",
+    devPath: "/",
+    prodHref: "https://intech-atom.ru/pnae",
+  },
+  {
+    id: "gost34233-1",
+    label: "ГОСТ 34233.1",
+    devPath: "/handbooks/gost34233-1",
+    prodHref: "https://intech-atom.ru/gost34233-1",
+  },
 ];
 
 interface Props {
@@ -14,6 +30,8 @@ interface Props {
 }
 
 export function HandbookStandardSwitch({ active, className }: Props) {
+  const useInternalRoutes = import.meta.env.DEV;
+
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
       {STANDARDS.map((item) => (
@@ -23,9 +41,13 @@ export function HandbookStandardSwitch({ active, className }: Props) {
           variant={item.id === active ? "default" : "outline"}
           size="sm"
         >
-          <a href={item.href} target="_top" rel="noreferrer">
-            {item.label}
-          </a>
+          {useInternalRoutes ? (
+            <Link to={item.devPath}>{item.label}</Link>
+          ) : (
+            <a href={item.prodHref} target="_top" rel="noreferrer">
+              {item.label}
+            </a>
+          )}
         </Button>
       ))}
     </div>

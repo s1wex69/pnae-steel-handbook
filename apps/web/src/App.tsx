@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import { EmbedGuard } from "@/components/EmbedGuard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SteelPropertiesPage } from "@/pages/SteelPropertiesPage";
+import { Gost34233_1SteelPropertiesPage } from "@/pages/Gost34233_1SteelPropertiesPage";
 import { PnaeCalculatorsPage } from "@/pages/PnaeCalculatorsPage";
 import { CylindricalShellInternalPage } from "@/pages/CylindricalShellInternalPage";
 import { CylindricalShellExternalPage } from "@/pages/CylindricalShellExternalPage";
@@ -30,6 +31,7 @@ export default function App() {
           <Routes>
             <Route element={<AppLayout />}>
               <Route index element={<SteelPropertiesPage />} />
+              <Route path="handbooks/gost34233-1" element={<Gost34233_1SteelPropertiesPage />} />
               <Route path="calculators" element={<PnaeCalculatorsPage />} />
               <Route path="calculators/cylindrical-shell-internal" element={<CylindricalShellInternalPage />} />
               <Route path="calculators/cylindrical-shell-external" element={<CylindricalShellExternalPage />} />

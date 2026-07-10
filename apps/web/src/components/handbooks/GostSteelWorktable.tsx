@@ -88,7 +88,12 @@ type RowCalc = {
   ready: boolean;
 };
 
-function useRowCalcs(handbook: SteelHandbook, rows: GostTableRow[]): RowCalc[] {
+function useRowCalcs(
+  handbook: SteelHandbook,
+  rows: GostTableRow[],
+  allowableModes: PnaeAllowableMode[]
+): RowCalc[] {
+  const primaryMode = allowableModes[0] ?? "pressure_internal";
   return useMemo(
     () =>
       rows.map((row) => {
@@ -101,11 +106,9 @@ function useRowCalcs(handbook: SteelHandbook, rows: GostTableRow[]): RowCalc[] {
           MECH_PROPS.map((key) => [key, grade && tempValid ? interpolatedValue(grade, key, t) : null])
         ) as Record<SteelPropertyKey, number | null>;
 
-        const rm = mech.rm;
-        const rp02 = mech.rp02;
         const allowable =
-          tempValid && rm !== null && rp02 !== null && rm > 0 && rp02 > 0 && rp02 <= rm
-            ? null // позже: computeGostAllowableByMode(mode, rm, rp02, ...)
+          grade && tempValid
+            ? computeGostAllowableByMode(primaryMode, grade, { temperature: t, handbook })
             : null;
 
         return {
@@ -116,7 +119,7 @@ function useRowCalcs(handbook: SteelHandbook, rows: GostTableRow[]): RowCalc[] {
           ready: Boolean(grade && row.mark && row.sortament && tempValid),
         };
       }),
-    [handbook, rows]
+    [handbook, rows, primaryMode]
   );
 }
 
@@ -591,7 +594,7 @@ export function GostSteelWorktable({ handbook }: Props) {
   }, []);
 
   const activeRow = rows.find((r) => r.id === activeRowId) ?? rows[0];
-  const calcs = useRowCalcs(handbook, rows);
+  const calcs = useRowCalcs(handbook, rows, allowableModes);
   const hasResults = calcs.some((c) => c.ready);
 
   const selectCategory = useCallback(

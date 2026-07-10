@@ -1,10 +1,11 @@
 import type { SteelHandbook } from "@/types/steel";
-import { handbookDataUrl } from "./handbookDataUrl";
+import { gostHandbookDataUrl, handbookDataUrl } from "./handbookDataUrl";
 
 declare global {
   interface Window {
     __PNAE_B64_CHUNKS?: string[];
     __PNAE_HANDBOOK?: SteelHandbook;
+    __GOST_HANDBOOK?: SteelHandbook;
   }
 }
 
@@ -30,5 +31,16 @@ export async function loadHandbookData(): Promise<SteelHandbook> {
   if (!res.ok) throw new Error(String(res.status));
   const data = (await res.json()) as SteelHandbook;
   window.__PNAE_HANDBOOK = data;
+  return data;
+}
+
+/** Загрузка справочника ГОСТ 34233.1 */
+export async function loadGostHandbookData(): Promise<SteelHandbook> {
+  if (window.__GOST_HANDBOOK) return window.__GOST_HANDBOOK;
+
+  const res = await fetch(gostHandbookDataUrl());
+  if (!res.ok) throw new Error(String(res.status));
+  const data = (await res.json()) as SteelHandbook;
+  window.__GOST_HANDBOOK = data;
   return data;
 }

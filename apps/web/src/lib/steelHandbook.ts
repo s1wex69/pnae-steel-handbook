@@ -221,9 +221,21 @@ export const PNAE_CATALOG_LAYOUT: {
   },
 ];
 
-/** Категории металла для справочника ГОСТ 34233.1 (стали ПНАЭ + титан) */
+/** Категории металла для справочника ГОСТ 34233.1 (стали ПНАЭ + цветные металлы) */
 export const GOST_METAL_CATEGORIES: PnaeMetalCategory[] = [
   ...PNAE_METAL_CATEGORIES,
+  {
+    id: "aluminum",
+    section: "Цветные металлы и сплавы",
+    label: "Алюминий и его сплавы",
+    groups: ["Алюминий и его сплавы"],
+  },
+  {
+    id: "copper",
+    section: "Цветные металлы и сплавы",
+    label: "Медь и её сплавы",
+    groups: ["Медь и её сплавы"],
+  },
   {
     id: "titanium",
     section: "Цветные металлы и сплавы",

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { to: "/calculators", label: "Калькуляторы", icon: Calculator },
   { to: "/handbooks/pnae-steel", label: "ПНАЭ", icon: BookOpen },
+  { to: "/handbooks/gost34233-1", label: "ГОСТ 34233.1", icon: BookOpen },
   { to: "/gosts", label: "ГОСТы", icon: Scale },
   { to: "/examples", label: "Примеры", icon: GraduationCap },
   { to: "/glossary", label: "Глоссарий", icon: Library },
