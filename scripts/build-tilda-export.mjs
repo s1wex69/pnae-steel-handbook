@@ -259,22 +259,34 @@ function run(cmd, args, env) {
 
 function embedSnippet(title, iframeSrc) {
   const src = iframeSrc ?? "ВСТАВЬТЕ_СЮДА_ССЫЛКУ_НА_index.html";
-  return `<div style="width:100%;max-width:1400px;margin:0 auto;padding-top:5.5rem;">
+  return `<div id="pnae-embed-wrap" style="width:100%;max-width:none;margin:0;padding:0;background:#ece9e4;">
   <iframe
+    id="pnae-embed-frame"
     src="${src}"
     title="${title}"
-    style="width:100%;height:min(92vh,1400px);min-height:900px;border:0;border-radius:12px;"
+    style="display:block;width:100%;height:1200px;min-height:600px;border:0;background:#ece9e4;"
     loading="lazy"
+    scrolling="no"
   ></iframe>
 </div>
 <script>
 (function(){
-  var T="pnae-embed-wheel";
+  var W="pnae-embed-wheel";
+  var H="pnae-embed-height";
+  var frame=document.getElementById("pnae-embed-frame");
   window.addEventListener("message",function(e){
-    if(!e.data||e.data.type!==T)return;
-    var dy=Number(e.data.deltaY);
-    if(!isFinite(dy)||!dy)return;
-    window.scrollBy(0,dy);
+    if(!e.data)return;
+    if(e.data.type===W){
+      var dy=Number(e.data.deltaY);
+      if(!isFinite(dy)||!dy)return;
+      window.scrollBy(0,dy);
+      return;
+    }
+    if(e.data.type===H&&frame){
+      var h=Number(e.data.height);
+      if(!isFinite(h)||h<200)return;
+      frame.style.height=Math.ceil(h)+"px";
+    }
   });
 })();
 </script>

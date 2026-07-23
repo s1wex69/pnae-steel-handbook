@@ -1,10 +1,14 @@
 import { useEffect, type ReactNode } from "react";
 import { EmbedGuard } from "@/components/EmbedGuard";
 import { fixTildaEmbedHost } from "@/tilda/fixTildaEmbedHost";
-import { useDocumentWheelScroll } from "@/hooks/useDocumentWheelScroll";
+import {
+  useDocumentWheelScroll,
+  useEmbedHeightReporter,
+} from "@/hooks/useDocumentWheelScroll";
 
 export function TildaShell({ children }: { children: ReactNode }) {
   useDocumentWheelScroll();
+  useEmbedHeightReporter();
 
   useEffect(() => {
     fixTildaEmbedHost();

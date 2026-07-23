@@ -8,7 +8,9 @@ html:has(#root.pnae-tilda-embed) body {
   min-height: 100%;
   height: auto;
   overflow-x: clip;
-  overflow-y: auto;
+  overflow-y: visible;
+  background: #ece9e4;
+  margin: 0;
 }
 
 html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
@@ -61,18 +63,18 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 }
 
 :root.light {
-  --color-background: #ede6da;
+  --color-background: #ece9e4;
   --color-foreground: #1a1a1a;
-  --color-card: #f7f2eb;
+  --color-card: #ece9e4;
   --color-card-foreground: #1a1a1a;
   --color-primary: #711a28;
   --color-primary-foreground: #ffffff;
   --color-heading: #1a1a1a;
   --color-emphasis: #1a1a1a;
-  --color-muted: #f0e8dc;
+  --color-muted: #ece9e4;
   --color-muted-foreground: #3d3d3d;
-  --color-border: #ddd2c4;
-  --color-accent: #e8dfd3;
+  --color-border: #d5d0ca;
+  --color-accent: #ece9e4;
   --color-accent-foreground: #1a1a1a;
   --color-destructive: #c44b4b;
   --color-header: #711a28;
@@ -87,12 +89,12 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  max-width: 1400px;
-  margin-inline: auto;
+  max-width: none;
+  margin-inline: 0;
   overflow-x: clip;
   overflow-y: visible;
   isolation: isolate;
-  background: var(--color-card);
+  background: #ece9e4;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--text-base--line-height);
@@ -262,8 +264,8 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 
 .t-rec:has(#root.pnae-tilda-embed),
 .t-rec:has(.pnae-t123-svc) {
-  background: var(--color-card) !important;
-  padding-top: 5.5rem !important;
+  background: #ece9e4 !important;
+  padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
 
@@ -271,7 +273,7 @@ html:has(#root.pnae-tilda-embed) .t-rec:has(#root.pnae-tilda-embed) {
 .t-rec:has(#root.pnae-tilda-embed) .t-col,
 .t-rec:has(#root.pnae-tilda-embed) [class*="t-cell"] {
   width: 100% !important;
-  max-width: 1400px !important;
-  margin-inline: auto !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
   box-sizing: border-box !important;
 }
