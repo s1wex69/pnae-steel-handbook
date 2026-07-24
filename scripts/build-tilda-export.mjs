@@ -230,7 +230,7 @@ const projects = [
     input: "tilda-gost-34233-1.html",
     title: "Справочник — ГОСТ 34233.1",
     iframeTitle: "Справочник ГОСТ 34233.1",
-    embedSiteUrl: "https://intech-atom.ru/gost34233-1",
+    embedSiteUrl: "https://intech-atom.ru/gost",
     embedSiteName: "ИНТЕХ-АТОМ",
   },
 ].map((p) => ({ ...p, iframeSrc: iframeUrls[p.id] }));
@@ -273,6 +273,7 @@ function embedSnippet(title, iframeSrc) {
 (function(){
   var W="pnae-embed-wheel";
   var H="pnae-embed-height";
+  var S="pnae-handbook-switch";
   var frame=document.getElementById("pnae-embed-frame");
   window.addEventListener("message",function(e){
     if(!e.data)return;
@@ -280,6 +281,12 @@ function embedSnippet(title, iframeSrc) {
       var dy=Number(e.data.deltaY);
       if(!isFinite(dy)||!dy)return;
       window.scrollBy(0,dy);
+      return;
+    }
+    if(e.data.type===S&&frame&&e.data.src){
+      frame.src=String(e.data.src);
+      frame.style.height="1200px";
+      if(frame.offsetTop!=null)window.scrollTo(0,frame.offsetTop);
       return;
     }
     if(e.data.type===H&&frame){
