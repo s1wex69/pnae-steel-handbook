@@ -22,7 +22,7 @@ export function fixTildaEmbedHost() {
       el.style.setProperty("padding-left", "0", "important");
       el.style.setProperty("padding-right", "0", "important");
       el.style.setProperty("padding-bottom", "0", "important");
-      el.style.setProperty("background", "#ffffff", "important");
+      el.style.setProperty("background", "#ece9e4", "important");
       if (el.classList.contains("t-rec") && window.self === window.top) {
         el.style.setProperty("padding-top", "5.5rem", "important");
       }
